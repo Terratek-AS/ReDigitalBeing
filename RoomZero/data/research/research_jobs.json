@@ -1,0 +1,15 @@
+[
+  {
+    "job_id": "7e47717e-3c5a-48b2-ac83-28f9052ab075",
+    "name": "Matrix Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-05-15T09:09:04.401646+00:00",
+    "next_run": null,
+    "created_by": "matrix",
+    "notes": ""
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "ea4894d8-068f-4299-b55f-39543ee395e3",
+    "timestamp": "2026-05-15T06:41:10.027034+00:00",
+    "category": "semantic",
+    "content": "Project codename is RoomZero",
+    "importance": 0.9,
+    "tags": [
+      "project"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  }
+]

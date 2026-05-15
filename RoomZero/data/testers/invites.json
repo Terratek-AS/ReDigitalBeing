@@ -1,0 +1,14 @@
+[
+  {
+    "invite_code": "RZ-P9GLKX18YM",
+    "role": "tester",
+    "created_at": "2026-05-15T09:08:13.290305+00:00",
+    "active": true
+  },
+  {
+    "invite_code": "RZ-LUXVK5Q6T0",
+    "role": "tester",
+    "created_at": "2026-05-15T09:09:04.371992+00:00",
+    "active": false
+  }
+]

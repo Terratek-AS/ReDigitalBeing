@@ -1,0 +1,87 @@
+[
+  {
+    "question_id": "c2431b17-4a65-4bd9-9ee2-716fefc05d14",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "other",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-05-15T09:09:04.400642+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "agent memory"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "5a83576a-6d09-4f32-8840-c73116d0cc97",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "other",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-05-15T09:09:04.400672+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "agent memory"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "9634b54d-e15a-4283-b7c2-7e18fddd95d9",
+    "question": "How should memory decay be implemented safely?",
+    "category": "other",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-05-15T09:09:04.400693+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "agent memory"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "f27bff7c-2763-4f78-b41b-df701e6ddeaf",
+    "question": "What are risks of memory poisoning?",
+    "category": "other",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-05-15T09:09:04.400708+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "agent memory"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "ca81b26e-7e5e-4e11-ba66-d666823f8b39",
+    "question": "What sources should be reviewed?",
+    "category": "other",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-05-15T09:09:04.400722+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "agent memory"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "source_id": "9cbb5bf0-c7b9-451f-a508-6596271a08f7",
+    "url_or_reference": "https://example.com/paper",
+    "title": "Example Paper",
+    "submitted_by": "matrix",
+    "timestamp": "2026-05-15T09:09:04.415955+00:00",
+    "category": "other",
+    "claimed_relevance": "test relevance",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
+  }
+]
