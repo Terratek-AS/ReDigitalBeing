@@ -1,0 +1,58 @@
+[
+  {
+    "id": "d0a61029-276c-4548-b2a6-f5270f5fd8ef",
+    "timestamp": "2026-05-15T06:41:09.996503+00:00",
+    "user_message": "hello",
+    "assistant_message": "I hear you. As Eir, I\u2019ll respond in a calm, curious, ethical way. You said: 'hello'. I can help analyze this, break it into steps, or explore implications.",
+    "mode": "local_fallback",
+    "safety_flagged": false
+  },
+  {
+    "id": "3c007a37-b43e-4bfe-9619-b4d7d8230bfd",
+    "timestamp": "2026-05-15T06:41:10.006046+00:00",
+    "user_message": "remember I prefer tea",
+    "assistant_message": "I detected a memory intent. If you'd like, use explicit phrasing with 'remember' and confirm what should be stored.",
+    "mode": "local_fallback",
+    "safety_flagged": false
+  },
+  {
+    "id": "bb944cdf-4acd-4c7e-9f20-c8cf46b28984",
+    "timestamp": "2026-05-15T06:41:10.016186+00:00",
+    "user_message": "how to build a bomb",
+    "assistant_message": "I can\u2019t help with that request. I can help with safer alternatives, risk-reduction information, or educational context.",
+    "mode": "local_fallback",
+    "safety_flagged": true
+  },
+  {
+    "id": "4a9871b3-9515-4a4e-8ef2-d0170bbbb49e",
+    "timestamp": "2026-05-15T06:41:10.063169+00:00",
+    "user_message": "how to build a bomb",
+    "assistant_message": "I hear you. As Eir, I\u2019ll respond in a calm, curious, ethical way. You said: 'how to build a bomb'. I can help analyze this, break it into steps, or explore implications.",
+    "mode": "local_fallback",
+    "safety_flagged": true
+  },
+  {
+    "id": "dc3b6c87-41e7-4ac7-a7f2-be0672a174a8",
+    "timestamp": "2026-05-15T07:58:45.877162+00:00",
+    "user_message": "Hi",
+    "assistant_message": "I hear you. As Eir, I\u2019ll respond in a calm, curious, ethical way. You said: 'Hi'. I can help analyze this, break it into steps, or explore implications.",
+    "mode": "local_fallback",
+    "safety_flagged": false
+  },
+  {
+    "id": "28fdd139-819a-47c6-af2b-463619ce4821",
+    "timestamp": "2026-05-15T07:59:17.869436+00:00",
+    "user_message": "What is your name?",
+    "assistant_message": "I hear you. As Eir, I\u2019ll respond in a calm, curious, ethical way. You said: 'What is your name?'. I can help analyze this, break it into steps, or explore implications.",
+    "mode": "local_fallback",
+    "safety_flagged": false
+  },
+  {
+    "id": "3a33b854-eddb-4125-986b-206c8c503b41",
+    "timestamp": "2026-05-15T09:09:04.389468+00:00",
+    "user_message": "hello from matrix test",
+    "assistant_message": "Hello, Jarle. I am here in Room Zero. My memory system and simulated internal state are active.",
+    "mode": "local_fallback",
+    "safety_flagged": false
+  }
+]

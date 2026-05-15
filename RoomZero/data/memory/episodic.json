@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1a05c072-70a3-4a95-a77f-c12d6f36b6b9",
+    "timestamp": "2026-05-15T06:41:10.005583+00:00",
+    "category": "episodic",
+    "content": "remember I prefer tea",
+    "importance": 0.65,
+    "tags": [
+      "user_requested_memory"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  }
+]

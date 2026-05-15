@@ -1,0 +1,16 @@
+[
+  {
+    "tester_id": "2990404b-3981-435a-92fe-a095a7048497",
+    "display_name": "matrix-user",
+    "role": "tester",
+    "invite_code": "RZ-LUXVK5Q6T0",
+    "consent_accepted": true,
+    "created_at": "2026-05-15T09:09:04.379202+00:00",
+    "last_seen": "2026-05-15T09:09:04.388729+00:00",
+    "active": true,
+    "permissions": [
+      "chat",
+      "submit_feedback"
+    ]
+  }
+]

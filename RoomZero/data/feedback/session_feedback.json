@@ -1,0 +1,18 @@
+[
+  {
+    "feedback_id": "2ab80aed-cdda-429e-b8de-a2d3293d870d",
+    "tester_id": "2990404b-3981-435a-92fe-a095a7048497",
+    "session_id": "matrix-session",
+    "timestamp": "2026-05-15T09:09:04.424981+00:00",
+    "realism_score": 8,
+    "coherence_score": 8,
+    "memory_score": 7,
+    "emotional_presence_score": 7,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 8,
+    "free_text": "good",
+    "suggested_improvement": "more depth"
+  }
+]
