@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoomZero Research Console</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <header class="topbar">
+    <div>
+      <h1>RoomZero • Eir Research Console</h1>
+      <p>Invite testers, review research, run jobs, and gather feedback in one smooth flow.</p>
+    </div>
+    <div class="status-pill" id="health-pill">Checking API...</div>
+  </header>
+
+  <main class="grid">
+    <section class="card card-wide">
+      <h2>Quick Actions & Install Links</h2>
+      <p class="muted">Use these shortcuts for rapid tester onboarding, API checks, install flow, and mobile access.</p>
+
+      <div class="row quick-actions">
+        <button id="btn-quick-health">Check Health</button>
+        <button id="btn-quick-create-flow">Run Quick Tester Flow</button>
+        <button id="btn-quick-list-jobs">List Research Jobs</button>
+        <button id="btn-open-docs">Open API Docs</button>
+      </div>
+
+      <div class="row quick-links">
+        <a href="/docs" target="_blank" rel="noopener">Swagger Docs</a>
+        <a href="/health" target="_blank" rel="noopener">Health Endpoint</a>
+        <a href="https://github.com/knoksen/ReDigitalBeing" target="_blank" rel="noopener">GitHub Repo</a>
+      </div>
+
+      <h3>Install / Run (Windows)</h3>
+      <div class="row quick-actions">
+        <button id="btn-copy-install">Copy install.ps1 command</button>
+        <button id="btn-copy-run">Copy run.ps1 command</button>
+        <button id="btn-copy-build-installer">Copy build installer command</button>
+      </div>
+
+      <h3>Mobile Quick Install Help</h3>
+      <div class="row quick-actions">
+        <button id="btn-mobile-help">Show mobile add-to-home help</button>
+        <button id="btn-copy-mobile-url">Copy local UI URL</button>
+      </div>
+      <pre id="quick-output" class="output"></pre>
+    </section>
+    <section class="card">
+      <h2>Tester Access</h2>
+      <div class="row">
+        <select id="invite-role">
+          <option value="observer">observer</option>
+          <option value="tester">tester</option>
+          <option value="researcher">researcher</option>
+          <option value="reviewer">reviewer</option>
+          <option value="admin">admin</option>
+        </select>
+        <button id="btn-create-invite">Create Invite</button>
+      </div>
+      <pre id="invite-output" class="output"></pre>
+
+      <div class="row">
+        <input id="register-name" placeholder="Display name" />
+        <input id="register-code" placeholder="Invite code" />
+        <button id="btn-register">Register</button>
+      </div>
+      <pre id="register-output" class="output"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Chat with Eir</h2>
+      <div class="row">
+        <input id="chat-tester-id" placeholder="Optional tester_id" />
+      </div>
+      <div class="row">
+        <input id="chat-message" placeholder="Message to Eir..." />
+        <button id="btn-chat">Send</button>
+      </div>
+      <pre id="chat-output" class="output"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Research Questions</h2>
+      <div class="row">
+        <input id="rq-question" placeholder="Question" />
+        <select id="rq-category">
+          <option value="other">other</option>
+          <option value="memory_systems">memory_systems</option>
+          <option value="ethics">ethics</option>
+          <option value="cognitive_architecture">cognitive_architecture</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="rq-submitted-by" placeholder="submitted_by" value="ui_researcher" />
+        <button id="btn-submit-rq">Submit</button>
+        <button id="btn-list-rq">Refresh</button>
+      </div>
+      <pre id="rq-output" class="output"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Research Jobs (Manual)</h2>
+      <div class="row">
+        <input id="job-topic" placeholder="Topic (e.g., persistent memory in AI agents)" />
+        <button id="btn-create-job">Create Job</button>
+      </div>
+      <div class="row">
+        <input id="job-id" placeholder="job_id" />
+        <button id="btn-run-job">Run</button>
+        <button id="btn-pause-job">Pause</button>
+        <button id="btn-activate-job">Activate</button>
+      </div>
+      <div class="row">
+        <button id="btn-list-jobs">List Jobs</button>
+      </div>
+      <pre id="job-output" class="output"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Sources</h2>
+      <div class="row">
+        <input id="source-title" placeholder="Title" />
+        <input id="source-url" placeholder="URL or reference" />
+      </div>
+      <div class="row">
+        <input id="source-by" placeholder="submitted_by" value="ui_researcher" />
+        <select id="source-category">
+          <option value="other">other</option>
+          <option value="memory_systems">memory_systems</option>
+          <option value="ethics">ethics</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="source-relevance" placeholder="Claimed relevance" />
+        <button id="btn-submit-source">Submit Source</button>
+        <button id="btn-list-sources">Queue</button>
+      </div>
+      <pre id="source-output" class="output"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Session Feedback</h2>
+      <div class="row">
+        <input id="fb-tester-id" placeholder="tester_id" />
+        <input id="fb-session-id" placeholder="session_id" value="ui-session-1" />
+      </div>
+      <div class="row">
+        <input id="fb-realism" type="number" min="1" max="10" value="8" />
+        <input id="fb-coherence" type="number" min="1" max="10" value="8" />
+        <input id="fb-memory" type="number" min="1" max="10" value="7" />
+        <input id="fb-emotional" type="number" min="1" max="10" value="7" />
+      </div>
+      <div class="row">
+        <input id="fb-ethical" type="number" min="1" max="10" value="9" />
+        <input id="fb-usefulness" type="number" min="1" max="10" value="8" />
+        <input id="fb-uncanny" type="number" min="1" max="10" value="4" />
+        <input id="fb-trust" type="number" min="1" max="10" value="8" />
+      </div>
+      <div class="row">
+        <input id="fb-text" placeholder="free_text" />
+        <input id="fb-improvement" placeholder="suggested_improvement" />
+      </div>
+      <div class="row">
+        <button id="btn-submit-feedback">Submit Feedback</button>
+        <button id="btn-feedback-stats">Stats</button>
+      </div>
+      <pre id="feedback-output" class="output"></pre>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
