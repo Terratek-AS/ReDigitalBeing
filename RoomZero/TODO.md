@@ -63,20 +63,73 @@
 - [ ] Run pytest
 - [ ] Provide changed files and usage examples
 
-## Task 16 — Add smooth UI/UX for user testing
-- [ ] Add frontend files under app/static (index.html, styles.css, app.js)
-- [ ] Add FastAPI routes/static mounting for /ui and /static
-- [ ] Wire dashboard actions to existing tester/research/jobs/feedback/source endpoints
-- [ ] Update README with UI usage section
-- [ ] Run pytest and verify existing tests remain passing
-- [ ] Provide UI walkthrough and example flows
+## Task 16 — Advanced UI/UX for user testing dashboard
+### A) UX architecture and navigation
+- [ ] Define primary user journeys (invite tester, run research jobs, submit feedback, approve sources)
+- [ ] Reorganize dashboard information hierarchy to reduce action depth
+- [ ] Add persistent top navigation and contextual action zones
+- [ ] Add clear section headers, helper text, and progressive disclosure for advanced actions
 
-## Task 17 — Create Windows installer
+### B) Visual design system
+- [ ] Introduce consistent spacing, typography scale, and component sizing tokens
+- [ ] Standardize button hierarchy (primary/secondary/tertiary/destructive)
+- [ ] Add status color semantics for success/warning/error/info with readable contrast
+- [ ] Refine card/table/form components for visual consistency and scanability
+
+### C) Interaction quality
+- [ ] Add loading states (skeletons/spinners) for async operations
+- [ ] Add empty states with next-step guidance for first-time users
+- [ ] Add inline validation and actionable error messages on forms
+- [ ] Add success confirmations/toasts for completed actions
+- [ ] Add keyboard-friendly interactions for frequent actions
+
+### D) Accessibility and responsiveness
+- [ ] Ensure keyboard navigation and visible focus states across interactive elements
+- [ ] Improve semantic HTML/ARIA landmarks in app/static/index.html
+- [ ] Validate WCAG-oriented color contrast for text and controls
+- [ ] Optimize layouts for desktop/tablet/mobile breakpoints
+- [ ] Ensure touch-friendly hit targets for mobile testing operations
+
+### E) Functional wiring and testability
+- [ ] Wire all dashboard controls to existing tester/research/jobs/feedback/source endpoints
+- [ ] Add global API error boundary/handler in frontend logic
+- [ ] Add lightweight frontend smoke test checklist for critical user flows
+- [ ] Update README with advanced UI/UX usage and flow walkthrough
+
+### F) Acceptance criteria (UI/UX)
+- [ ] Invite-to-chat flow can be completed end-to-end from `/ui` without API docs
+- [ ] Research job create/list/run flow is discoverable in <= 3 interactions per task
+- [ ] Feedback and source moderation actions provide clear state/result feedback
+- [ ] Mobile view remains usable for quick admin/testing actions
+- [ ] Existing backend tests continue passing after UI changes (`pytest`)
+
+## Task 17 — Windows installer hardening and verification
+### A) Build pipeline
 - [x] Create build_installer.ps1 to package RoomZero app for Windows
 - [x] Create installer/RoomZero.iss Inno Setup script for Setup.exe generation
 - [x] Update install.ps1 for installer-friendly bootstrap/use
 - [x] Update README.md with Windows installer build/install instructions
-- [ ] Build and verify installer artifact generation
+- [ ] Run full build chain: `.\install.ps1 -WithBuilder` -> `.\build_installer.ps1` -> `iscc .\installer\RoomZero.iss`
+
+### B) Installer QA on Windows
+- [ ] Verify artifact output exists at expected paths (`dist\RoomZero\` and `dist\installer\RoomZero-Setup.exe`)
+- [ ] Validate clean-machine installation flow (no pre-existing venv or Python assumptions)
+- [ ] Verify Start Menu/Desktop shortcuts and uninstall entry creation
+- [ ] Validate first-run behavior post-install (app starts, `/health` responds, `/ui` loads)
+- [ ] Validate uninstall flow removes app files and leaves user data policy as documented
+- [ ] Test upgrade path (install older build -> install newer build -> verify settings/data expectations)
+
+### C) Security, trust, and documentation
+- [ ] Document SmartScreen/signing expectations for unsigned internal builds
+- [ ] Add release notes template for installer changes and known issues
+- [ ] Add rollback/recovery instructions for failed install or failed first run
+- [ ] Align README + PRESENTATION install wording with verified installer behavior
+
+### D) Acceptance criteria (Windows install)
+- [ ] A non-dev Windows user can install, launch, and access `/ui` with setup docs only
+- [ ] Installer/uninstaller flows execute without manual file surgery
+- [ ] Build and installer steps are reproducible by another team member on Windows
+- [ ] Final installer verification evidence captured (logs/screenshots/checklist)
 
 ## Task 18 — Delivery polish: UX quick links + presentation + publish
 - [ ] Add quick-action buttons/links in UI for efficient user testing flows

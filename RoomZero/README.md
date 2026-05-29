@@ -277,6 +277,46 @@ Planned connectors:
 - sensor/event input adapters
 - multi-agent room simulation primitives
 
+## Execution Plan Snapshot (Windows Install + Advanced UI/UX)
+
+This snapshot mirrors the actionable checklist in `TODO.md` for delivery readiness.
+
+### Advanced UI/UX workstreams
+- UX architecture and navigation
+  - define primary user journeys
+  - reduce action depth for tester/research/feedback/source tasks
+  - improve section hierarchy and contextual actions
+- Visual design system consistency
+  - standard spacing/typography/component hierarchy
+  - semantic status colors and clear button hierarchy
+- Interaction quality
+  - loading, empty, success, and error states
+  - inline validation and clearer user feedback loops
+- Accessibility and responsiveness
+  - keyboard/focus behavior, semantic landmarks, contrast checks
+  - mobile-first usability for quick admin/testing actions
+- Functional wiring and acceptance
+  - ensure dashboard controls map cleanly to existing API endpoints
+  - verify critical flows can be completed from `/ui` without relying on `/docs`
+
+### Windows installer hardening workstreams
+- Build chain verification
+  - run and validate full chain:
+    - `.\install.ps1 -WithBuilder`
+    - `.\build_installer.ps1`
+    - `iscc .\installer\RoomZero.iss`
+- Installer QA on Windows
+  - clean-machine install validation
+  - first-run checks (`/health`, `/ui`)
+  - uninstall and upgrade-path behavior checks
+- Trust and release readiness
+  - SmartScreen/signing expectations for unsigned builds
+  - rollback guidance and release-note discipline
+- Acceptance criteria
+  - non-dev installability from docs
+  - reproducible build/install flow by another team member
+  - checklist/log evidence for final verification
+
 ## Safety and Data Defaults
 
 - Local data storage by default (JSON files under `data/`)

@@ -61,6 +61,44 @@ RoomZero is a local-first research platform for persistent digital-being simulat
 - Local-first data control and transparency
 
 ## 9) Next Recommended Steps
+
+### Advanced UI/UX execution priorities
+- Finalize UX architecture for key user journeys:
+  - invite tester
+  - run research jobs
+  - submit feedback
+  - moderate sources
+- Improve dashboard clarity and interaction quality:
+  - clearer hierarchy and action grouping
+  - loading, empty, success, and error states
+  - inline validation and actionable feedback
+- Enforce accessibility and responsiveness standards:
+  - keyboard navigation + visible focus states
+  - semantic landmarks and contrast checks
+  - mobile-first usability for quick testing/admin flows
+- Validate UI acceptance outcomes:
+  - complete invite-to-chat flow from `/ui` without relying on `/docs`
+  - keep critical workflows discoverable with low interaction depth
+
+### Windows installer hardening priorities
+- Validate full build chain on Windows:
+  - `.\install.ps1 -WithBuilder`
+  - `.\build_installer.ps1`
+  - `iscc .\installer\RoomZero.iss`
+- Execute installer QA scenarios:
+  - clean-machine install
+  - first run (`/health`, `/ui`)
+  - uninstall behavior
+  - upgrade path behavior
+- Improve trust/release readiness:
+  - SmartScreen/signing expectations for unsigned builds
+  - rollback guidance for install/first-run failures
+  - verification evidence (logs/checklists/screenshots)
+- Validate installer acceptance outcomes:
+  - non-dev user can install and run from docs only
+  - build/install flow is reproducible by another team member
+
+### Cross-cutting quality priorities
 - Expand endpoint-level automated tests for testers/research/feedback/sources
 - Add end-to-end UI smoke tests
 - Validate installer artifact generation in CI
