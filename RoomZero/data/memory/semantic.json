@@ -10,5 +10,31 @@
     ],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "de6bc8ae-7af2-430f-974b-80e0f62f0319",
+    "timestamp": "2026-05-30T02:50:45.008393+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "b25d646b-5cf5-44a8-a7b7-4f229792db01",
+    "timestamp": "2026-05-30T03:25:43.519213+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
   }
 ]

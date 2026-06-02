@@ -10,5 +10,25 @@
     ],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "b79e6a45-9150-44c1-bc0d-e2ee6c88a625",
+    "timestamp": "2026-05-30T02:50:45.080599+00:00",
+    "category": "episodic",
+    "content": "missing required fields",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "324f3f37-aa2f-42bd-ba19-aa993ceebfce",
+    "timestamp": "2026-05-30T03:25:43.601097+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

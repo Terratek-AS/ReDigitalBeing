@@ -10,5 +10,23 @@
     "role": "tester",
     "created_at": "2026-05-15T09:09:04.371992+00:00",
     "active": false
+  },
+  {
+    "invite_code": "RZ-JQ0IPG5LAB",
+    "role": "tester",
+    "created_at": "2026-05-30T02:50:45.064032+00:00",
+    "active": true
+  },
+  {
+    "invite_code": "RZ-CTE4MWIKWB",
+    "role": "tester",
+    "created_at": "2026-05-30T03:25:43.582710+00:00",
+    "active": true
+  },
+  {
+    "invite_code": "RZ-373KYBRD0P",
+    "role": "tester",
+    "created_at": "2026-05-30T03:25:43.617066+00:00",
+    "active": true
   }
 ]

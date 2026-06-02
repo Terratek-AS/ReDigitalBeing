@@ -14,5 +14,37 @@
     "trust_score": 8,
     "free_text": "good",
     "suggested_improvement": "more depth"
+  },
+  {
+    "feedback_id": "9d7c93ba-899e-43f7-9b0f-3ccec285081c",
+    "tester_id": "automation-tester",
+    "session_id": "automation-session",
+    "timestamp": "2026-05-30T02:50:45.020186+00:00",
+    "realism_score": 8,
+    "coherence_score": 8,
+    "memory_score": 7,
+    "emotional_presence_score": 7,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 8,
+    "free_text": "",
+    "suggested_improvement": ""
+  },
+  {
+    "feedback_id": "5a2d6408-8d95-44a4-9dc9-07b2fabd5498",
+    "tester_id": "automation-tester",
+    "session_id": "automation-session",
+    "timestamp": "2026-05-30T03:25:43.530323+00:00",
+    "realism_score": 8,
+    "coherence_score": 8,
+    "memory_score": 7,
+    "emotional_presence_score": 7,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 8,
+    "free_text": "",
+    "suggested_improvement": ""
   }
 ]
