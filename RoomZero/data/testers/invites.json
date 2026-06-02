@@ -28,5 +28,29 @@
     "role": "tester",
     "created_at": "2026-05-30T03:25:43.617066+00:00",
     "active": true
+  },
+  {
+    "invite_code": "RZ-S718IBGSUM",
+    "role": "tester",
+    "created_at": "2026-06-02T23:49:24.750442+00:00",
+    "active": true
+  },
+  {
+    "invite_code": "RZ-TL4KW7SR1O",
+    "role": "tester",
+    "created_at": "2026-06-02T23:49:24.776797+00:00",
+    "active": true
+  },
+  {
+    "invite_code": "RZ-WFBH1AOGOQ",
+    "role": "tester",
+    "created_at": "2026-06-02T23:50:18.100037+00:00",
+    "active": true
+  },
+  {
+    "invite_code": "RZ-VQS0WHBTSL",
+    "role": "tester",
+    "created_at": "2026-06-02T23:50:18.132138+00:00",
+    "active": true
   }
 ]

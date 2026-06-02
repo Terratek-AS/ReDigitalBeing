@@ -1,11 +1,17 @@
-# TODO - GitHub Release + Presentation Refresh
+# TODO - App Completion (Code/Test Driven)
 
-- [x] Review current documentation (`README.md`, `PRESENTATION.md`) and identify release-facing updates
-- [ ] Update `README.md` with first-page style project description and release-ready repository references
-- [ ] Update `PRESENTATION.md` first page and overall release presentation content
-- [ ] Validate markdown consistency and links
-- [ ] Check git status/remotes and GitHub CLI availability
-- [ ] Create release branch `blackboxai/...`
-- [ ] Commit and push documentation updates
-- [ ] Open pull request to target repository
-- [ ] Create GitHub release tag and release notes
+- [x] Confirm scope and priorities with user
+- [x] Run baseline automated checks (`pytest`) to identify concrete blockers
+- [x] Run smoke/API checks to identify runtime/startup blockers
+- [x] Review failing areas in `app/main.py`, modules, and static UI linked to real failures
+- [x] Implement fixes module-by-module (no artificial changes)
+- [x] Re-run `pytest` and smoke checks
+- [x] Verify startup + API/UI behavior
+- [ ] Summarize final completed app state
+
+## Findings from verification
+- `pytest`: 16/16 tests passing.
+- API smoke checks: all checks passed.
+- Startup: FastAPI/Uvicorn starts successfully on `http://127.0.0.1:8000`.
+- UI/API/docs availability confirmed (`/ui`, `/health`, `/docs` all 200).
+- No concrete code blockers found in current implementation.

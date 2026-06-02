@@ -34,5 +34,29 @@
     "reliability_score": 3,
     "status": "submitted",
     "reviewer_notes": null
+  },
+  {
+    "source_id": "e6bb34f2-59c9-489c-a68b-c4f3710c2057",
+    "url_or_reference": "https://example.com/automation",
+    "title": "Automation Source",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-02T23:49:24.718263+00:00",
+    "category": "other",
+    "claimed_relevance": "smoke",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
+  },
+  {
+    "source_id": "08a64a56-2d13-4aba-aca4-5beec6df7376",
+    "url_or_reference": "https://example.com/automation",
+    "title": "Automation Source",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-02T23:50:18.072466+00:00",
+    "category": "other",
+    "claimed_relevance": "smoke",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
   }
 ]

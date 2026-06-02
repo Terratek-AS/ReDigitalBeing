@@ -111,5 +111,33 @@
     "eir_answer": null,
     "reviewer_notes": null,
     "approved_summary": null
+  },
+  {
+    "question_id": "a2403928-86da-40ee-ac9b-5dbe667ba3b5",
+    "question": "How to improve automation reliability?",
+    "category": "other",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-02T23:49:24.740352+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "1c5d4467-984f-4347-98ad-77ecf295952c",
+    "question": "How to improve automation reliability?",
+    "category": "other",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-02T23:50:18.090949+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
   }
 ]

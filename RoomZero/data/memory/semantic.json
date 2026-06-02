@@ -36,5 +36,31 @@
     ],
     "source": "automation",
     "decay_factor": 1.0
+  },
+  {
+    "id": "f6811d26-f10d-429f-8754-40f64dc628d9",
+    "timestamp": "2026-06-02T23:49:24.696297+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "f8dd6b3f-1b8e-468a-8858-1b7ea2e288eb",
+    "timestamp": "2026-06-02T23:50:18.049717+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
   }
 ]
