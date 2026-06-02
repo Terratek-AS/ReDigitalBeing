@@ -1,37 +1,41 @@
 # RoomZero Presentation
 
-## 1) Vision
-RoomZero is a local-first research platform for persistent digital-being simulation with strong safety controls and transparent workflows.
+## 1) First Page — Release Headline
 
-## 2) What’s Included
+**RoomZero: Persistent Digital-Being Research Platform (Phase 1 Release)**
+
+RoomZero delivers a local-first, safety-aware foundation for persistent digital-being simulation.  
+This release introduces **Eir**, the first digital being prototype with memory continuity, emotional state handling, and transparent governance workflows for research and testing.
+
+Repository: https://github.com/Terratek-AS/ReDigitalBeing
+
+## 2) Description (Release-Friendly)
+
+RoomZero is built for teams exploring long-term, stateful AI interactions under controlled and ethical constraints.  
+It combines:
+- persistent memory and persona continuity
+- structured tester/research workflows
+- explicit safety boundaries
+- practical local deployment via API, CLI, and Windows installer path
+
+## 3) What’s Included
+
 - Eir persona chat with memory/state continuity
 - Research Network (testers, research queue, sources, feedback)
 - Continuous research jobs (manual/local mode)
 - Web UI dashboard for faster testing operations
 - Windows installer pipeline (PyInstaller + Inno Setup)
 
-## 3) Architecture Snapshot
+## 4) Architecture Snapshot
+
 - Backend: FastAPI (`app/main.py`)
 - Modules: memory, persona, state, safety, llm, testers, research, feedback, sources, research_jobs
 - Data store: JSON files under `data/`
 - UI: static dashboard under `app/static/`
 - CLI: `python -m app.cli`
 
-## 4) New Delivery Polish (Task 18)
-- Added quick-action section in UI for:
-  - health check
-  - one-click tester onboarding flow
-  - research jobs quick listing
-  - direct docs open
-- Added install quick command buttons:
-  - install
-  - run
-  - build installer
-- Added mobile quick install/access help:
-  - add-to-home guidance
-  - local UI URL copy helper
-
 ## 5) Effective User Testing Flow
+
 1. Create invite
 2. Register tester
 3. Chat with Eir
@@ -41,6 +45,7 @@ RoomZero is a local-first research platform for persistent digital-being simulat
 7. Review stats and iterate
 
 ## 6) Install and Run
+
 - Install:
   `.\install.ps1`
 - Run:
@@ -50,11 +55,13 @@ RoomZero is a local-first research platform for persistent digital-being simulat
   `.\build_installer.ps1`
 
 ## 7) API and Console
+
 - API docs: `/docs`
 - UI dashboard: `/ui`
 - Health: `/health`
 
 ## 8) Safety and Governance
+
 - Explicit consent for tester onboarding
 - Role-based tester permissions
 - Reviewer-controlled approval pipelines
@@ -105,4 +112,5 @@ RoomZero is a local-first research platform for persistent digital-being simulat
 - Add optional remote knowledge connectors with strict review gates
 
 ## 10) Repository
-- GitHub: https://github.com/knoksen/ReDigitalBeing
+
+- GitHub: https://github.com/Terratek-AS/ReDigitalBeing
