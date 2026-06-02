@@ -1,5 +1,20 @@
 # RoomZero
 
+## First Page — Release Overview
+
+**RoomZero** is a local-first research platform for building persistent digital-being simulations with strong safety controls and transparent workflows.
+
+This release introduces the first digital being, **Eir**, with:
+- persistent memory layers
+- persona continuity and emotional state modeling
+- FastAPI + CLI interfaces for testing and operations
+- structured research/testing pipelines
+- safety boundaries and ethical constraints by default
+
+Repository: https://github.com/Terratek-AS/ReDigitalBeing
+
+## Project Description
+
 RoomZero is a research prototype for a persistent digital being simulation system.  
 Phase 1 creates the first digital being, **Eir**, with local-first memory, persona continuity, emotional state simulation, CLI/API interfaces, and safety boundaries.
 
