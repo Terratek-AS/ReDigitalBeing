@@ -11,7 +11,7 @@
   - [x] CI workflow for RoomZero (lint/test/build checks appropriate for current repo)
   - [x] CodeQL workflow for Python
 - [x] Add/repair Dependabot config (`.github/dependabot.yml`)
-- [ ] Ensure dependency graph can resolve Python dependencies from repo layout
+- [x] Ensure dependency graph can resolve Python dependencies from repo layout
 - [x] Validate workflow syntax and branch triggers
 
 ## 2) Inspection phase (non-destructive)

@@ -149,6 +149,8 @@ python -m app.cli
 
 The repository includes GitHub Actions workflows at `.github/workflows/ci.yml` and `.github/workflows/codeql.yml`.
 
+The CI workflow is configured for pushes to `main`, `develop`, and `blackboxai/**` branches.
+
 Validation tests for RoomZero are:
 - `python -m pytest -q`
 - `powershell -ExecutionPolicy Bypass -File .\scripts\verify.ps1`
