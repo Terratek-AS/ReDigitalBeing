@@ -62,5 +62,18 @@
     ],
     "source": "automation",
     "decay_factor": 1.0
+  },
+  {
+    "id": "143f8cb2-f5cd-44bf-bb46-d6c2251fe624",
+    "timestamp": "2026-06-03T06:22:20.853040+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
   }
 ]

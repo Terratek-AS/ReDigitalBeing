@@ -139,5 +139,19 @@
     "eir_answer": null,
     "reviewer_notes": null,
     "approved_summary": null
+  },
+  {
+    "question_id": "a7932194-4d02-4e50-96a7-16b034091620",
+    "question": "How to improve automation reliability?",
+    "category": "other",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-03T06:22:20.905793+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
   }
 ]

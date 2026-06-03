@@ -63,5 +63,18 @@
     "next_run": null,
     "created_by": "automation",
     "notes": ""
+  },
+  {
+    "job_id": "a89f39f9-5722-4337-9dbc-a6626d2a4adf",
+    "name": "Automation Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": null,
+    "next_run": null,
+    "created_by": "automation",
+    "notes": ""
   }
 ]

@@ -52,5 +52,17 @@
     "role": "tester",
     "created_at": "2026-06-02T23:50:18.132138+00:00",
     "active": true
+  },
+  {
+    "invite_code": "RZ-TADFFW5UZV",
+    "role": "tester",
+    "created_at": "2026-06-03T06:22:20.917407+00:00",
+    "active": true
+  },
+  {
+    "invite_code": "RZ-03A5XOIDLL",
+    "role": "tester",
+    "created_at": "2026-06-03T06:22:20.946344+00:00",
+    "active": true
   }
 ]

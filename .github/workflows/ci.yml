@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "develop", "blackboxai/**"]
+  pull_request:
+    branches: ["main", "develop"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python-version: ["3.11"]
+
+    defaults:
+      run:
+        working-directory: RoomZero
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: RoomZero/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run pytest
+        run: python -m pytest -q
+
+  package-smoke:
+    name: Packaging smoke (Windows)
+    runs-on: windows-latest
+    needs: test
+
+    defaults:
+      run:
+        working-directory: RoomZero
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: RoomZero/requirements.txt
+
+      - name: Bootstrap install with builder deps
+        shell: pwsh
+        run: .\install.ps1 -WithBuilder
+
+      - name: Build executable (PyInstaller)
+        shell: pwsh
+        run: .\build_installer.ps1
+
+      - name: Validate dist artifact exists
+        shell: pwsh
+        run: |
+          if (-not (Test-Path ".\dist\RoomZero.exe")) { throw "dist\RoomZero.exe missing" }
+          Write-Host "Found .\dist\RoomZero.exe"
