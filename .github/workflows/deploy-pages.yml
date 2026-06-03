@@ -28,22 +28,9 @@ jobs:
 
       - name: Prepare Pages artifact
         run: |
-          mkdir -p out/static
-          cp -r RoomZero/app/static/* out/static/
-          cp RoomZero/app/static/index.html out/404.html
-          cat > out/index.html <<'HTML'
-          <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8" />
-            <meta http-equiv="refresh" content="0; url=./static/index.html" />
-            <title>RoomZero</title>
-          </head>
-          <body>
-            <p>Redirecting to RoomZero…</p>
-          </body>
-          </html>
-          HTML
+          rm -rf out
+          mkdir -p out
+          cp -r RoomZero/app/static/* out/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
