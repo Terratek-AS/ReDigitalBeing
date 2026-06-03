@@ -37,5 +37,31 @@
     "next_run": null,
     "created_by": "automation",
     "notes": ""
+  },
+  {
+    "job_id": "319e9de9-edd1-4cda-afce-5adbeb7ad3bf",
+    "name": "Automation Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": null,
+    "next_run": null,
+    "created_by": "automation",
+    "notes": ""
+  },
+  {
+    "job_id": "131e1ae2-54be-4d29-b814-91827bbd444d",
+    "name": "Automation Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": null,
+    "next_run": null,
+    "created_by": "automation",
+    "notes": ""
   }
 ]

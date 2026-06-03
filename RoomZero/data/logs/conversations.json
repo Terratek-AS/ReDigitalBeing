@@ -70,5 +70,21 @@
     "assistant_message": "Hello, Jarle. I am here in Room Zero. My memory system and simulated internal state are active.",
     "mode": "local_fallback",
     "safety_flagged": false
+  },
+  {
+    "id": "a0774e56-1707-492e-b0db-4da591fa5bf7",
+    "timestamp": "2026-06-02T23:49:24.684453+00:00",
+    "user_message": "hello from smoke api",
+    "assistant_message": "Hello, Jarle. I am here in Room Zero. My memory system and simulated internal state are active.",
+    "mode": "local_fallback",
+    "safety_flagged": false
+  },
+  {
+    "id": "300315cf-c7f8-4714-8f58-cd83763ad4c2",
+    "timestamp": "2026-06-02T23:50:18.031140+00:00",
+    "user_message": "hello from smoke api",
+    "assistant_message": "Hello, Jarle. I am here in Room Zero. My memory system and simulated internal state are active.",
+    "mode": "local_fallback",
+    "safety_flagged": false
   }
 ]

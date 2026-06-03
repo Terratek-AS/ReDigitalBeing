@@ -30,5 +30,25 @@
     "tags": [],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "018b6309-fe2e-4cea-a0f7-22c588118299",
+    "timestamp": "2026-06-02T23:49:24.761727+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "e2ec013f-50c8-4e60-972e-791f5d141bb1",
+    "timestamp": "2026-06-02T23:50:18.116085+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

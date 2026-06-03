@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
+import threading
+import time
+import webbrowser
 
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -79,7 +84,15 @@ safe_mode = True
 
 app = FastAPI(title="RoomZero API", version="0.1.0")
 
-STATIC_DIR = Path(__file__).resolve().parent / "static"
+def _resolve_static_dir() -> Path:
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        candidate = Path(sys._MEIPASS) / "app" / "static"
+        if candidate.exists():
+            return candidate
+    return Path(__file__).resolve().parent / "static"
+
+
+STATIC_DIR = _resolve_static_dir()
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
@@ -488,3 +501,22 @@ def admin_shutdown_safe_mode(request: AdminToggleRequest) -> dict:
     global safe_mode
     safe_mode = request.safe_mode
     return {"safe_mode": safe_mode, "status": "updated"}
+
+
+def _open_ui_after_delay(delay_seconds: float = 1.5) -> None:
+    time.sleep(delay_seconds)
+    try:
+        webbrowser.open("http://127.0.0.1:8000/ui")
+        print("RoomZero: opened browser at http://127.0.0.1:8000/ui")
+    except Exception as exc:
+        print(f"RoomZero: could not open browser automatically: {exc}")
+
+
+if __name__ == "__main__":
+    print("RoomZero: starting server on http://127.0.0.1:8000")
+    threading.Thread(target=_open_ui_after_delay, daemon=True).start()
+    try:
+        uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)
+    except Exception as exc:
+        print(f"RoomZero: startup failed: {exc}")
+        raise
