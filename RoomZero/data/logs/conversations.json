@@ -94,5 +94,13 @@
     "assistant_message": "Hello, Jarle. I am here in Room Zero. My memory system and simulated internal state are active.",
     "mode": "local_fallback",
     "safety_flagged": false
+  },
+  {
+    "id": "45676e49-e404-4170-ad9f-219cf67b54ea",
+    "timestamp": "2026-06-03T15:02:26.603423+00:00",
+    "user_message": "hello from smoke api",
+    "assistant_message": "Hello, Jarle. I am here in Room Zero. My memory system and simulated internal state are active.",
+    "mode": "local_fallback",
+    "safety_flagged": false
   }
 ]

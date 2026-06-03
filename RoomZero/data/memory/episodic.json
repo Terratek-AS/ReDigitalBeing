@@ -60,5 +60,15 @@
     "tags": [],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "a3eed4db-0726-4d9d-8f77-4cafdc9f8cc5",
+    "timestamp": "2026-06-03T15:02:26.701165+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

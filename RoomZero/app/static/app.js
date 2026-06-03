@@ -34,6 +34,13 @@ async function copyText(value, okMessage) {
   }
 }
 
+function updateOnboardingStep(stepNumber) {
+  const steps = document.querySelectorAll(".onboarding-bar .step");
+  steps.forEach((step, idx) => {
+    step.classList.toggle("done", idx < stepNumber);
+  });
+}
+
 function setRolePanel(role) {
   const map = {
     tester: "dashboard-tester",
@@ -49,6 +56,7 @@ function setRolePanel(role) {
     target.classList.remove("hidden");
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+  updateOnboardingStep(2);
 }
 
 function getObserverNotes() {
@@ -199,6 +207,7 @@ $("btn-submit-feedback").onclick = async () => {
     });
     pretty($("feedback-output"), data);
     showToast("Feedback submitted");
+    updateOnboardingStep(3);
     initHealthAndStatus();
   } catch (e) {
     showToast(e.message);

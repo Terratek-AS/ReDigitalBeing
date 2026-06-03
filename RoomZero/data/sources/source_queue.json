@@ -70,5 +70,17 @@
     "reliability_score": 3,
     "status": "submitted",
     "reviewer_notes": null
+  },
+  {
+    "source_id": "961172c3-8ed1-452d-94bc-91981d72103c",
+    "url_or_reference": "https://example.com/automation",
+    "title": "Automation Source",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-03T15:02:26.642327+00:00",
+    "category": "other",
+    "claimed_relevance": "smoke",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
   }
 ]

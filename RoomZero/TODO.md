@@ -77,3 +77,23 @@
 - [ ] Validate install/uninstall/reinstall lifecycle where environment allows
 - [ ] Update docs (`README.md`, `TODO.md`) with UI/PWA/install status
 - [ ] Prepare commit + PR summary with validation evidence
+
+## 8) Execution tracker - UI/Product polish task (approved)
+- [x] Plan approved by maintainer
+- [ ] Implement UI polish + onboarding + mobile navigation in static frontend
+  - [ ] `RoomZero/app/static/index.html`
+  - [ ] `RoomZero/app/static/styles.css`
+  - [ ] `RoomZero/app/static/app.js`
+- [ ] Keep backend/API compatibility unchanged
+- [ ] Update product documentation
+  - [ ] `RoomZero/README.md`
+  - [ ] `RoomZero/TODO.md`
+  - [ ] `RoomZero/USER_GUIDE.md` (new)
+- [ ] Validation runs
+  - [ ] `python -m pytest -q RoomZero/tests`
+  - [ ] `powershell -ExecutionPolicy Bypass -File RoomZero/scripts/verify.ps1`
+- [ ] Git workflow
+  - [ ] create branch `blackboxai/...`
+  - [ ] commit
+  - [ ] push
+  - [ ] open PR with summary + screenshot checklist

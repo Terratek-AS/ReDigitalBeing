@@ -54,6 +54,11 @@
     <section class="card card-wide">
       <h2>Choose your role</h2>
       <p class="muted">Start where you feel most comfortable. You can switch roles any time.</p>
+      <div class="onboarding-bar">
+        <div class="step done"><span>1</span> Choose role</div>
+        <div class="step"><span>2</span> Complete first action</div>
+        <div class="step"><span>3</span> Review status</div>
+      </div>
       <div class="role-grid">
         <article class="role-card" data-role="tester">
           <h3>Tester</h3>
@@ -72,6 +77,12 @@
         </article>
       </div>
     </section>
+
+    <nav class="mobile-role-nav">
+      <button class="btn-secondary" data-open-role="tester">Tester</button>
+      <button class="btn-secondary" data-open-role="observer">Observer</button>
+      <button class="btn-secondary" data-open-role="researcher">Researcher</button>
+    </nav>
 
     <section class="card role-panel" id="dashboard-tester">
       <h2>Tester Dashboard</h2>

@@ -94,5 +94,21 @@
     "trust_score": 8,
     "free_text": "",
     "suggested_improvement": ""
+  },
+  {
+    "feedback_id": "05dfb116-9c5e-4a96-b64b-ada6801eb574",
+    "tester_id": "automation-tester",
+    "session_id": "automation-session",
+    "timestamp": "2026-06-03T15:02:26.629636+00:00",
+    "realism_score": 8,
+    "coherence_score": 8,
+    "memory_score": 7,
+    "emotional_presence_score": 7,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 8,
+    "free_text": "",
+    "suggested_improvement": ""
   }
 ]
