@@ -2,11 +2,12 @@ name: CodeQL
 
 on:
   push:
-    branches: ["main", "develop"]
+    branches: ["main", "develop", "blackboxai/**"]
   pull_request:
-    branches: ["main", "develop"]
+    branches: ["main", "develop", "blackboxai/**"]
   schedule:
     - cron: "0 4 * * 1"
+  workflow_dispatch:
 
 permissions:
   actions: read

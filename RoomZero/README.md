@@ -145,6 +145,17 @@ You can distribute `RoomZero-Setup.exe` as the Windows installer.
 python -m app.cli
 ```
 
+## CI and validation
+
+The repository includes GitHub Actions workflows at `.github/workflows/ci.yml` and `.github/workflows/codeql.yml`.
+
+Validation tests for RoomZero are:
+- `python -m pytest -q`
+- `powershell -ExecutionPolicy Bypass -File .\scripts\verify.ps1`
+- `powershell -ExecutionPolicy Bypass -File .\build_installer.ps1`
+
+Dependabot configuration lives in `.github/dependabot.yml`.
+
 ## OpenAI API Key (Optional)
 
 1. Copy `.env.example` to `.env`
