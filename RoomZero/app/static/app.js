@@ -109,19 +109,43 @@ async function initHealthAndStatus() {
   }
 }
 
+function updateInstallState(message) {
+  const el = $("install-state");
+  if (el) el.textContent = message;
+}
+
+function isStandaloneDisplay() {
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
 function setupPwaInstall() {
+  const btn = $("btn-install-pwa");
+
+  if (isStandaloneDisplay()) {
+    if (btn) btn.classList.add("hidden");
+    updateInstallState("RoomZero is installed on this device.");
+  } else {
+    updateInstallState("Tip: Install RoomZero for one-tap launch from your home screen.");
+  }
+
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredInstallPrompt = event;
-    const btn = $("btn-install-pwa");
     if (btn) btn.classList.remove("hidden");
+    updateInstallState("Install is available now.");
   });
 
-  const btn = $("btn-install-pwa");
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    if (btn) btn.classList.add("hidden");
+    updateInstallState("RoomZero installed successfully.");
+    showToast("RoomZero installed");
+  });
+
   if (btn) {
     btn.onclick = async () => {
       if (!deferredInstallPrompt) {
-        showToast("Install is available from your browser menu on this device.");
+        showToast("Use your browser menu and choose 'Add to Home screen' if install is not shown.");
         return;
       }
       deferredInstallPrompt.prompt();
@@ -132,9 +156,12 @@ function setupPwaInstall() {
   }
 
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/static/service-worker.js").catch(() => {
-      // best-effort registration only
-    });
+    navigator.serviceWorker
+      .register("/static/service-worker.js")
+      .then(() => updateInstallState("Offline support enabled (service worker active)."))
+      .catch(() => {
+        updateInstallState("Install works, but offline support could not be enabled in this browser.");
+      });
   }
 }
 

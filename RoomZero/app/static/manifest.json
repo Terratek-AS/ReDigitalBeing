@@ -1,12 +1,15 @@
 {
-  "name": "RoomZero - Eir",
+  "name": "RoomZero",
   "short_name": "RoomZero",
-  "description": "A safe, local-first space for testers, observers, and researchers collaborating with Eir.",
+  "description": "RoomZero is a safe, local-first research space for testers, observers, and researchers collaborating with Eir.",
+  "id": "/ui",
   "start_url": "/ui",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0f1320",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1020",
   "theme_color": "#101828",
+  "categories": ["productivity", "education", "utilities"],
   "icons": [
     {
       "src": "/static/icon-192.svg",

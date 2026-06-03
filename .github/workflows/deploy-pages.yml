@@ -1,0 +1,52 @@
+name: Deploy RoomZero UI to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "RoomZero/app/static/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-roomzero
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p out/static
+          cp -r RoomZero/app/static/* out/static/
+          cp RoomZero/app/static/index.html out/404.html
+          cat > out/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta http-equiv="refresh" content="0; url=./static/index.html" />
+            <title>RoomZero</title>
+          </head>
+          <body>
+            <p>Redirecting to RoomZero…</p>
+          </body>
+          </html>
+          HTML
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

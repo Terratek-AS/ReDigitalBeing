@@ -1,99 +1,86 @@
-# TODO - Production Readiness & Repository Health (CI/Repo-Hardening PR)
+# TODO - Milestone M2: RoomZero research platform MVP (SQLite parallel layer)
 
 ## 0) Execution tracking for approved scope
 - [x] Plan approved by maintainer
-- [x] Create working branch (`blackboxai/...`)
-- [ ] Keep scope isolated from PR #5 installer/runtime startup work
-- [ ] Keep release `v1.0.1` untouched
+- [x] Safe migration path approved
+- [x] Dedicated `research_comments` table approved
+- [ ] Keep existing JSON flows and endpoints intact
+- [ ] Do not remove M1 functionality
 
-## 1) Repository health (highest priority)
-- [x] Add/repair GitHub Actions workflow(s) under `.github/workflows/`
-  - [x] CI workflow for RoomZero (lint/test/build checks appropriate for current repo)
-  - [x] CodeQL workflow for Python
-- [x] Add/repair Dependabot config (`.github/dependabot.yml`)
-- [x] Ensure dependency graph can resolve Python dependencies from repo layout
-- [x] Validate workflow syntax and branch triggers
+## 1) Data layer (SQLite + migration/bootstrap)
+- [ ] Add SQLite database config path in app config
+- [ ] Add DB bootstrap/migration module
+- [ ] Validate migration execution and idempotency
+- [ ] Tables to create:
+  - [ ] `users`
+  - [ ] `invitations`
+  - [ ] `research_questions`
+  - [ ] `research_comments`
+  - [ ] `simulation_scenarios`
+  - [ ] `knowledge_entries`
+  - [ ] `audit_logs`
 
-## 2) Inspection phase (non-destructive)
-- [ ] Inspect packaging/build chain files:
-  - [ ] `RoomZero/build_installer.ps1`
-  - [ ] `RoomZero/install.ps1`
-  - [ ] `RoomZero/RoomZero.spec`
-  - [ ] `RoomZero/installer/RoomZero.iss`
-- [ ] Inspect verification scripts:
-  - [ ] `RoomZero/scripts/verify.ps1`
-  - [ ] `RoomZero/scripts/smoke_api.ps1`
-- [ ] Inspect key tests and coverage gaps:
-  - [ ] `RoomZero/tests/test_memory.py`
-  - [ ] `RoomZero/tests/test_safety.py`
-  - [ ] `RoomZero/tests/test_llm_intents.py`
-  - [ ] `RoomZero/tests/test_research_jobs.py`
+## 2) Invitation system
+- [ ] Invite code generation in SQLite
+- [ ] Invite expiration support
+- [ ] `invited_by` tracking
+- [ ] Invite acceptance workflow
+- [ ] Audit log events for create/accept/expire/fail
 
-## 3) Validation runs requested
-- [x] Run: `python -m pytest -q`
-- [x] Run: `powershell -ExecutionPolicy Bypass -File RoomZero/scripts/verify.ps1`
-- [x] Run packaging checks (builder + installer script validation, no destructive ops)
-- [x] Capture factual pass/fail outputs for report
+## 3) User management
+- [ ] User registration from invite
+- [ ] Role assignment
+- [ ] Contributor mapping support (safe compatibility)
+- [ ] User listing/retrieval endpoints
+- [ ] Audit log events for registration/role changes
 
-## 4) Documentation/readiness updates (if needed by evidence)
-- [x] Update `RoomZero/README.md` for CI/repo-health instructions
-- [ ] Add/update release notes section for this PR scope
-- [ ] Add architecture/deployment notes tied to CI/CD + packaging validation
-- [x] Keep all changes traceable and factual (no placeholders)
+## 4) Research platform entities
+- [ ] New research question schema and lifecycle:
+  - [ ] fields: id/title/description/category/hypothesis/simulation_relevance/ethical_risk/suggested_conditions/status/author/created_at/updated_at/tags
+  - [ ] statuses: proposed/approved/testing/completed/archived
+- [ ] Submission/edit endpoints (owner-aware)
+- [ ] Comment workflow (`research_comments`)
+- [ ] Status transition endpoints with role checks
+- [ ] Audit log events for submit/edit/comment/status change/approval
 
-## 5) Git/PR workflow requested by maintainer
-- [x] Create branch with prefix `blackboxai/`
-- [x] Commit only proven CI/config/docs (code only if concrete blocker)
-- [x] Push branch
-- [x] Open separate PR for repo-health scope
-- [ ] Record PR link in final engineering report
+## 5) Scenario conversion + knowledge foundation
+- [ ] Convert approved research question -> `simulation_scenarios`
+- [ ] Scenario fields: purpose/agent_type/environment/variables/metrics/ethical_constraints
+- [ ] Knowledge entries linked to questions/scenarios/observations
+- [ ] Audit log events for conversion + knowledge creation/updates
 
-## 6) Final deliverables
-- [x] Passing tests / validation evidence
-- [x] Passing CI workflow definition state
-- [x] Updated docs
-- [x] PR link(s)
-- [ ] Final engineering report + production readiness assessment
+## 6) API integration (non-breaking)
+- [ ] Add new M2 routes in `app/main.py` (parallel with legacy routes)
+- [ ] Add role permission checks for M2 routes
+- [ ] Keep all legacy JSON routes untouched and functional
 
-## 7) Product/UI + Installation mode (new approved scope)
-- [x] Scope approved for productized role-based UI and installation/PWA readiness
-- [ ] Redesign `/ui` into warm, professional product shell
-- [ ] Add role entry cards and role dashboards (Tester / Observer / Researcher)
-- [ ] Add user-facing status indicators (system, research, memory/logs, feedback)
-- [ ] Add observer notes (local/browser persistence only)
-- [ ] Make UI fully mobile responsive
-- [ ] Add PWA baseline:
-  - [ ] `manifest.json`
-  - [ ] `service-worker.js`
-  - [ ] install prompt/button wiring
-  - [ ] add-to-home-screen guidance
-- [ ] Keep existing API behavior unchanged
-- [ ] Add meaningful tests only (no fake tests)
-- [ ] Run validation:
-  - [ ] `python -m pytest -q RoomZero/tests`
-  - [ ] `powershell -ExecutionPolicy Bypass -File RoomZero/scripts/verify.ps1`
-- [ ] Rebuild executable (`RoomZero.exe`)
-- [ ] Attempt installer build (`RoomZero-Setup.exe`) and document blocker if `iscc` missing
-- [ ] Validate install/uninstall/reinstall lifecycle where environment allows
-- [ ] Update docs (`README.md`, `TODO.md`) with UI/PWA/install status
-- [ ] Prepare commit + PR summary with validation evidence
+## 7) Admin + research UI updates
+- [ ] Add admin dashboard sections in static UI:
+  - [ ] users
+  - [ ] invitations
+  - [ ] research questions
+  - [ ] approvals
+  - [ ] recent activity
+- [ ] Add research submission UI:
+  - [ ] submit
+  - [ ] edit own submissions
+  - [ ] comment
+  - [ ] view status
+- [ ] Do not break current role dashboards or M1 install/PWA flow
 
-## 8) Execution tracker - UI/Product polish task (approved)
-- [x] Plan approved by maintainer
-- [ ] Implement UI polish + onboarding + mobile navigation in static frontend
-  - [ ] `RoomZero/app/static/index.html`
-  - [ ] `RoomZero/app/static/styles.css`
-  - [ ] `RoomZero/app/static/app.js`
-- [ ] Keep backend/API compatibility unchanged
-- [ ] Update product documentation
-  - [ ] `RoomZero/README.md`
-  - [ ] `RoomZero/TODO.md`
-  - [ ] `RoomZero/USER_GUIDE.md` (new)
-- [ ] Validation runs
-  - [ ] `python -m pytest -q RoomZero/tests`
-  - [ ] `powershell -ExecutionPolicy Bypass -File RoomZero/scripts/verify.ps1`
-- [ ] Git workflow
-  - [ ] create branch `blackboxai/...`
-  - [ ] commit
-  - [ ] push
-  - [ ] open PR with summary + screenshot checklist
+## 8) Validation required
+- [ ] Database migration validation
+- [ ] API endpoint testing (new M2 + legacy smoke)
+- [ ] Startup smoke test
+- [ ] Role permission checks
+- [ ] Full test run (`python -m pytest -q RoomZero/tests`)
+
+## 9) Completion deliverables
+- [ ] Final report includes:
+  - [ ] changed files
+  - [ ] new tables
+  - [ ] new API routes
+  - [ ] test results
+  - [ ] remaining blockers
+- [ ] Commit with exact message:
+  - [ ] `Implement RoomZero research platform MVP`
