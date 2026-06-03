@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RoomZero | Welcome to Eir</title>
   <meta name="description" content="RoomZero is a safe, local-first research space for testers, observers, and researchers collaborating with Eir." />
-  <link rel="manifest" href="/static/manifest.json" />
+  <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#101828" />
-  <link rel="apple-touch-icon" href="/static/icon-192.png" />
-  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="bg-glow"></div>
@@ -262,14 +262,15 @@
       </div>
 
       <div class="row quick-links">
-        <a href="/docs" target="_blank" rel="noopener">API docs</a>
-        <a href="/health" target="_blank" rel="noopener">Health endpoint</a>
+        <a id="quick-link-docs" href="#" target="_blank" rel="noopener">API docs</a>
+        <a id="quick-link-health" href="#" target="_blank" rel="noopener">Health endpoint</a>
         <a href="https://github.com/Terratek-AS/ReDigitalBeing" target="_blank" rel="noopener">Repository</a>
       </div>
     </section>
   </main>
 
   <div id="toast" class="toast hidden"></div>
-  <script src="/static/app.js"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

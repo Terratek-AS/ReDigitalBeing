@@ -2,6 +2,25 @@ const $ = (id) => document.getElementById(id);
 
 let deferredInstallPrompt = null;
 
+function getConfiguredApiBaseUrl() {
+  const fallback = "http://127.0.0.1:8000";
+  const configured = window.ROOMZERO_CONFIG && window.ROOMZERO_CONFIG.API_BASE_URL;
+  const base = (configured || fallback).trim().replace(/\/+$/, "");
+  return base || fallback;
+}
+
+const API_BASE_URL = getConfiguredApiBaseUrl();
+
+function toApiUrl(path) {
+  if (/^https?:\/\//i.test(path)) return path;
+  if (!path.startsWith("/")) return `${API_BASE_URL}/${path}`;
+  return `${API_BASE_URL}${path}`;
+}
+
+function getUiBaseUrl() {
+  return API_BASE_URL;
+}
+
 function showToast(message) {
   const t = $("toast");
   if (!t) return;
@@ -11,9 +30,14 @@ function showToast(message) {
 }
 
 async function api(path, options = {}) {
-  const res = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+  };
+
+  const res = await fetch(toApiUrl(path), {
     ...options,
+    headers,
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
@@ -156,8 +180,15 @@ function setupPwaInstall() {
   }
 
   if ("serviceWorker" in navigator) {
+    const swUrl = (() => {
+      if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+        return new URL("./service-worker.js", window.location.href).toString();
+      }
+      return "/static/service-worker.js";
+    })();
+
     navigator.serviceWorker
-      .register("/static/service-worker.js")
+      .register(swUrl)
       .then(() => updateInstallState("Offline support enabled (service worker active)."))
       .catch(() => {
         updateInstallState("Install works, but offline support could not be enabled in this browser.");
@@ -411,13 +442,19 @@ $("btn-quick-health").onclick = async () => {
   }
 };
 
-$("btn-open-docs").onclick = () => window.open("/docs", "_blank", "noopener");
+const quickLinkDocs = $("quick-link-docs");
+if (quickLinkDocs) quickLinkDocs.href = toApiUrl("/docs");
+
+const quickLinkHealth = $("quick-link-health");
+if (quickLinkHealth) quickLinkHealth.href = toApiUrl("/health");
+
+$("btn-open-docs").onclick = () => window.open(toApiUrl("/docs"), "_blank", "noopener");
 
 $("btn-copy-install").onclick = () => copyText(".\\install.ps1", "Copied install command");
 $("btn-copy-run").onclick = () => copyText(".\\run.ps1", "Copied run command");
 $("btn-copy-build-installer").onclick = () =>
   copyText(".\\install.ps1 -WithBuilder && .\\build_installer.ps1", "Copied build-installer command");
-$("btn-copy-mobile-url").onclick = () => copyText("http://127.0.0.1:8000/ui", "Copied local UI URL");
+$("btn-copy-mobile-url").onclick = () => copyText(`${getUiBaseUrl()}/ui`, "Copied UI URL");
 
 $("btn-mobile-help").onclick = () => {
   const help = [

@@ -8,6 +8,7 @@ import webbrowser
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -53,6 +54,15 @@ from app.models import (
     SubmitSourceRequest,
     TesterInviteRequest,
     TesterRegisterRequest,
+    PlatformActorRequest,
+    PlatformCommentCreateRequest,
+    PlatformInvitationAcceptRequest,
+    PlatformInvitationCreateRequest,
+    PlatformKnowledgeCreateRequest,
+    PlatformResearchQuestionCreateRequest,
+    PlatformResearchQuestionUpdateRequest,
+    PlatformResearchStatusChangeRequest,
+    PlatformScenarioConvertRequest,
 )
 from app.persona import PersonaStore
 from app.research import ResearchStore
@@ -61,6 +71,7 @@ from app.safety import evaluate_message, safe_refusal_message
 from app.sources import SourceStore
 from app.state import StateStore
 from app.testers import TesterStore
+from app.platform_store import PlatformStore
 
 
 class AdminToggleRequest(BaseModel):
@@ -79,10 +90,26 @@ research_store = ResearchStore(RESEARCH_QUESTIONS_FILE, KNOWLEDGE_BASE_FILE, RES
 feedback_store = FeedbackStore(SESSION_FEEDBACK_FILE)
 source_store = SourceStore(SOURCE_QUEUE_FILE, APPROVED_SOURCES_FILE)
 research_jobs_store = ResearchJobsStore(RESEARCH_JOBS_FILE, RESEARCH_QUESTIONS_FILE)
+platform_store = PlatformStore(Path("RoomZero/data/platform/platform.sqlite"))
 
 safe_mode = True
 
 app = FastAPI(title="RoomZero API", version="0.1.0")
+
+# M2.1 CORS policy:
+# Keep this allowlist minimal and explicit for known frontend origins.
+# Tighten further in production by restricting to your exact deployed frontend domain(s).
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+        "https://terratek-as.github.io",
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 def _resolve_static_dir() -> Path:
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
@@ -277,7 +304,8 @@ def submit_research_question(request: SubmitResearchQuestionRequest) -> dict:
 
 @app.get("/research/questions")
 def list_research_questions(status: str | None = None) -> dict:
-    items = research_store.list_research_questions(status=status) if status else research_store.list_research_questions()
+    # Keep runtime behavior unchanged while satisfying static type checkers.
+    items = research_store.list_research_questions(status=status) if status else research_store.list_research_questions()  # type: ignore[arg-type]
     return {"count": len(items), "items": [q.model_dump() for q in items]}
 
 
@@ -501,6 +529,252 @@ def admin_shutdown_safe_mode(request: AdminToggleRequest) -> dict:
     global safe_mode
     safe_mode = request.safe_mode
     return {"safe_mode": safe_mode, "status": "updated"}
+
+
+# --- M2 platform routes ---
+@app.post("/platform/invitations")
+def platform_create_invitation(request: PlatformInvitationCreateRequest) -> dict:
+    try:
+        platform_store.require_role(request.actor_id, {"admin", "reviewer"})
+        invite = platform_store.create_invitation(
+            role=request.role,
+            invited_by=request.actor_id,
+            expires_in_hours=request.expires_in_hours,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "created", "invitation": invite}
+
+
+@app.get("/platform/invitations")
+def platform_list_invitations(actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer"})
+        items = platform_store.list_invitations()
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
+
+
+@app.post("/platform/invitations/accept")
+def platform_accept_invitation(request: PlatformInvitationAcceptRequest) -> dict:
+    try:
+        user = platform_store.accept_invitation(
+            invite_code=request.invite_code,
+            display_name=request.display_name,
+            accepted_by=request.accepted_by,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "accepted", "user": user}
+
+
+@app.get("/platform/users")
+def platform_list_users(actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer"})
+        items = platform_store.list_users()
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
+
+
+@app.get("/platform/users/{user_id}")
+def platform_get_user(user_id: str, actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer"})
+        user = platform_store.get_user(user_id)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found.")
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return user
+
+
+@app.post("/platform/research/questions")
+def platform_create_question(request: PlatformResearchQuestionCreateRequest) -> dict:
+    try:
+        question = platform_store.create_research_question(
+            actor_id=request.actor_id,
+            title=request.title,
+            description=request.description,
+            category=request.category,
+            hypothesis=request.hypothesis,
+            simulation_relevance=request.simulation_relevance,
+            ethical_risk=request.ethical_risk,
+            suggested_conditions=request.suggested_conditions,
+            tags=request.tags,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "created", "question": question}
+
+
+@app.get("/platform/research/questions")
+def platform_list_questions(actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        items = platform_store.list_research_questions()
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
+
+
+@app.get("/platform/research/questions/{question_id}")
+def platform_get_question(question_id: str, actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        question = platform_store.get_research_question(question_id)
+        if question is None:
+            raise HTTPException(status_code=404, detail="Research question not found.")
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return question
+
+
+@app.patch("/platform/research/questions/{question_id}")
+def platform_update_question(question_id: str, request: PlatformResearchQuestionUpdateRequest) -> dict:
+    try:
+        question = platform_store.update_research_question(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            title=request.title,
+            description=request.description,
+            hypothesis=request.hypothesis,
+            simulation_relevance=request.simulation_relevance,
+            ethical_risk=request.ethical_risk,
+            suggested_conditions=request.suggested_conditions,
+            tags=request.tags,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "updated", "question": question}
+
+
+@app.post("/platform/research/questions/{question_id}/status")
+def platform_change_question_status(question_id: str, request: PlatformResearchStatusChangeRequest) -> dict:
+    try:
+        question = platform_store.change_research_status(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            status=request.status,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "updated", "question": question}
+
+
+@app.post("/platform/research/questions/{question_id}/comments")
+def platform_add_comment(question_id: str, request: PlatformCommentCreateRequest) -> dict:
+    try:
+        comment = platform_store.add_comment(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            comment=request.comment,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "created", "comment": comment}
+
+
+@app.get("/platform/research/questions/{question_id}/comments")
+def platform_list_comments(question_id: str, actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        items = platform_store.list_comments(question_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
+
+
+@app.post("/platform/research/questions/{question_id}/convert-scenario")
+def platform_convert_scenario(question_id: str, request: PlatformScenarioConvertRequest) -> dict:
+    try:
+        scenario = platform_store.create_scenario_from_question(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            purpose=request.purpose,
+            agent_type=request.agent_type,
+            environment=request.environment,
+            variables=request.variables,
+            metrics=request.metrics,
+            ethical_constraints=request.ethical_constraints,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "created", "scenario": scenario}
+
+
+@app.get("/platform/scenarios")
+def platform_list_scenarios(actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        items = platform_store.list_scenarios()
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
+
+
+@app.get("/platform/scenarios/{scenario_id}")
+def platform_get_scenario(scenario_id: str, actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        scenario = platform_store.get_scenario(scenario_id)
+        if scenario is None:
+            raise HTTPException(status_code=404, detail="Scenario not found.")
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return scenario
+
+
+@app.post("/platform/knowledge")
+def platform_create_knowledge(request: PlatformKnowledgeCreateRequest) -> dict:
+    try:
+        item = platform_store.create_knowledge_entry(
+            actor_id=request.actor_id,
+            title=request.title,
+            content=request.content,
+            source_type=request.source_type,
+            source_id=request.source_id,
+            linked_question_id=request.linked_question_id,
+            linked_scenario_id=request.linked_scenario_id,
+            linked_observation_id=request.linked_observation_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "created", "knowledge": item}
+
+
+@app.get("/platform/knowledge")
+def platform_list_knowledge(actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        items = platform_store.list_knowledge_entries()
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
+
+
+@app.get("/platform/knowledge/{knowledge_id}")
+def platform_get_knowledge(knowledge_id: str, actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        item = platform_store.get_knowledge_entry(knowledge_id)
+        if item is None:
+            raise HTTPException(status_code=404, detail="Knowledge entry not found.")
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return item
+
+
+@app.post("/platform/audit")
+def platform_recent_activity(request: PlatformActorRequest) -> dict:
+    try:
+        platform_store.require_role(request.actor_id, {"admin", "reviewer"})
+        items = platform_store.recent_activity(limit=200)
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
 
 
 def _open_ui_after_delay(delay_seconds: float = 1.5) -> None:

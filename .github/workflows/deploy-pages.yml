@@ -6,6 +6,8 @@ on:
     paths:
       - "RoomZero/app/static/**"
       - ".github/workflows/deploy-pages.yml"
+      - "RoomZero/app/static/config.js"
+      - "RoomZero/app/static/config.example.js"
   workflow_dispatch:
 
 permissions:
