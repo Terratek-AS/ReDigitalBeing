@@ -1,0 +1,31 @@
+name: Docker Integration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build images
+        run: docker compose -f docker-compose.yml build --progress=plain
+      - name: Start services
+        run: |
+          docker compose -f docker-compose.yml up -d
+          sleep 5
+      - name: Wait for health endpoint
+        run: |
+          for i in 1 2 3 4 5; do
+            if curl -fsS http://localhost:8000/health; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Collect logs (if any)
+        if: failure()
+        run: docker compose -f docker-compose.yml logs --no-color --tail=200
+      - name: Stop services
+        if: always()
+        run: docker compose -f docker-compose.yml down

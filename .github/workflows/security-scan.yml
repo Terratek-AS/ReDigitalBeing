@@ -1,0 +1,29 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, 'ci/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  trivy-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.8.1
+        with:
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+          scan-type: 'fs'
+          ignore-unfixed: 'false'
+          vuln-type: 'os,library'
+      - name: Scan requirements.txt for vulnerabilities
+        run: |
+          if [ -f RoomZero/requirements.txt ]; then
+            docker run --rm -v "$PWD":/project aquasec/trivy:latest fs --exit-code 1 --severity CRITICAL,HIGH /project/RoomZero/requirements.txt || true
+          else
+            echo 'No requirements.txt found; skipping.'
+          fi

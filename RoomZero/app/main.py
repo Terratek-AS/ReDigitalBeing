@@ -91,9 +91,16 @@ research_store = ResearchStore(RESEARCH_QUESTIONS_FILE, KNOWLEDGE_BASE_FILE, RES
 feedback_store = FeedbackStore(SESSION_FEEDBACK_FILE)
 source_store = SourceStore(SOURCE_QUEUE_FILE, APPROVED_SOURCES_FILE)
 research_jobs_store = ResearchJobsStore(RESEARCH_JOBS_FILE, RESEARCH_QUESTIONS_FILE)
-platform_db_path = Path(
-    os.getenv("ROOMZERO_PLATFORM_DB_PATH", "RoomZero/data/platform/platform.sqlite")
-)
+project_root = Path(__file__).resolve().parents[1]
+def _resolve_platform_db_path() -> Path:
+    env_path = os.getenv("ROOMZERO_PLATFORM_DB_PATH")
+    if env_path:
+        path = Path(env_path)
+    else:
+        path = project_root / "data" / "platform" / "platform.sqlite"
+    return path if path.is_absolute() else project_root / path
+
+platform_db_path = _resolve_platform_db_path()
 platform_db_path.parent.mkdir(parents=True, exist_ok=True)
 platform_store = PlatformStore(platform_db_path)
 
