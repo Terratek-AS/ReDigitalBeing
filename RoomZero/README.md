@@ -352,3 +352,4 @@ This snapshot mirrors the actionable checklist in `TODO.md` for delivery readine
 - Human override is respected
 - Eir avoids claims of proven consciousness
 - Sensitive memory should require explicit user consent
+

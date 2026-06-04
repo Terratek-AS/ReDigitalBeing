@@ -104,7 +104,7 @@ app.add_middleware(
     allow_origins=[
         "http://127.0.0.1:8000",
         "http://localhost:8000",
-        "https://terratek-as.github.io",
+        "https://knoksen.github.io",
     ],
     allow_credentials=False,
     allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
@@ -794,3 +794,4 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"RoomZero: startup failed: {exc}")
         raise
+

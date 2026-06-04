@@ -82,11 +82,11 @@ Configured allowlist currently includes:
 
 - `http://127.0.0.1:8000`
 - `http://localhost:8000`
-- `https://terratek-as.github.io`
+- `https://knoksen.github.io`
 
 This supports:
 - local UI and API on localhost
-- GitHub Pages hosted shell at the Terratek org domain
+- GitHub Pages hosted shell at the Knoksen user/org domain
 
 ### Tighten later (recommended)
 
@@ -214,3 +214,4 @@ The frontend will route API calls to configured backend URL.
 - `GET /ui` loads locally (for local backend mode)
 - GitHub Pages shell loads and can call API endpoints via configured base URL
 - CORS allows requests from approved frontend origin
+

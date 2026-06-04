@@ -11,14 +11,14 @@ Repository: https://github.com/Terratek-AS/ReDigitalBeing
 
 - M1, M1.5, and M2 foundations are implemented in the RoomZero backend and UI.
 - Public GitHub Pages preview exists:
-  - https://terratek-as.github.io/ReDigitalBeing
+  - https://knoksen.github.io/ReDigitalBeing
 - Root documentation is now established here for project orientation and backend integration guidance.
 - M2.1 focuses on making the static frontend safely configurable for a public backend deployment.
 
 ## GitHub Pages Preview
 
 Preview URL:  
-https://terratek-as.github.io/ReDigitalBeing
+https://knoksen.github.io/ReDigitalBeing
 
 Important:
 - Pages serves static assets only.
@@ -176,3 +176,4 @@ Use invite + registration workflow exposed by backend endpoints and UI flows.
 - panel-based lab interface
 - live chamber monitor
 - agent/memory/experiment panels
+

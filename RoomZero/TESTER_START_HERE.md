@@ -15,7 +15,7 @@
    - API docs: `http://127.0.0.1:8000/docs`
 
 ### GitHub Pages (UI shell preview)
-- URL: `https://terratek-as.github.io/ReDigitalBeing`
+- URL: `https://knoksen.github.io/ReDigitalBeing`
 - Note: Pages provides frontend shell visibility. Full research/chat actions still depend on backend API availability.
 
 ---
@@ -76,3 +76,4 @@ Logs/Screenshots:
 - Full functionality requires backend API endpoints to be reachable.
 - GitHub Pages deploy currently hosts frontend shell, not full backend runtime.
 - Android APK is intentionally deferred pending a safe wrapper architecture decision (Capacitor/Tauri/etc.) and API-hosting strategy.
+

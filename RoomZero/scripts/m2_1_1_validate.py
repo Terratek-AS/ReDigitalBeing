@@ -3,7 +3,7 @@ import urllib.request
 import urllib.error
 
 LOCAL_BASE = "http://127.0.0.1:8000"
-PAGES_BASE = "https://terratek-as.github.io/ReDigitalBeing"
+PAGES_BASE = "https://knoksen.github.io/ReDigitalBeing"
 
 pages_urls = [
     f"{PAGES_BASE}/",
@@ -87,7 +87,7 @@ def main():
     allowed = [
         "http://127.0.0.1:8000",
         "http://localhost:8000",
-        "https://terratek-as.github.io",
+        "https://knoksen.github.io",
     ]
     disallowed = [
         "https://evil.example.com",
@@ -100,3 +100,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
