@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy filesystem scan
-        uses: aquasecurity/trivy-action@v0.8.1
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           format: 'table'
           exit-code: '1'
