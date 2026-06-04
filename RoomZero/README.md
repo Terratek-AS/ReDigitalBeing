@@ -136,6 +136,10 @@ A named volume is mounted to:
 
 - `/app/data/platform`
 
+Local default path (when no `ROOMZERO_PLATFORM_DB_PATH` is set) is:
+
+- `RoomZero/data/platform/platform.sqlite`
+
 This keeps SQLite runtime writes out of tracked repo files and avoids repeated dirty Git state.
 
 ### Build and run
@@ -151,6 +155,8 @@ Verify:
 
 - `http://127.0.0.1:8000/health`
 - `http://127.0.0.1:8000/ui`
+
+> Note: A running Docker daemon is required for `docker compose build`, `docker compose up -d`, and `docker compose logs`. If Docker is unavailable in your environment, use `docker compose config` to validate the compose syntax before you run the container.
 
 Logs:
 
