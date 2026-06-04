@@ -250,3 +250,74 @@ class ResearchJobCreateRequest(BaseModel):
     schedule: str = "manual"
     created_by: str = "admin"
     notes: str = ""
+
+
+# --- M2 platform requests ---
+class PlatformActorRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+
+
+class PlatformInvitationCreateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    role: str = Field(min_length=1, max_length=50)
+    expires_in_hours: int = Field(default=72, ge=1, le=24 * 30)
+
+
+class PlatformInvitationAcceptRequest(BaseModel):
+    invite_code: str = Field(min_length=4, max_length=200)
+    display_name: str = Field(min_length=1, max_length=200)
+    accepted_by: str | None = None
+
+
+class PlatformResearchQuestionCreateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    title: str = Field(min_length=1, max_length=500)
+    description: str = Field(min_length=1, max_length=10000)
+    category: str = Field(min_length=1, max_length=100)
+    hypothesis: str = Field(min_length=1, max_length=5000)
+    simulation_relevance: str = Field(min_length=1, max_length=5000)
+    ethical_risk: str = Field(min_length=1, max_length=2000)
+    suggested_conditions: str = Field(min_length=1, max_length=5000)
+    tags: list[str] = Field(default_factory=list)
+
+
+class PlatformResearchQuestionUpdateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    title: str | None = None
+    description: str | None = None
+    hypothesis: str | None = None
+    simulation_relevance: str | None = None
+    ethical_risk: str | None = None
+    suggested_conditions: str | None = None
+    tags: list[str] | None = None
+
+
+class PlatformResearchStatusChangeRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    status: str = Field(min_length=1, max_length=50)
+
+
+class PlatformCommentCreateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    comment: str = Field(min_length=1, max_length=5000)
+
+
+class PlatformScenarioConvertRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    purpose: str = Field(min_length=1, max_length=5000)
+    agent_type: str = Field(min_length=1, max_length=200)
+    environment: str = Field(min_length=1, max_length=5000)
+    variables: list[str] = Field(default_factory=list)
+    metrics: list[str] = Field(default_factory=list)
+    ethical_constraints: list[str] = Field(default_factory=list)
+
+
+class PlatformKnowledgeCreateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    title: str = Field(min_length=1, max_length=500)
+    content: str = Field(min_length=1, max_length=20000)
+    source_type: str = Field(min_length=1, max_length=100)
+    source_id: str = Field(min_length=1, max_length=200)
+    linked_question_id: str | None = None
+    linked_scenario_id: str | None = None
+    linked_observation_id: str | None = None

@@ -53,6 +53,16 @@
 - [ ] Add new M2 routes in `app/main.py` (parallel with legacy routes)
 - [ ] Add role permission checks for M2 routes
 - [ ] Keep all legacy JSON routes untouched and functional
+- [ ] Wire `PlatformStore` and SQLite bootstrap into startup path
+- [ ] Add admin/research route families:
+  - [ ] `/platform/invitations` (create/list/accept)
+  - [ ] `/platform/users` (list/get)
+  - [ ] `/platform/research/questions` (create/list/get/update/status)
+  - [ ] `/platform/research/questions/{id}/comments` (add/list)
+  - [ ] `/platform/research/questions/{id}/convert-scenario`
+  - [ ] `/platform/scenarios` (list/get)
+  - [ ] `/platform/knowledge` (create/list/get)
+  - [ ] `/platform/audit` (recent activity)
 
 ## 7) Admin + research UI updates
 - [ ] Add admin dashboard sections in static UI:
@@ -71,9 +81,13 @@
 ## 8) Validation required
 - [ ] Database migration validation
 - [ ] API endpoint testing (new M2 + legacy smoke)
+- [ ] Endpoint tests (M2 happy-path + error-path)
 - [ ] Startup smoke test
 - [ ] Role permission checks
+- [ ] Audit log write/read checks
+- [ ] Approved question -> scenario conversion test
 - [ ] Full test run (`python -m pytest -q RoomZero/tests`)
+- [ ] `powershell -ExecutionPolicy Bypass -File RoomZero/scripts/verify.ps1`
 
 ## 9) Completion deliverables
 - [ ] Final report includes:

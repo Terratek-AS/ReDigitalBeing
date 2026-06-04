@@ -82,5 +82,53 @@
     "reliability_score": 3,
     "status": "submitted",
     "reviewer_notes": null
+  },
+  {
+    "source_id": "f1d9b1c1-2eab-4569-a12f-93a19006fd58",
+    "url_or_reference": "https://example.com/automation",
+    "title": "Automation Source",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-03T22:20:46.849350+00:00",
+    "category": "other",
+    "claimed_relevance": "smoke",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
+  },
+  {
+    "source_id": "5b3d7c52-f43d-4b02-a95e-e931170d6054",
+    "url_or_reference": "https://example.com/automation",
+    "title": "Automation Source",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-03T22:23:05.297982+00:00",
+    "category": "other",
+    "claimed_relevance": "smoke",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
+  },
+  {
+    "source_id": "3d876649-cbe7-4698-a51a-58b9003ecc9d",
+    "url_or_reference": "https://example.com/automation",
+    "title": "Automation Source",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-03T22:31:33.037837+00:00",
+    "category": "other",
+    "claimed_relevance": "smoke",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
+  },
+  {
+    "source_id": "0df119be-931e-4404-89cc-609c42647268",
+    "url_or_reference": "https://example.com/automation",
+    "title": "Automation Source",
+    "submitted_by": "automation",
+    "timestamp": "2026-06-03T22:33:15.318549+00:00",
+    "category": "other",
+    "claimed_relevance": "smoke",
+    "reliability_score": 3,
+    "status": "submitted",
+    "reviewer_notes": null
   }
 ]

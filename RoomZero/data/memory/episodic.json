@@ -70,5 +70,45 @@
     "tags": [],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "f9dab753-370f-4bd3-8f68-48efd9e590db",
+    "timestamp": "2026-06-03T22:20:46.909976+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "2b9cdc3d-1ecb-4744-af2a-7abcb806dd62",
+    "timestamp": "2026-06-03T22:23:05.353578+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "ef3d8d10-b20d-4116-b23f-81b940ba283f",
+    "timestamp": "2026-06-03T22:31:33.082632+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "8ec283a4-ea55-4ffd-94fc-8ddb40131579",
+    "timestamp": "2026-06-03T22:33:15.367503+00:00",
+    "category": "episodic",
+    "content": "minimal valid memory payload",
+    "importance": 0.6,
+    "tags": [],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

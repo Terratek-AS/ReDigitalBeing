@@ -88,5 +88,57 @@
     ],
     "source": "automation",
     "decay_factor": 1.0
+  },
+  {
+    "id": "e0707b32-6bd6-4ce2-9b0d-0b690dc80719",
+    "timestamp": "2026-06-03T22:20:46.821807+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "619303e9-0110-428b-a750-2e82c7ccd164",
+    "timestamp": "2026-06-03T22:23:05.272707+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "cf7b57bc-a2a5-45eb-92e6-286c3ff6e78c",
+    "timestamp": "2026-06-03T22:31:33.013760+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "79705bfa-ea29-4d18-9a8c-d6488135bdb3",
+    "timestamp": "2026-06-03T22:33:15.296029+00:00",
+    "category": "semantic",
+    "content": "automation semantic memory",
+    "importance": 0.6,
+    "tags": [
+      "automation",
+      "smoke"
+    ],
+    "source": "automation",
+    "decay_factor": 1.0
   }
 ]

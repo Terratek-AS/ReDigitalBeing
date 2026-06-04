@@ -89,5 +89,57 @@
     "next_run": null,
     "created_by": "automation",
     "notes": ""
+  },
+  {
+    "job_id": "ba6ed799-03ae-488c-83d9-47d24a003080",
+    "name": "Automation Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": null,
+    "next_run": null,
+    "created_by": "automation",
+    "notes": ""
+  },
+  {
+    "job_id": "be3d9163-9b23-426c-9d1e-126dd7b467cd",
+    "name": "Automation Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": null,
+    "next_run": null,
+    "created_by": "automation",
+    "notes": ""
+  },
+  {
+    "job_id": "36a3f0a9-ea2c-4844-94de-4a14287892a6",
+    "name": "Automation Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": null,
+    "next_run": null,
+    "created_by": "automation",
+    "notes": ""
+  },
+  {
+    "job_id": "08634325-faba-4fb5-ba3f-13c02ebe713a",
+    "name": "Automation Job",
+    "topic": "agent memory",
+    "category": "other",
+    "query": "agent memory",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": null,
+    "next_run": null,
+    "created_by": "automation",
+    "notes": ""
   }
 ]
