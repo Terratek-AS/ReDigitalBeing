@@ -314,6 +314,215 @@ Planned connectors:
 - sensor/event input adapters
 - multi-agent room simulation primitives
 
+## M4 Roadmap: Simulation Intelligence & Digital Human Layer (Planning-Only)
+
+### M4 objective
+
+Define a future planning blueprint for the **Simulation Intelligence & Digital Human Layer** so M2/M3 architecture decisions remain forward-compatible. M4 in this phase is documentation-only and creates no implementation obligation in the current cycle.
+
+### What M4 is
+
+- A planning framework to evolve approved research scenarios into **controlled simulation runs**
+- A design model for repeatable, observable, and auditable simulation execution
+- A specification direction for agent behavior orchestration via explicit agent profiles
+- A governance roadmap for ethical reasoning tests, risk gating, and human oversight
+- A presentation-layer roadmap for Unreal/MetaHuman as avatar visualization only
+
+### What M4 is not
+
+- Not a runtime implementation milestone in this task
+- Not a bypass of M2.1.4 deployment ownership or M2.2 Research MVP Foundation
+- Not a replacement for M3 event/simulation transport hardening
+- Not a claim of real consciousness or proven sentience
+- Not permission to use MetaHuman-derived assets/data for AI/ML training, testing, benchmarking, evaluation, or enhancement
+
+### M4 dependencies
+
+- M2.1.4 deployment ownership and canonical URL authority completed
+- M2.2 research workflows stabilized with governance and auditability
+- M3 simulation-event architecture established (schema + transport + audit trail)
+- Stable role/approval model for research-to-simulation conversion
+- Baseline observability and incident-response readiness
+
+### Simulation runtime roadmap
+
+- Define simulation run lifecycle:
+  - draft -> approved -> scheduled -> running -> paused -> completed -> archived
+- Introduce deterministic configuration snapshots per run:
+  - scenario version
+  - agent profile version
+  - memory-state snapshot reference
+  - safety policy version
+- Add replayability primitives:
+  - event log stream
+  - seed/config capture
+  - run outcome digest
+- Enforce audit trace for all control-plane actions and state transitions
+
+### Agent profile roadmap
+
+- Define versioned agent profile schema:
+  - role
+  - objectives
+  - behavioral constraints
+  - response style boundaries
+  - tool/action permissions
+- Separate profile policy from runtime memory content
+- Require profile approval workflow for medium/high-impact behavior changes
+- Track profile-to-run linkage for post-run analysis and reproducibility
+
+### Memory state roadmap
+
+- Introduce simulation memory-state abstraction:
+  - working memory
+  - episodic simulation memory
+  - scenario-bound semantic memory overlays
+- Ensure memory states are:
+  - inspectable
+  - reversible
+  - environment-scoped
+- Maintain strict separation from private user data and production personal memory stores
+- Add snapshot/restore controls for repeatable testing and controlled rollback
+
+### Metrics and observation roadmap
+
+- Define mandatory telemetry for each controlled simulation run:
+  - run identifiers
+  - scenario/profile versions
+  - timing and transition events
+  - safety events and override events
+- Define synthetic consciousness markers and consciousness-adjacent behavioral markers as research observables (not consciousness claims)
+- Add observer dashboards for run health, drift indicators, and policy violations
+- Require exportable audit summaries for review and governance sign-off
+
+### Ethical simulation gate
+
+- Require ethical risk classification before run approval:
+  - low / medium / high
+- Require explicit ethical approval and human oversight for medium/high-risk scenarios
+- Block or flag harmful real-world operational simulation behavior
+- Require clear stop/abort controls and post-run incident review for flagged events
+
+### Unreal/MetaHuman presentation layer
+
+- Use Unreal/MetaHuman as visual avatar/presentation layer only
+- Keep cognition simulation, agent behavior logic, evaluation pipelines, and knowledge/research datasets outside Unreal/MetaHuman asset domain
+- Ensure transport boundary between simulation runtime and visual renderer is contract-based and auditable
+- Restrict visual layer to presentation, animation, and user-facing embodiment experiences only
+
+### Future database models
+
+(Planning targets only; no schema changes in this task)
+
+- `simulation_runs`
+- `simulation_run_events`
+- `agent_profiles`
+- `agent_profile_versions`
+- `memory_state_snapshots`
+- `memory_state_transitions`
+- `simulation_observations`
+- `simulation_metric_series`
+- `ethical_reviews`
+- `ethical_review_decisions`
+- `simulation_gate_decisions`
+- `visual_session_links`
+- `run_artifact_index`
+
+### Future APIs
+
+(Planning targets only; no API implementation in this task)
+
+- Simulation runs:
+  - `POST /platform/simulations/runs`
+  - `GET /platform/simulations/runs`
+  - `GET /platform/simulations/runs/{run_id}`
+  - `POST /platform/simulations/runs/{run_id}/start|pause|resume|stop`
+- Agent profiles:
+  - `POST /platform/simulations/agent-profiles`
+  - `GET /platform/simulations/agent-profiles`
+  - `POST /platform/simulations/agent-profiles/{id}/versions`
+- Memory state:
+  - `POST /platform/simulations/memory-snapshots`
+  - `POST /platform/simulations/runs/{run_id}/restore-memory`
+- Observation/metrics:
+  - `GET /platform/simulations/runs/{run_id}/events`
+  - `GET /platform/simulations/runs/{run_id}/metrics`
+- Ethical gate:
+  - `POST /platform/simulations/ethics/review`
+  - `POST /platform/simulations/runs/{run_id}/gate-decision`
+
+### Future UI
+
+(Planning targets only; no frontend implementation in this task)
+
+- Simulation Control Center
+- Agent Profile Manager
+- Memory State Inspector + Snapshot Diff Viewer
+- Observation & Metrics Console
+- Ethical Gate Queue + Decision Workspace
+- Run Replay/Audit Timeline Viewer
+- Visual Session Monitor (Unreal/MetaHuman presentation linkage only)
+
+### Testing checklist
+
+Docs/planning targets for future implementation:
+
+- Unit tests for run lifecycle state machine transitions
+- Contract tests for event schemas and API payloads
+- Deterministic replay tests for repeatable run verification
+- Access-control tests for simulation control and ethical gate actions
+- Safety policy tests for blocked/flagged behavior pathways
+- Audit integrity tests (completeness, tamper-evidence assumptions, traceability)
+- Renderer-boundary tests confirming no prohibited data crossing into MetaHuman pipelines
+
+### Safety constraints
+
+- No real-consciousness claims in product or research outputs
+- Use terms such as:
+  - synthetic consciousness markers
+  - consciousness-adjacent behavioral markers
+  - cognition simulation
+- Medium/high-risk scenarios require ethical approval and active human oversight
+- Harmful real-world operational simulation behavior must be blocked or flagged
+- Emergency stop and post-incident review process required for flagged runs
+
+### Licensing constraints
+
+- MetaHuman may only be used as a visual avatar/presentation layer
+- MetaHuman assets, animation curves, rendered outputs, facial/motion data, or derived datasets must not be used for AI/ML training, testing, benchmarking, evaluation, or enhancement
+- RoomZero cognition, training, evaluation, simulation research datasets, and knowledge-base data must remain separated from Unreal/MetaHuman assets
+- License/compliance review is required before commercial release, paid distribution, enterprise deployment, or public launch using Unreal/MetaHuman presentation components
+
+### Implementation order
+
+1. Complete M2.1.4 deployment ownership authority
+2. Complete M2.2 research MVP governance and lifecycle hardening
+3. Complete M3 event architecture and simulation transport foundation
+4. Implement M4 simulation runtime control plane (minimal vertical slice)
+5. Add agent profile versioning and approval workflows
+6. Add memory snapshot/restore and observability primitives
+7. Add ethical gate enforcement for medium/high-risk scenarios
+8. Integrate Unreal/MetaHuman presentation linkage under strict boundary controls
+9. Expand validation, audit exports, and operational readiness checks
+
+### Risks
+
+- Scope creep risk if planning language is interpreted as immediate implementation mandate
+- Governance risk if ethical gate is bypassed for medium/high-risk runs
+- Auditability risk if replay/event capture is incomplete
+- Data-boundary risk between cognition simulation data and visual asset ecosystems
+- Compliance risk from improper MetaHuman/Unreal usage in AI/ML evaluation flows
+- Terminology risk from over-claiming consciousness rather than measured behavioral markers
+
+### Next recommended milestone after M4
+
+**M4.1 Controlled Simulation Pilot (post-M2/M3 completion)**
+
+- Run a constrained internal pilot with approved low-risk scenarios
+- Validate repeatability, observability, auditability, and ethical gate operations
+- Validate boundary-safe Unreal/MetaHuman presentation workflow
+- Publish governance evidence package and readiness decision for wider simulation rollout
+
 ## Execution Plan Snapshot (Windows Install + Advanced UI/UX)
 
 This snapshot mirrors the actionable checklist in `TODO.md` for delivery readiness.

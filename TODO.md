@@ -54,6 +54,31 @@
 - [ ] Improve operational reliability for platform entities and auditability.
 - [ ] Define acceptance gates for MVP readiness (roles, lifecycle, observability, docs, and test evidence).
 
+## M4 planning (future, documentation-only): Simulation Intelligence & Digital Human Layer
+
+- [ ] M4 is **planning-only** in this cycle. No runtime/app/backend/frontend/database implementation in this task.
+- [ ] M4 must build on M2/M3 and must not bypass:
+  - [ ] M2.1.4 deployment ownership resolution
+  - [ ] M2.2 Research MVP Foundation stability gates
+  - [ ] M3 simulation-event architecture hardening
+- [ ] Planning principles:
+  - [ ] approved research scenarios can become controlled simulation runs
+  - [ ] simulation runs must be repeatable, observable, and auditable
+  - [ ] agent behavior must be structured through explicit agent profiles
+  - [ ] memory states must be inspectable, reversible, and separated from private user data
+  - [ ] medium/high-risk scenarios require ethical approval and human oversight
+  - [ ] MetaHuman remains visual avatar/presentation only
+  - [ ] avoid real-consciousness claims; use synthetic consciousness markers and consciousness-adjacent behavioral markers
+- [ ] M4 roadmap artifacts required in docs:
+  - [ ] simulation runtime roadmap
+  - [ ] agent profile roadmap
+  - [ ] memory state roadmap
+  - [ ] observation/metrics roadmap
+  - [ ] ethical simulation gate roadmap
+  - [ ] Unreal/MetaHuman presentation roadmap
+  - [ ] future DB/API/UI model requirements
+  - [ ] testing, safety, licensing, implementation order, risks, and post-M4 recommendation
+
 ## Backend roadmap
 
 - [ ] Harden API contracts for platform endpoints (clear error semantics and role checks).

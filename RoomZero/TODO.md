@@ -1,5 +1,14 @@
 # TODO - Milestone M2: RoomZero research platform MVP (SQLite parallel layer)
 
+## Planning notice: M4 Simulation Intelligence & Digital Human Layer (future only)
+
+- [ ] M4 is documentation/planning-only in the current cycle.
+- [ ] Do not implement M4 runtime/app/backend/frontend/database changes from this TODO.
+- [ ] M4 must build on M2/M3 completion and must not bypass M2.1.4 or M2.2.
+- [ ] M4 design target: controlled simulation runs that are repeatable, observable, auditable, and ethically gated.
+- [ ] Use language such as synthetic consciousness markers and consciousness-adjacent behavioral markers; avoid claims of real consciousness.
+- [ ] Unreal/MetaHuman is visual presentation only and must remain separated from cognition/training/evaluation/simulation research datasets.
+
 ## 0) Execution tracking for approved scope
 - [x] Plan approved by maintainer
 - [x] Safe migration path approved

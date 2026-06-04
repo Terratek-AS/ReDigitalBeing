@@ -71,51 +71,68 @@ It combines:
 - Unreal/MetaHuman visual presentation must remain strictly separated from RoomZero cognition, training, evaluation, simulation research datasets, and knowledge-base data.
 - AI research/testing must use original data, user-owned data, synthetic data created independently of MetaHuman assets, or separately licensed datasets.
 
-## 9) Next Recommended Steps
+## 9) M4 Planning Outlook: Simulation Intelligence & Digital Human Layer (Planning-Only)
 
-### Advanced UI/UX execution priorities
-- Finalize UX architecture for key user journeys:
-  - invite tester
-  - run research jobs
-  - submit feedback
-  - moderate sources
-- Improve dashboard clarity and interaction quality:
-  - clearer hierarchy and action grouping
-  - loading, empty, success, and error states
-  - inline validation and actionable feedback
-- Enforce accessibility and responsiveness standards:
-  - keyboard navigation + visible focus states
-  - semantic landmarks and contrast checks
-  - mobile-first usability for quick testing/admin flows
-- Validate UI acceptance outcomes:
-  - complete invite-to-chat flow from `/ui` without relying on `/docs`
-  - keep critical workflows discoverable with low interaction depth
+### M4 objective
+- Provide a future roadmap for the **Simulation Intelligence & Digital Human Layer** without implementing runtime features in this cycle.
+- Ensure M2/M3 architectural decisions remain compatible with future controlled simulation capabilities.
 
-### Windows installer hardening priorities
-- Validate full build chain on Windows:
-  - `.\install.ps1 -WithBuilder`
-  - `.\build_installer.ps1`
-  - `iscc .\installer\RoomZero.iss`
-- Execute installer QA scenarios:
-  - clean-machine install
-  - first run (`/health`, `/ui`)
-  - uninstall behavior
-  - upgrade path behavior
-- Improve trust/release readiness:
-  - SmartScreen/signing expectations for unsigned builds
-  - rollback guidance for install/first-run failures
-  - verification evidence (logs/checklists/screenshots)
-- Validate installer acceptance outcomes:
-  - non-dev user can install and run from docs only
-  - build/install flow is reproducible by another team member
+### What M4 is
+- A planning framework for turning approved research scenarios into **controlled simulation runs**.
+- A roadmap for repeatable, observable, auditable simulation operations.
+- A governance model for agent behavior, cognition simulation, and ethical reasoning tests.
+- A future visual-presentation layer plan using Unreal/MetaHuman only as avatar presentation.
 
-### Cross-cutting quality priorities
-- Expand endpoint-level automated tests for testers/research/feedback/sources
-- Add end-to-end UI smoke tests
-- Validate installer artifact generation in CI
-- Add optional remote knowledge connectors with strict review gates
+### What M4 is not
+- Not an implementation milestone in the current cycle.
+- Not a bypass of M2.1.4 deployment ownership, M2.2 research MVP foundation, or M3 simulation event hardening.
+- Not a claim of real consciousness.
+- Not an AI/ML data rights expansion for Unreal/MetaHuman assets.
 
-## 10) Repository
+### M4 dependency position
+- M2.1.4 must be resolved first (deployment ownership authority).
+- M2.2 governance and review workflows must be stable.
+- M3 event model must define simulation event transport and auditability.
+- M4 starts only after those gates are satisfied.
+
+### M4 roadmap pillars
+- Simulation runtime roadmap (future)
+- Agent profile roadmap (future)
+- Memory state roadmap (future)
+- Metrics and observation roadmap (future)
+- Ethical simulation gate (future)
+- Unreal/MetaHuman presentation layer (future)
+- Future DB/API/UI planning artifacts (future)
+- Testing/safety/licensing boundaries (future)
+
+### Required safety and licensing boundaries
+- Medium/high-risk scenarios require ethical approval and human oversight before execution.
+- Harmful real-world operational simulation behavior must be blocked or flagged.
+- Use language such as:
+  - synthetic consciousness markers
+  - consciousness-adjacent behavioral markers
+  - agent behavior
+  - cognition simulation
+  - controlled simulation runs
+- MetaHuman may only be used as visual avatar/presentation layer.
+- MetaHuman assets, animation curves, rendered outputs, facial/motion data, or derived datasets must not be used for AI/ML training, testing, benchmarking, evaluation, or enhancement.
+- RoomZero cognition/training/evaluation/simulation research datasets/knowledge-base data must remain separated from Unreal/MetaHuman assets.
+
+## 10) Next Recommended Steps
+
+### Immediate priority (before M4 implementation)
+- Complete M2.1.4 deployment ownership path.
+- Complete M2.2 research MVP hardening and governance acceptance.
+- Complete M3 simulation event architecture baseline.
+
+### Post-M4 planning milestone
+- M4.1 Controlled Simulation Pilot:
+  - approved low-risk scenarios only
+  - repeatability/observability/auditability validation
+  - ethical gate validation
+  - Unreal/MetaHuman boundary-safe presentation validation
+
+## 11) Repository
 
 - GitHub: https://github.com/Terratek-AS/ReDigitalBeing
 
