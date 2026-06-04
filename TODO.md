@@ -21,29 +21,206 @@
   - [x] CORS allowlist includes Knoksen Pages origin
   - [x] targeted tests and local smoke previously passed
   - [x] completion commit recorded: `3d45028`
+- [x] M2.1.4 deployment ownership validation completed.
 
 ## Current blocker
 
-- [ ] **M2.1.4 Deployment ownership blocker (active):**
+- [ ] **M2.1.5 Repository Ownership / Knoksen Deployment Decision (active):**
   - current remote owner: `https://github.com/Terratek-AS/ReDigitalBeing.git`
-  - intended canonical URL: `https://knoksen.github.io/ReDigitalBeing`
-  - deployment ownership blocker: canonical Knoksen Pages URL cannot be authoritative until repo ownership/deployment target is under `knoksen` namespace (transfer/fork/mirror + Pages config)
+  - intended canonical URL target: `https://knoksen.github.io/ReDigitalBeing`
+  - deployment authority for canonical Knoksen Pages URL is pending ownership/deployment decision under `knoksen` namespace
+  - M3 Public Tester Platform implementation must not proceed until M2.1.5 is resolved
 
 ## Current task
 
-- [ ] Finalize deployment-ownership path so intended canonical URL is technically valid and controlled by Knoksen.
-- [ ] Keep backend stability unchanged while resolving ownership/deployment target.
-- [ ] Validate docs + deployment configuration for canonical URL consistency.
-- [ ] M2.1.4 execution checklist:
-  - [x] inspect current remote/origin
-  - [x] inspect Pages workflow behavior (`.github/workflows/deploy-pages.yml`)
-  - [x] inspect frontend config and backend CORS alignment
-  - [x] inspect deployment docs for canonical wording consistency
-  - [ ] run targeted pytest suite
-  - [ ] run uvicorn smoke (`/health`, `/ui`)
-  - [ ] run targeted CORS checks (allowed + blocked origins)
-  - [ ] verify git status and confirm sqlite is not staged
-  - [ ] commit and push only if all validations pass
+- [ ] Produce planning-only M3 Public Tester Platform roadmap.
+- [ ] Keep runtime/app/backend/frontend/database behavior unchanged.
+- [ ] Do not modify or stage runtime database files, including `RoomZero/data/platform/platform.sqlite`.
+- [ ] M3 planning checklist:
+  - [ ] document M3 objective
+  - [ ] document what M3 is / is not
+  - [ ] document M3 dependencies (M2.1.5 mandatory gate)
+  - [ ] define landing/onboarding/invite/role roadmap
+  - [ ] define PWA/mobile, feedback, approved research thread, admin monitoring roadmap
+  - [ ] define tester safety/ethics rules
+  - [ ] define testing/deployment checklists
+  - [ ] define implementation order, risks, and next milestone after M3
+
+## M3 Roadmap: Public Tester Platform (planning-only)
+
+### M3 objective
+
+Make RoomZero accessible, understandable, installable, and testable for invited external users through a stable public tester interface.
+
+### What M3 is
+
+- A planning milestone for invited external tester access and usability hardening.
+- A product-readiness roadmap for public-facing tester documentation and guided workflows.
+- A governance roadmap for invitation-controlled access, role-aware tester experiences, and transparent feedback loops.
+- A deployment-readiness checklist for validating that public tester entry points are accurate, controlled, and supportable.
+
+### What M3 is not
+
+- Not a runtime feature-implementation milestone in this task.
+- Not a bypass of M2.1.5 Repository Ownership / Knoksen Deployment Decision.
+- Not M4 simulation runtime, agent-runtime, synthetic-cognition, Unreal, or MetaHuman implementation.
+- Not authorization for database schema/runtime data changes.
+- Not authorization to stage/commit `RoomZero/data/platform/platform.sqlite`.
+
+### M3 dependencies
+
+- M2.1.5 Repository Ownership / Knoksen Deployment Decision completed and documented.
+- Canonical deployment ownership and URL authority validated for public tester communication.
+- Stable baseline for existing tester/research/admin route families and role model.
+- Documentation consistency across root + RoomZero docs before external tester invites.
+- Existing safety/ethics guardrails preserved, including MetaHuman/Unreal presentation-only policy.
+
+### Public landing page roadmap
+
+- Define a clear landing narrative for invited testers:
+  - what RoomZero is
+  - what testers can do in this phase
+  - what is intentionally out of scope
+- Provide explicit environment/state badges:
+  - local test mode
+  - preview shell mode
+  - backend-connected mode
+- Add a concise “Start Here” handoff path to onboarding docs.
+- Ensure no claim of open public access while access remains invite-controlled.
+
+### Tester onboarding roadmap
+
+- Provide stepwise onboarding for invited external users:
+  - install/open path
+  - environment verification
+  - role expectations
+  - first-session actions
+- Add troubleshooting paths for API unavailable, CORS issues, and offline shell states.
+- Provide expected outcomes for each onboarding step to reduce support overhead.
+- Include responsible-use and consent reminders before first active testing session.
+
+### Invitation/access roadmap
+
+- Document invitation lifecycle:
+  - invite issued
+  - invite accepted
+  - tester active
+  - invite/tester revoked or expired
+- Define access-control communication templates:
+  - invite accepted
+  - invite invalid/expired
+  - access removed
+- Clarify that external tester access is invitation-only and auditable.
+- Align invitation docs with deployment ownership gate (M2.1.5).
+
+### Role-based tester interface roadmap
+
+- Define role-specific UI expectations:
+  - observer
+  - tester
+  - researcher
+  - reviewer
+  - admin
+- Publish a role-capability matrix for visible actions and restricted actions.
+- Add role-aware guidance text in tester-facing docs to reduce confusion.
+- Require clear escalation path for permissions/access mismatch reports.
+
+### PWA/mobile roadmap
+
+- Keep PWA install path as primary mobile route for M3.
+- Define minimum mobile UX acceptance criteria:
+  - installability
+  - launch behavior
+  - offline fallback behavior
+  - backend connectivity notice clarity
+- Document supported browser expectations and known limitations.
+- Defer APK wrapper decisions until post-M2.1.5 and deployment architecture stabilization.
+
+### Feedback/bug reporting roadmap
+
+- Standardize tester feedback and bug report templates.
+- Require minimum reproduction metadata:
+  - device
+  - OS
+  - browser/app mode
+  - URL/environment
+  - expected vs actual
+- Define triage labels:
+  - blocker
+  - high
+  - medium
+  - low
+  - docs/usability
+- Establish response-time and acknowledgement expectations for invited testers.
+
+### Public approved research thread roadmap
+
+- Publish rules for what can be surfaced as approved public research threads.
+- Keep only reviewer/approved outputs visible in public tester narratives.
+- Enforce separation between unreviewed queue content and approved public-facing summaries.
+- Define provenance requirements for any externally visible approved research thread.
+
+### Admin tester monitoring roadmap
+
+- Define admin monitoring panel planning requirements:
+  - invite status visibility
+  - tester activity summaries
+  - feedback/bug queue visibility
+  - moderation/escalation states
+- Establish audit expectations for admin-side invite and access actions.
+- Define privacy-aware reporting boundaries for external tester analytics.
+- Provide incident escalation checklist for safety or abuse reports.
+
+### Safety/ethics rules for testers
+
+- External testers must follow explicit consent and responsible-use policies.
+- No claims of real consciousness or sentience in tester communications.
+- Risky or ethically ambiguous test scenarios require reviewer/admin oversight.
+- Prohibit misuse of system outputs for harmful or deceptive activity.
+- Keep MetaHuman/Unreal references as future presentation-layer only; no AI-use crossover.
+
+### Testing checklist (docs-only task)
+
+- [ ] Verify M3 planning sections exist across designated docs.
+- [ ] Verify M2.1.5 is consistently documented as current dependency gate.
+- [ ] Verify no runtime/app/backend/frontend code edits were introduced.
+- [ ] Verify `RoomZero/data/platform/platform.sqlite` is not staged.
+- [ ] Run final `git status` and capture result.
+
+### Deployment checklist (for M3 readiness validation)
+
+- [ ] M2.1.5 ownership/deployment decision approved and recorded.
+- [ ] Canonical URL authority validated under approved namespace.
+- [ ] Public tester docs updated to reflect actual deployment state.
+- [ ] Invite/access wording aligned with current deployment reality.
+- [ ] Frontend shell vs backend-required behavior clearly documented for testers.
+
+### Implementation order (planning sequence)
+
+1. Resolve and document M2.1.5 ownership/deployment authority.
+2. Finalize M3 public tester docs baseline (landing/onboarding/access/roles).
+3. Validate PWA/mobile tester instructions and environment disclaimers.
+4. Finalize feedback/bug reporting and approved research thread policy docs.
+5. Finalize admin monitoring and safety/ethics rule documentation.
+6. Run docs consistency pass and deployment-readiness checklist.
+7. Enter next milestone execution planning after M3 documentation acceptance.
+
+### Risks
+
+- Ownership ambiguity risk if M2.1.5 remains unresolved while public tester messaging expands.
+- Expectation mismatch risk if users assume open access instead of invite-only flow.
+- Support burden risk from unclear onboarding in backend-unavailable states.
+- Governance risk if approved vs unreviewed research outputs are not clearly separated.
+- Scope creep risk if M3 planning is treated as authorization for runtime/M4 implementation.
+
+### Next milestone after M3
+
+**M3.1 Public Tester Pilot Execution (post-M2.1.5 resolution)**
+
+- Run controlled invited external tester pilot.
+- Validate onboarding completion rates and feedback triage throughput.
+- Validate role-based access clarity and admin monitoring workflows.
+- Publish pilot evidence package and readiness decision for broader access.
 
 ## Next milestone
 
@@ -58,7 +235,7 @@
 
 - [ ] M4 is **planning-only** in this cycle. No runtime/app/backend/frontend/database implementation in this task.
 - [ ] M4 must build on M2/M3 and must not bypass:
-  - [ ] M2.1.4 deployment ownership resolution
+  - [ ] M2.1.5 Repository Ownership / Knoksen Deployment Decision
   - [ ] M2.2 Research MVP Foundation stability gates
   - [ ] M3 simulation-event architecture hardening
 - [ ] Planning principles:
@@ -186,7 +363,7 @@
 
 ## Next recommended task
 
-- [ ] Execute **M2.1.4 Deployment Ownership + Canonical URL Validation** completion:
+- [ ] Execute **M2.1.5 Repository Ownership / Knoksen Deployment Decision** completion:
   - [ ] finalize ownership/deployment target under Knoksen namespace
   - [ ] run canonical URL + CORS + smoke + targeted test validation
   - [ ] publish short deployment ownership decision record in docs
