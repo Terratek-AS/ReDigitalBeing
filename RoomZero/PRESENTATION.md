@@ -66,6 +66,10 @@ It combines:
 - Role-based tester permissions
 - Reviewer-controlled approval pipelines
 - Local-first data control and transparency
+- MetaHuman may be used as a visual avatar/presentation layer only. MetaHuman assets, animation curves, rendered outputs, facial/motion data, or derived datasets must not be used to train, test, benchmark, evaluate, or enhance AI/ML/neural-network systems.
+- MetaHuman license review is mandatory before commercial release, paid distribution, enterprise use, or public product launch.
+- Unreal/MetaHuman visual presentation must remain strictly separated from RoomZero cognition, training, evaluation, simulation research datasets, and knowledge-base data.
+- AI research/testing must use original data, user-owned data, synthetic data created independently of MetaHuman assets, or separately licensed datasets.
 
 ## 9) Next Recommended Steps
 

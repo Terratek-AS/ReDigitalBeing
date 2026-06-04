@@ -31,9 +31,19 @@
 
 ## Current task
 
-- [ ] Finalize deployment-ownership path so canonical Pages URL is technically valid and controlled by Knoksen.
+- [ ] Finalize deployment-ownership path so intended canonical Pages URL is technically valid and controlled by Knoksen.
 - [ ] Keep backend stability unchanged while resolving ownership/deployment target.
 - [ ] Validate docs + deployment configuration for canonical URL consistency.
+- [ ] M2.1.4 execution checklist:
+  - [ ] inspect current remote/origin
+  - [ ] inspect Pages workflow behavior (`.github/workflows/deploy-pages.yml`)
+  - [ ] inspect frontend config and backend CORS alignment
+  - [ ] inspect deployment docs for canonical wording consistency
+  - [ ] run targeted pytest suite
+  - [ ] run uvicorn smoke (`/health`, `/ui`)
+  - [ ] run targeted CORS checks (allowed + blocked origins)
+  - [ ] verify git status and confirm sqlite is not staged
+  - [ ] commit and push only if all validations pass
 
 ## Next milestone
 
@@ -80,6 +90,11 @@
 - [ ] Add stronger reviewer workflows for questionable research/source items.
 - [ ] Document escalation path for risky/ambiguous content.
 - [ ] Expand safety test cases for edge-case policy handling.
+- [ ] MetaHuman/Unreal AI-use guardrail:
+  - [ ] MetaHuman may be used as a visual avatar/presentation layer only. MetaHuman assets, animation curves, rendered outputs, facial/motion data, or derived datasets must not be used to train, test, benchmark, evaluate, or enhance AI/ML/neural-network systems.
+  - [ ] MetaHuman license review is mandatory before commercial release, paid distribution, enterprise use, or public product launch.
+  - [ ] Keep Unreal/MetaHuman visual presentation strictly separated from RoomZero cognition, training, evaluation, simulation research datasets, and knowledge-base data.
+  - [ ] AI research/testing must use original data, user-owned data, synthetic data created independently of MetaHuman assets, or separately licensed datasets.
 
 ## Simulation roadmap
 
@@ -110,7 +125,7 @@
 - [ ] Decide ownership strategy: transfer vs fork vs mirror.
 - [ ] Ensure canonical Pages deployment target is under Knoksen control.
 - [ ] Verify Pages source artifact and branch/environment config.
-- [ ] Verify canonical URL is published and documented consistently.
+- [ ] Verify intended canonical URL is published and documented consistently.
 - [ ] Confirm backend domain + CORS allowlist alignment with production frontend origin.
 
 ## Windows installer checklist
