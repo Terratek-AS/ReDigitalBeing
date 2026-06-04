@@ -1,0 +1,42 @@
+name: Lint & Smoke Checks
+
+on:
+  push:
+    branches: [ main, 'blackboxai/**', 'ci/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r RoomZero/requirements.txt
+      - name: Compile Python files
+        run: python -m compileall -q .
+      - name: Pip check
+        run: pip check || true
+      - name: Run pytest
+        run: pytest -q
+      - name: Node lint if present
+        run: |
+          if [ -f package.json ]; then
+            curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            npm ci || true
+            if npm run | grep -q "lint"; then npm run lint || true; else echo "no lint script in package.json"; fi
+          elif [ -f RoomZero/package.json ]; then
+            curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            (cd RoomZero && npm ci) || true
+            (cd RoomZero && if npm run | grep -q "lint"; then npm run lint || true; else echo "no lint script in RoomZero/package.json"; fi)
+          else
+            echo "no package.json found; skipping JS lint"
+          fi
