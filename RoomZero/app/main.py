@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import sys
 import threading
 import time
@@ -90,7 +91,11 @@ research_store = ResearchStore(RESEARCH_QUESTIONS_FILE, KNOWLEDGE_BASE_FILE, RES
 feedback_store = FeedbackStore(SESSION_FEEDBACK_FILE)
 source_store = SourceStore(SOURCE_QUEUE_FILE, APPROVED_SOURCES_FILE)
 research_jobs_store = ResearchJobsStore(RESEARCH_JOBS_FILE, RESEARCH_QUESTIONS_FILE)
-platform_store = PlatformStore(Path("RoomZero/data/platform/platform.sqlite"))
+platform_db_path = Path(
+    os.getenv("ROOMZERO_PLATFORM_DB_PATH", "RoomZero/data/platform/platform.sqlite")
+)
+platform_db_path.parent.mkdir(parents=True, exist_ok=True)
+platform_store = PlatformStore(platform_db_path)
 
 safe_mode = True
 

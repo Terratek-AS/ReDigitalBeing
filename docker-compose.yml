@@ -1,0 +1,17 @@
+services:
+  roomzero-backend:
+    build:
+      context: .
+      dockerfile: RoomZero/Dockerfile
+    container_name: roomzero-backend
+    ports:
+      - "8000:8000"
+    environment:
+      ROOMZERO_ENV: local
+      ROOMZERO_PLATFORM_DB_PATH: /app/data/platform/platform.sqlite
+    volumes:
+      - roomzero_platform_data:/app/data/platform
+    restart: unless-stopped
+
+volumes:
+  roomzero_platform_data:

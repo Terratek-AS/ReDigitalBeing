@@ -115,6 +115,55 @@ Then open:
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - Health check: `http://127.0.0.1:8000/health`
 
+## Docker Runtime (M2.1.7)
+
+Docker support is additive and does not replace the local `run.ps1` / uvicorn workflow.
+
+### Files
+
+- `RoomZero/Dockerfile`
+- `docker-compose.yml`
+- `.dockerignore`
+- `.env.example`
+
+### Platform DB path in Docker
+
+Docker compose sets:
+
+- `ROOMZERO_PLATFORM_DB_PATH=/app/data/platform/platform.sqlite`
+
+A named volume is mounted to:
+
+- `/app/data/platform`
+
+This keeps SQLite runtime writes out of tracked repo files and avoids repeated dirty Git state.
+
+### Build and run
+
+From repository root:
+
+```powershell
+docker compose build
+docker compose up -d
+```
+
+Verify:
+
+- `http://127.0.0.1:8000/health`
+- `http://127.0.0.1:8000/ui`
+
+Logs:
+
+```powershell
+docker compose logs
+```
+
+Stop:
+
+```powershell
+docker compose down
+```
+
 ## Build Windows Installer
 
 ### 1) Prepare environment
