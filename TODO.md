@@ -25,20 +25,20 @@
 ## Current blocker
 
 - [ ] **M2.1.4 Deployment ownership blocker (active):**
-  - current remote: `https://github.com/Terratek-AS/ReDigitalBeing.git`
-  - intended canonical Pages URL: `https://knoksen.github.io/ReDigitalBeing`
-  - blocker: canonical Knoksen Pages URL cannot be authoritative until repo ownership/deployment target is under `knoksen` namespace (transfer/fork/mirror + Pages config)
+  - current remote owner: `https://github.com/Terratek-AS/ReDigitalBeing.git`
+  - intended canonical URL: `https://knoksen.github.io/ReDigitalBeing`
+  - deployment ownership blocker: canonical Knoksen Pages URL cannot be authoritative until repo ownership/deployment target is under `knoksen` namespace (transfer/fork/mirror + Pages config)
 
 ## Current task
 
-- [ ] Finalize deployment-ownership path so intended canonical Pages URL is technically valid and controlled by Knoksen.
+- [ ] Finalize deployment-ownership path so intended canonical URL is technically valid and controlled by Knoksen.
 - [ ] Keep backend stability unchanged while resolving ownership/deployment target.
 - [ ] Validate docs + deployment configuration for canonical URL consistency.
 - [ ] M2.1.4 execution checklist:
-  - [ ] inspect current remote/origin
-  - [ ] inspect Pages workflow behavior (`.github/workflows/deploy-pages.yml`)
-  - [ ] inspect frontend config and backend CORS alignment
-  - [ ] inspect deployment docs for canonical wording consistency
+  - [x] inspect current remote/origin
+  - [x] inspect Pages workflow behavior (`.github/workflows/deploy-pages.yml`)
+  - [x] inspect frontend config and backend CORS alignment
+  - [x] inspect deployment docs for canonical wording consistency
   - [ ] run targeted pytest suite
   - [ ] run uvicorn smoke (`/health`, `/ui`)
   - [ ] run targeted CORS checks (allowed + blocked origins)
