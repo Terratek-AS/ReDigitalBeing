@@ -222,6 +222,38 @@ Validation tests for RoomZero are:
 
 Dependabot configuration lives in `.github/dependabot.yml`.
 
+## Codacy / Static Analysis (Windows + WSL)
+
+The Codacy CLI and some static-analysis tools are not supported natively on Windows without WSL. Two recommended approaches:
+
+- **Run Codacy CLI in WSL (local):**
+  1. Install WSL and a Linux distro (example on Windows 10/11):
+
+    ```powershell
+    wsl --install -d ubuntu
+    ```
+
+  2. Open the installed distro and install required packages:
+
+    ```bash
+    sudo apt update && sudo apt install -y openjdk-11-jre-headless curl unzip
+    ```
+
+  3. Follow Codacy's official CLI install instructions inside WSL (or use the distro package recommended by Codacy). Once installed, run the analysis from the repository root mounted in WSL:
+
+    ```bash
+    # Example (replace with Codacy CLI's actual command from their docs)
+    codacy analyze --project .
+    ```
+
+- **Use CI / GitHub Actions (recommended for automation):**
+  - Add a workflow that runs the Codacy analysis or other scanners (e.g., Trivy for vulnerabilities) so analysis runs consistently in CI regardless of developer OS.
+  - If you want, I can add a GitHub Actions workflow that runs Codacy (or Trivy) on every push/PR — tell me which scanner you'd like wired into CI and I will add it.
+
+Notes:
+- After adding or updating dependencies (requirements.txt, package.json, etc.), run a vulnerability scan (Trivy or similar) before merging.
+- If you need exact Codacy CLI install commands or an automated Action, I can add them once you confirm which Codacy integration you prefer.
+
 ## OpenAI API Key (Optional)
 
 1. Copy `.env.example` to `.env`
