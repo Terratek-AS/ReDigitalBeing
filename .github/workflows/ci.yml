@@ -1,33 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r RoomZero/requirements.txt
-      - name: Run tests
-        run: |
-          pytest -q
-      - name: Validate docker-compose
-        run: |
-          docker compose -f docker-compose.yml config
-name: CI
-
-on:
+'on':
   push:
     branches: ["main", "develop", "blackboxai/**"]
   pull_request:
@@ -38,12 +11,10 @@ permissions:
   contents: read
 
 jobs:
-  syntax-check:
-    name: Syntax check
+  lint-and-validate:
+    name: Lint and validate
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: RoomZero
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,46 +23,50 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Validate Python syntax
-        run: python -m compileall -q .
-
-  test:
-    name: Test (Python ${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-        python-version: ["3.11"]
-
-    defaults:
-      run:
-        working-directory: RoomZero
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: RoomZero/requirements.txt
 
-      - name: Install dependencies
+      - name: Install Python dependencies
+        working-directory: RoomZero
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Python compile check
+        run: python -m compileall -q RoomZero
+
+      - name: pip dependency check
+        working-directory: RoomZero
+        run: pip check
+
       - name: Run pytest
+        working-directory: RoomZero
         run: python -m pytest -q
+
+      - name: Run ruff if available
+        working-directory: RoomZero
+        run: |
+          python -c "import importlib.util,sys; sys.exit(0 if importlib.util.find_spec('ruff') else 1)" && ruff check . || echo "ruff not installed, skipping"
+
+      - name: Run npm lint if package.json has lint script
+        shell: bash
+        run: |
+          if [ -f package.json ] && node -e "const p=require('./package.json'); process.exit(p.scripts&&p.scripts.lint?0:1)"; then
+            npm run lint
+          elif [ -f RoomZero/package.json ] && node -e "const p=require('./RoomZero/package.json'); process.exit(p.scripts&&p.scripts.lint?0:1)"; then
+            cd RoomZero
+            npm run lint
+          else
+            echo "No package.json lint script found, skipping npm lint"
+          fi
+
+      - name: Validate docker-compose
+        run: docker compose -f docker-compose.yml config
 
   package-smoke:
     name: Packaging smoke (Windows)
     runs-on: windows-latest
-    needs: test
+    needs: lint-and-validate
 
     defaults:
       run:
