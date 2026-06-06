@@ -242,5 +242,113 @@
     ],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "69d019a7-c29c-4980-a934-bf84f16aa1dd",
+    "timestamp": "2026-06-06T15:42:50.933074+00:00",
+    "category": "episodic",
+    "content": "Test memory content 52b39a39-a75d-4a76-9d68-5b85307c48d1",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "947b804d-06e5-43fa-960c-44ac8052ee12",
+    "timestamp": "2026-06-06T15:44:50.825904+00:00",
+    "category": "episodic",
+    "content": "Test memory content b8fbabbc-72fc-4498-ba28-469224f92a2b",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "4f59abd2-7ec1-4312-8587-eea8debbbb12",
+    "timestamp": "2026-06-06T15:52:27.406091+00:00",
+    "category": "episodic",
+    "content": "Test memory content 8bc049aa-8fdb-4ebd-86e0-249d5075cba8",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "6deced7a-799e-437e-8785-251fdc5bdd8b",
+    "timestamp": "2026-06-06T15:59:58.232907+00:00",
+    "category": "episodic",
+    "content": "Test memory content 1c27c0b7-cff7-4928-8a74-03ff55c55afd",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "4e9b7c2c-e90b-4892-9eac-ebb9c8b41f31",
+    "timestamp": "2026-06-06T16:00:35.360321+00:00",
+    "category": "episodic",
+    "content": "Test memory content dae2f41a-eaac-4579-9693-98c272191c7b",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "6378623e-a18f-4ed4-b291-871b4b55a9cf",
+    "timestamp": "2026-06-06T16:06:16.022416+00:00",
+    "category": "episodic",
+    "content": "Test memory content 2e01128f-31b2-406e-8663-74d4a5704104",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "d0db02f2-b7d1-4ef8-8787-3a93854f895a",
+    "timestamp": "2026-06-06T16:06:31.009126+00:00",
+    "category": "episodic",
+    "content": "Test memory content d0eb2d65-b261-47ee-9234-6df8e71a7249",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "39202e5e-8dd6-47ef-b83b-6235c94a8087",
+    "timestamp": "2026-06-06T16:10:14.977368+00:00",
+    "category": "episodic",
+    "content": "Test memory content 40076bbf-b6a4-4a65-bd94-fad33353d443",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "d049bb24-c13a-454e-9456-85f4bcf783e4",
+    "timestamp": "2026-06-06T16:10:17.105362+00:00",
+    "category": "episodic",
+    "content": "Test memory content 34ab4532-91ea-4974-8656-1a84e31a10dc",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

@@ -1,0 +1,415 @@
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 5d4b393..11f1a6f 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -151,6 +151,7 @@[m [mUse invite + registration workflow exposed by backend endpoints and UI flows.[m
+ - deployment documentation[m
+ - root README[m
+ - Pages-to-backend connection model[m
+[32m+[m[32m- Unreal integration readiness docs + smoke tooling (`RoomZero/README.md`, `RoomZero/scripts/ws_unreal_smoke.py`)[m
+ [m
+ ### M3[m
+ - real-time chamber layer using WebSocket or SSE[m
+[1mdiff --git a/RoomZero/README.md b/RoomZero/README.md[m
+[1mindex c7b8464..1e46a15 100644[m
+[1m--- a/RoomZero/README.md[m
+[1m+++ b/RoomZero/README.md[m
+[36m@@ -217,6 +217,9 @@[m [mThe CI workflow is configured for pushes to `main`, `develop`, and `blackboxai/*[m
+ [m
+ Validation tests for RoomZero are:[m
+ - `python -m pytest -q`[m
+[32m+[m[32m- `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`[m
+[32m+[m[32m  - expected pass output: `[smoke] completed successfully`[m
+[32m+[m[32m  - if Unreal token auth is enabled: set `ROOMZERO_WS_TOKEN` or pass `--token`[m
+ - `powershell -ExecutionPolicy Bypass -File .\scripts\verify.ps1`[m
+ - `powershell -ExecutionPolicy Bypass -File .\build_installer.ps1`[m
+ [m
+[36m@@ -386,6 +389,216 @@[m [mPlanned connectors:[m
+ - reviewer-controlled promotion into approved knowledge[m
+ - explicit consent required for tester registration and sensitive memory flows[m
+ [m
+[32m+[m[32m## Unreal WebSocket Protocol (M1.2)[m
+[32m+[m
+[32m+[m[32mRoomZero exposes an Unreal-focused WebSocket bridge for local-first agent embodiment integration.[m
+[32m+[m
+[32m+[m[32m### Endpoints[m
+[32m+[m
+[32m+[m[32m- WebSocket connect: `ws://127.0.0.1:8000/ws/unreal/{agent_id}`[m
+[32m+[m[32m- State snapshot (REST): `GET /ws/unreal/state/{agent_id}`[m
+[32m+[m[32m- Send command to agent (REST): `POST /ws/unreal/command/{agent_id}`[m
+[32m+[m[32m- Observation list (REST): `GET /ws/unreal/observations`[m
+[32m+[m
+[32m+[m[32m`agent_id` is the canonical agent key for state/commands/observations.[m
+[32m+[m
+[32m+[m[32m### Optional auth token[m
+[32m+[m
+[32m+[m[32mIf `ROOMZERO_UNREAL_TOKEN` is unset, Unreal routes are public for local development.[m
+[32m+[m
+[32m+[m[32mIf set, token is required for:[m
+[32m+[m[32m- `POST /ws/unreal/command/{agent_id}`[m
+[32m+[m[32m- `WS /ws/unreal/{agent_id}`[m
+[32m+[m
+[32m+[m[32mAccepted token inputs:[m
+[32m+[m[32m- query string: `?token=...`[m
+[32m+[m[32m- header: `X-RoomZero-Unreal-Token: ...`[m
+[32m+[m[32m- header: `Authorization: Bearer ...`[m
+[32m+[m
+[32m+[m[32m### Protocol version[m
+[32m+[m
+[32m+[m[32mCurrent expected value: `"roomzero.unreal.v1"`.[m
+[32m+[m
+[32m+[m[32mAll bridge model payloads include `protocol_version` and Unreal clients should verify it on every received message before processing.[m
+[32m+[m
+[32m+[m[32m### Initial WebSocket state payload[m
+[32m+[m
+[32m+[m[32mImmediately after connect, backend sends current agent state:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{[m
+[32m+[m[32m  "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m  "agent_id": "rz-01",[m
+[32m+[m[32m  "emotion": "neutral",[m
+[32m+[m[32m  "awareness": 0.5,[m
+[32m+[m[32m  "trust": 0.2,[m
+[32m+[m[32m  "is_speaking": false,[m
+[32m+[m[32m  "is_observing": true,[m
+[32m+[m[32m  "updated_at": "2025-01-01T12:00:00+00:00"[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mThen backend sends a greeting command payload (`type = "command"`).[m
+[32m+[m
+[32m+[m[32m### Command message shape (backend -> Unreal)[m
+[32m+[m
+[32m+[m[32mCommands are sent over WS and accepted via REST enqueue/broadcast path:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{[m
+[32m+[m[32m  "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m  "type": "command",[m
+[32m+[m[32m  "agent_id": "rz-01",[m
+[32m+[m[32m  "command": "speak",[m
+[32m+[m[32m  "text": "I am RZ-01. I observe, learn, and reflect.",[m
+[32m+[m[32m  "emotion": "curious",[m
+[32m+[m[32m  "animation": "Gesture_Explain",[m
+[32m+[m[32m  "duration_seconds": 4.0[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mNotes:[m
+[32m+[m[32m- `command` is required.[m
+[32m+[m[32m- `text`, `emotion`, `animation`, `duration_seconds` are optional and command-specific.[m
+[32m+[m
+[32m+[m[32m### Observation event shape (Unreal -> backend)[m
+[32m+[m
+[32m+[m[32mSend observations over WS with message `type = "observation"`:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{[m
+[32m+[m[32m  "type": "observation",[m
+[32m+[m[32m  "event": "player_entered_room",[m
+[32m+[m[32m  "payload": {[m
+[32m+[m[32m    "distance": 2.4[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mBackend stores observation with server timestamp and returns:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{[m
+[32m+[m[32m  "type": "ack",[m
+[32m+[m[32m  "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m  "kind": "observation",[m
+[32m+[m[32m  "agent_id": "rz-01",[m
+[32m+[m[32m  "created_at": "2025-01-01T12:00:02+00:00"[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mIf `event` is missing/empty, backend responds with:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{[m
+[32m+[m[32m  "type": "error",[m
+[32m+[m[32m  "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m  "error": "missing_event"[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32m### Ping / pong behavior[m
+[32m+[m
+[32m+[m[32mUnreal may send:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{ "type": "ping" }[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mBackend responds:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{[m
+[32m+[m[32m  "type": "pong",[m
+[32m+[m[32m  "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m  "agent_id": "rz-01"[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32m### Unknown/invalid message handling[m
+[32m+[m
+[32m+[m[32mUnknown message type returns safe error payload:[m
+[32m+[m
+[32m+[m[32m```json[m
+[32m+[m[32m{[m
+[32m+[m[32m  "type": "error",[m
+[32m+[m[32m  "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m  "error": "unknown_message_type"[m
+[32m+[m[32m}[m
+[32m+[m[32m```[m
+[32m+[m
+[32m+[m[32mAdditional safety behaviors:[m
+[32m+[m[32m- token failure on WS connect closes socket with code `1008`[m
+[32m+[m[32m- command path/body `agent_id` mismatch returns HTTP 400[m
+[32m+[m[32m- malformed observation payload defaults to `{}` for `payload` if non-object[m
+[32m+[m
+[32m+[m[32m### Unreal Integration Quick Guide[m
+[32m+[m
+[32m+[m[32mProtocol contract reference:[m
+[32m+[m[32m- `docs/unreal_ws_contract.md` (schema-focused contract for `roomzero.unreal.v1`)[m
+[32m+[m
+[32m+[m[32m1. Start backend (`.\run.ps1` or uvicorn).[m
+[32m+[m[32m2. Unreal connects a WebSocket client to:[m
+[32m+[m[32m   - `ws://127.0.0.1:8000/ws/unreal/{agent_id}`[m
+[32m+[m[32m   - add token in query/header if enabled.[m
+[32m+[m[32m3. On connect:[m
+[32m+[m[32m   - read initial `AgentState`[m
+[32m+[m[32m   - read greeting/queued `command` messages[m
+[32m+[m[32m   - verify `protocol_version == "roomzero.unreal.v1"` before handling.[m
+[32m+[m[32m4. Send world observations as `type: "observation"` messages.[m
+[32m+[m[32m5. Listen continuously for command messages and map them to animation/audio/behavior.[m
+[32m+[m[32m6. Optionally send periodic `ping` and verify `pong`.[m
+[32m+[m
+[32m+[m[32mBlueprint/C++ notes:[m
+[32m+[m[32m- Keep a small dispatcher keyed by `type` (`command`, `ack`, `pong`, `error`, state payload).[m
+[32m+[m[32m- Normalize numeric fields from JSON (`awareness`, `trust`, `duration_seconds`) with clamping.[m
+[32m+[m[32m- Treat unknown fields as forward-compatible extensions; ignore safely.[m
+[32m+[m[32m- Reconnect with backoff and re-read initial state after reconnect.[m
+[32m+[m
+[32m+[m[32mLocal testing:[m
+[32m+[m[32m- Run automated test coverage:[m
+[32m+[m[32m  - `python -m pytest -q RoomZero/tests/test_ws_unreal.py`[m
+[32m+[m[32m- Use smoke client:[m
+[32m+[m[32m  - `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`[m
+[32m+[m[32m  - optional token via env:[m
+[32m+[m[32m    - `set ROOMZERO_WS_TOKEN=your_token_here` (Windows cmd)[m
+[32m+[m[32m- Inspect observations:[m
+[32m+[m[32m  - `GET http://127.0.0.1:8000/ws/unreal/observations`[m
+[32m+[m
+[32m+[m[32mCI/local validation note:[m
+[32m+[m[32m- Keep smoke execution local/controlled by running backend in the same job/session, then executing:[m
+[32m+[m[32m  - `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`[m
+[32m+[m[32m- This avoids secret requirements when Unreal token auth is disabled for CI smoke scope.[m
+[32m+[m[32m- If token auth is enabled in CI, provide token via ephemeral environment variable and never commit credentials.[m
+[32m+[m
+[32m+[m[32m### Manual Unreal Integration Readiness Checklist[m
+[32m+[m
+[32m+[m[32mBackend start command:[m
+[32m+[m[32m- `python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`[m
+[32m+[m
+[32m+[m[32mWebSocket smoke command:[m
+[32m+[m[32m- `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`[m
+[32m+[m
+[32m+[m[32mExpected smoke output (high level):[m
+[32m+[m[32m- Connected to WS endpoint[m
+[32m+[m[32m- Received initial state with `protocol_version=roomzero.unreal.v1`[m
+[32m+[m[32m- Received greeting command (`type=command`)[m
+[32m+[m[32m- Ping sent and pong received[m
+[32m+[m[32m- Observation sent and observation ack received[m
+[32m+[m[32m- Clean close/disconnect[m
+[32m+[m
+[32m+[m[32mCommon failure causes:[m
+[32m+[m[32m- Wrong endpoint path or port[m
+[32m+[m[32m- Backend not running[m
+[32m+[m[32m- token set in backend but missing/incorrect in client[m
+[32m+[m[32m- firewall/proxy interference on localhost WS[m
+[32m+[m[32m- invalid JSON message shape in client sender[m
+[32m+[m
+[32m+[m[32mProtocol version verification:[m
+[32m+[m[32m- Confirm every inbound payload includes `protocol_version`[m
+[32m+[m[32m- Confirm value equals exactly `roomzero.unreal.v1`[m
+[32m+[m[32m- If mismatched, log and drop payload (do not execute command blindly)[m
+[32m+[m
+ ## Roadmap[m
+ [m
+ ### Phase 1B[m
+[1mdiff --git a/RoomZero/TODO.md b/RoomZero/TODO.md[m
+[1mindex 95e3387..a89892d 100644[m
+[1m--- a/RoomZero/TODO.md[m
+[1m+++ b/RoomZero/TODO.md[m
+[36m@@ -1,12 +1,57 @@[m
+ # TODO - Milestone M2: RoomZero research platform MVP (SQLite parallel layer)[m
+ [m
+[31m-## M1.1 runtime hardening implementation tracker (current task)[m
+[31m-- [x] Review runtime bridge files and tests[m
+[32m+[m[32m## M3 — Simulation Event Architecture & Transport Foundation (current task)[m
+[32m+[m[32m- [x] Review runtime bridge files, models, tests, and docs[m
+ - [x] Draft and confirm implementation plan with maintainer[m
+[31m-- [ ] Implement main.py hardening updates[m
+[31m-- [ ] Expand ws unreal tests for M1.1[m
+[31m-- [ ] Run compile/test/compose validation commands[m
+[31m-- [ ] Finalize TODO runtime hardening checklist updates[m
+[32m+[m[32m- [ ] Add internal simulation-event schema model(s) (additive, no DB migration)[m
+[32m+[m[32m- [ ] Add minimal normalization mapping for Unreal observation -> simulation event[m
+[32m+[m[32m- [ ] Add minimal simulation event trace/audit-safe logging[m
+[32m+[m[32m- [ ] Preserve Unreal websocket ack/error compatibility and existing behavior[m
+[32m+[m[32m- [ ] Add focused tests for simulation event normalization and trace behavior[m
+[32m+[m[32m- [ ] Update docs for simulation event lifecycle, transport foundation, and limitations[m
+[32m+[m[32m- [ ] Update README status wording to clearly track M3 completion state[m
+[32m+[m[32m- [ ] Add Codacy Windows/WSL limitation note in M3 context docs[m
+[32m+[m[32m- [ ] Run validation:[m
+[32m+[m[32m  - [ ] `python -m compileall -q RoomZero`[m
+[32m+[m[32m  - [ ] `python -m pytest -q`[m
+[32m+[m[32m  - [ ] `python -m pytest -q RoomZero/tests/test_ws_unreal.py`[m
+[32m+[m[32m  - [ ] `python -m pytest -q RoomZero/tests/test_api_endpoints.py RoomZero/tests/test_research_jobs.py RoomZero/tests/test_m2_platform.py`[m
+[32m+[m[32m  - [ ] `docker compose -f docker-compose.yml config`[m
+[32m+[m[32m  - [ ] `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke` (if backend start is safe)[m
+[32m+[m[32m- [ ] Finalize M3 completion report with files changed, schema summary, transport summary, audit behavior, validations, risks, and next milestone[m
+[32m+[m
+[32m+[m[32m## M1.3 Contract Hardening & Integration Fixtures (current task)[m
+[32m+[m[32m- [x] Review runtime bridge files, models, tests, and docs[m
+[32m+[m[32m- [x] Draft and confirm implementation plan with maintainer[m
+[32m+[m[32m- [ ] Add compact Unreal WS contract document (`docs/unreal_ws_contract.md`)[m
+[32m+[m[32m- [ ] Add reusable Unreal WS JSON fixtures (`tests/fixtures/unreal_ws/`)[m
+[32m+[m[32m- [ ] Add fixture-backed protocol stability tests in `tests/test_ws_unreal.py`[m
+[32m+[m[32m- [ ] Harden `scripts/ws_unreal_smoke.py` minimally (env token + clearer errors)[m
+[32m+[m[32m- [ ] Add README note for contract doc + CI/local smoke validation guidance[m
+[32m+[m[32m- [ ] Run validation:[m
+[32m+[m[32m  - [ ] `python -m compileall -q RoomZero`[m
+[32m+[m[32m  - [ ] `python -m pytest -q`[m
+[32m+[m[32m  - [ ] `python -m pytest -q RoomZero/tests/test_ws_unreal.py`[m
+[32m+[m[32m  - [ ] `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`[m
+[32m+[m[32m  - [ ] `docker compose -f docker-compose.yml config`[m
+[32m+[m[32m- [ ] Finalize M1.3 TODO updates and completion report[m
+[32m+[m
+[32m+[m[32m## M1.4 Unreal WebSocket contract + schema hardening[m
+[32m+[m[32m- [ ] Clarify handshake lifecycle, endpoint format, agent_id routing, v1 compatibility, and error behavior in `RoomZero/docs/unreal_ws_contract.md`[m
+[32m+[m[32m- [ ] Add dependency-free JSON Schema artifacts for Unreal WS messages in `RoomZero/docs/schemas/unreal_ws/`[m
+[32m+[m[32m- [ ] Harden smoke client in `RoomZero/scripts/ws_unreal_smoke.py` with `--expect-protocol`, `--send-unknown-message`, and `--timeout`[m
+[32m+[m[32m- [ ] Add focused websocket negative-path tests in `RoomZero/tests/test_ws_unreal.py`[m
+[32m+[m[32m- [ ] Update `RoomZero/README.md` with smoke validation guidance, backend startup notes, `ROOMZERO_WS_TOKEN`, and expected pass output[m
+[32m+[m[32m- [ ] Validate compileall, full pytest, ws-only pytest, smoke client, and `docker compose config`[m
+[32m+[m
+[32m+[m[32m## M1.2 Unreal integration readiness tracker (completed baseline)[m
+[32m+[m[32m- [x] Review runtime bridge files, models, tests, and docs[m
+[32m+[m[32m- [x] Draft and confirm implementation plan with maintainer[m
+[32m+[m[32m- [x] Add Unreal protocol documentation and integration guide[m
+[32m+[m[32m- [x] Add standalone Unreal WebSocket smoke client script[m
+[32m+[m[32m- [x] Add manual Unreal integration readiness checklist[m
+[32m+[m[32m- [x] Run compile/test/compose validation commands[m
+[32m+[m[32m- [x] Finalize TODO M1.2 checklist updates[m
+ [m
+ ## Planning notice: M4 Simulation Intelligence & Digital Human Layer (future only)[m
+ [m
+[1mdiff --git a/RoomZero/app/main.py b/RoomZero/app/main.py[m
+[1mindex cbb6438..f0e7c2c 100644[m
+[1m--- a/RoomZero/app/main.py[m
+[1m+++ b/RoomZero/app/main.py[m
+[36m@@ -68,6 +68,7 @@[m [mfrom app.models import ([m
+     AgentCommand,[m
+     AgentState,[m
+     ObservationEvent,[m
+[32m+[m[32m    SimulationEvent,[m
+ )[m
+ from app.persona import PersonaStore[m
+ from app.research import ResearchStore[m
+[36m@@ -112,9 +113,11 @@[m [msafe_mode = True[m
+ [m
+ # --- Unreal bridge runtime (local in-memory MVP) ---[m
+ UNREAL_OBSERVATION_CAP = 500[m
+[32m+[m[32mUNREAL_SIMULATION_EVENT_CAP = 500[m
+ unreal_agent_states: dict[str, AgentState] = {}[m
+ unreal_agent_connections: dict[str, set[WebSocket]] = {}[m
+ unreal_observations: list[ObservationEvent] = [][m
+[32m+[m[32munreal_simulation_events: list[SimulationEvent] = [][m
+ unreal_pending_commands: dict[str, list[AgentCommand]] = {}[m
+ [m
+ [m
+[36m@@ -179,6 +182,51 @@[m [mdef _queue_unreal_command(agent_id: str, command: AgentCommand) -> None:[m
+     queue.append(command)[m
+ [m
+ [m
+[32m+[m[32mdef _build_payload_summary(payload: dict) -> dict:[m
+[32m+[m[32m    return {[m
+[32m+[m[32m        "keys": sorted([str(k) for k in payload.keys()])[:10],[m
+[32m+[m[32m        "size": len(payload),[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef _append_simulation_event(event: SimulationEvent) -> None:[m
+[32m+[m[32m    unreal_simulation_events.append(event)[m
+[32m+[m[32m    overflow = len(unreal_simulation_events) - UNREAL_SIMULATION_EVENT_CAP[m
+[32m+[m[32m    if overflow > 0:[m
+[32m+[m[32m        del unreal_simulation_events[0:overflow][m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef _normalize_observation_to_simulation_event(observation: ObservationEvent) -> SimulationEvent:[m
+[32m+[m[32m    return SimulationEvent([m
+[32m+[m[32m        event_type=f"unreal.observation.{observation.event}",[m
+[32m+[m[32m        source="unreal.websocket",[m
+[32m+[m[32m        payload=observation.payload,[m
+[32m+[m[32m        created_at=observation.created_at,[m
+[32m+[m[32m        agent_id=observation.agent_id,[m
+[32m+[m[32m        protocol_version=observation.protocol_version,[m
+[32m+[m[32m        status="accepted",[m
+[32m+[m[32m        severity="info",[m
+[32m+[m[32m        metadata={[m
+[32m+[m[32m            "observation_event": observation.event,[m
+[32m+[m[32m            "transport": "websocket",[m
+[32m+[m[32m            "payload_summary": _build_payload_summary(observation.payload),[m
+[32m+[m[32m        },[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef _trace_simulation_event(event: SimulationEvent) -> None:[m
+[32m+[m[32m    print([m
+[32m+[m[32m        "[simulation-event]"[m
+[32m+[m[32m        f" event_id={event.event_id}"[m
+[32m+[m[32m        f" event_type={event.event_type}"[m
+[32m+[m[32m        f" source={event.source}"[m
+[32m+[m[32m        f" agent_id={event.agent_id or '-'}"[m
+[32m+[m[32m        f" created_at={event.created_at}"[m
+[32m+[m[32m        f" status={event.status or '-'}"[m
+[32m+[m[32m        f" payload_summary={event.metadata.get('payload_summary', {})}"[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m
+ async def _drain_queued_unreal_commands(agent_id: str, websocket: WebSocket) -> None:[m
+     queue = unreal_pending_commands.get(agent_id)[m
+     if not queue:[m
+[36m@@ -985,7 +1033,28 @@[m [masync def unreal_ws(websocket: WebSocket, agent_id: str) -> None:[m
+ [m
+     try:[m
+         while True:[m
+[31m-            message = await websocket.receive_json()[m
+[32m+[m[32m            try:[m
+[32m+[m[32m                message = await websocket.receive_json()[m
+[32m+[m[32m            except ValueError:[m
+[32m+[m[32m                await websocket.send_json([m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        "type": "error",[m
+[32m+[m[32m                        "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m                        "error": "invalid_payload",[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                )[m
+[32m+[m[32m                continue[m
+[32m+[m
+[32m+[m[32m            if not isinstance(message, dict):[m
+[32m+[m[32m                await websocket.send_json([m
+[32m+[m[32m                    {[m
+[32m+[m[32m                        "type": "error",[m
+[32m+[m[32m                        "protocol_version": "roomzero.unreal.v1",[m
+[32m+[m[32m                        "error": "invalid_payload",[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                )[m
+[32m+[m[32m                continue[m
+[32m+[m
+             msg_type = s
