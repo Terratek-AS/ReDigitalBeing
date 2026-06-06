@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from datetime import datetime, timezone
 import os
 import sys
 import threading
@@ -8,7 +9,7 @@ import time
 import webbrowser
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -64,6 +65,9 @@ from app.models import (
     PlatformResearchQuestionUpdateRequest,
     PlatformResearchStatusChangeRequest,
     PlatformScenarioConvertRequest,
+    AgentCommand,
+    AgentState,
+    ObservationEvent,
 )
 from app.persona import PersonaStore
 from app.research import ResearchStore
@@ -105,6 +109,123 @@ platform_db_path.parent.mkdir(parents=True, exist_ok=True)
 platform_store = PlatformStore(platform_db_path)
 
 safe_mode = True
+
+# --- Unreal bridge runtime (local in-memory MVP) ---
+UNREAL_OBSERVATION_CAP = 500
+unreal_agent_states: dict[str, AgentState] = {}
+unreal_agent_connections: dict[str, set[WebSocket]] = {}
+unreal_observations: list[ObservationEvent] = []
+unreal_pending_commands: dict[str, list[AgentCommand]] = {}
+
+
+def _get_real_unreal_token() -> str | None:
+    token = os.getenv("ROOMZERO_UNREAL_TOKEN", "").strip()
+    return token or None
+
+
+def _extract_unreal_token(authorization: str | None = None, query_token: str | None = None) -> str | None:
+    if query_token:
+        return query_token.strip()
+    if authorization:
+        auth = authorization.strip()
+        if auth.lower().startswith("bearer "):
+            return auth[7:].strip()
+        return auth
+    return None
+
+
+def _validate_unreal_token(token: str | None = None) -> None:
+    expected = _get_real_unreal_token()
+    if expected is None:
+        return
+    if token != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+def _validate_unreal_websocket_token(websocket: WebSocket) -> bool:
+    expected = _get_real_unreal_token()
+    if expected is None:
+        return True
+    token = _extract_unreal_token(
+        authorization=websocket.headers.get("authorization"),
+        query_token=websocket.query_params.get("token"),
+    )
+    return token == expected
+
+
+def _append_unreal_observation(obs: ObservationEvent) -> None:
+    unreal_observations.append(obs)
+    overflow = len(unreal_observations) - UNREAL_OBSERVATION_CAP
+    if overflow > 0:
+        del unreal_observations[0:overflow]
+
+
+def _queue_unreal_command(agent_id: str, command: AgentCommand) -> None:
+    queue = unreal_pending_commands.setdefault(agent_id, [])
+    queue.append(command)
+
+
+async def _drain_queued_unreal_commands(agent_id: str, websocket: WebSocket) -> None:
+    queue = unreal_pending_commands.get(agent_id)
+    if not queue:
+        return
+
+    while queue:
+        command = queue[0]
+        try:
+            await websocket.send_json(command.model_dump())
+        except Exception:
+            break
+        queue.pop(0)
+
+    if not queue:
+        unreal_pending_commands.pop(agent_id, None)
+
+
+def _get_or_create_unreal_state(agent_id: str) -> AgentState:
+    state = unreal_agent_states.get(agent_id)
+    if state is None:
+        state = AgentState(agent_id=agent_id)
+        unreal_agent_states[agent_id] = state
+    return state
+
+
+def _build_greeting_command(agent_id: str) -> AgentCommand:
+    return AgentCommand(
+        agent_id=agent_id,
+        command="speak",
+        text="I am RZ-01. I observe, learn, and reflect.",
+        emotion="curious",
+        animation="Gesture_Explain",
+        duration_seconds=4.0,
+    )
+
+
+def _register_unreal_socket(agent_id: str, websocket: WebSocket) -> None:
+    sockets = unreal_agent_connections.setdefault(agent_id, set())
+    sockets.add(websocket)
+
+
+def _unregister_unreal_socket(agent_id: str, websocket: WebSocket) -> None:
+    sockets = unreal_agent_connections.get(agent_id)
+    if not sockets:
+        return
+    sockets.discard(websocket)
+    if not sockets:
+        unreal_agent_connections.pop(agent_id, None)
+
+
+async def _broadcast_unreal_command(agent_id: str, command: AgentCommand) -> int:
+    sockets = list(unreal_agent_connections.get(agent_id, set()))
+    delivered = 0
+    for sock in sockets:
+        try:
+            await sock.send_json(command.model_dump())
+            delivered += 1
+        except Exception:
+            _unregister_unreal_socket(agent_id, sock)
+    return delivered
+
 
 app = FastAPI(title="RoomZero API", version="0.1.0")
 
@@ -787,6 +908,148 @@ def platform_recent_activity(request: PlatformActorRequest) -> dict:
     except ValueError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc
     return {"count": len(items), "items": items}
+
+
+# --- Unreal WebSocket bridge routes (local in-memory MVP) ---
+@app.get("/ws/unreal/state/{agent_id}")
+def unreal_get_state(
+    agent_id: str,
+    token: str | None = None,
+    authorization: str | None = Header(None),
+) -> dict:
+    _validate_unreal_token(_extract_unreal_token(authorization=authorization, query_token=token))
+    return _get_or_create_unreal_state(agent_id).model_dump()
+
+
+@app.post("/ws/unreal/command/{agent_id}")
+async def unreal_send_command(
+    agent_id: str,
+    request: AgentCommand,
+    token: str | None = None,
+    authorization: str | None = Header(None),
+) -> dict:
+    _validate_unreal_token(_extract_unreal_token(authorization=authorization, query_token=token))
+    if request.agent_id != agent_id:
+        raise HTTPException(status_code=400, detail="agent_id path/body mismatch")
+
+    delivered = await _broadcast_unreal_command(agent_id, request)
+    if delivered == 0:
+        _queue_unreal_command(agent_id, request)
+        status = "queued"
+    else:
+        status = "delivered"
+
+    return {
+        "status": status,
+        "delivered": delivered,
+        "command": request.model_dump(),
+    }
+
+
+@app.get("/ws/unreal/observations")
+def unreal_list_observations(
+    token: str | None = None,
+    authorization: str | None = Header(None),
+) -> dict:
+    _validate_unreal_token(_extract_unreal_token(authorization=authorization, query_token=token))
+    return {"count": len(unreal_observations), "items": [o.model_dump() for o in unreal_observations]}
+
+
+@app.websocket("/ws/unreal/{agent_id}")
+async def unreal_ws(websocket: WebSocket, agent_id: str) -> None:
+    if not _validate_unreal_websocket_token(websocket):
+        await websocket.close(code=1008)
+        return
+
+    await websocket.accept()
+    _register_unreal_socket(agent_id, websocket)
+
+    current_state = _get_or_create_unreal_state(agent_id)
+    await websocket.send_json(current_state.model_dump())
+    await websocket.send_json(_build_greeting_command(agent_id).model_dump())
+    await _drain_queued_unreal_commands(agent_id, websocket)
+
+    try:
+        while True:
+            message = await websocket.receive_json()
+            msg_type = str(message.get("type", "")).strip().lower()
+
+            if msg_type == "hello":
+                await websocket.send_json(_get_or_create_unreal_state(agent_id).model_dump())
+                continue
+
+            if msg_type == "observation":
+                event_name = str(message.get("event", "")).strip()
+                payload = message.get("payload")
+                if not event_name:
+                    await websocket.send_json(
+                        {
+                            "type": "error",
+                            "protocol_version": "roomzero.unreal.v1",
+                            "error": "missing_event",
+                        }
+                    )
+                    continue
+                if not isinstance(payload, dict):
+                    payload = {}
+                obs = ObservationEvent(agent_id=agent_id, event=event_name, payload=payload)
+                _append_unreal_observation(obs)
+                await websocket.send_json(
+                    {
+                        "type": "ack",
+                        "protocol_version": "roomzero.unreal.v1",
+                        "kind": "observation",
+                        "agent_id": agent_id,
+                        "created_at": obs.created_at,
+                    }
+                )
+                continue
+
+            if msg_type == "state_update":
+                state = _get_or_create_unreal_state(agent_id)
+                emotion = message.get("emotion")
+                awareness = message.get("awareness")
+                trust = message.get("trust")
+                is_speaking = message.get("is_speaking")
+                is_observing = message.get("is_observing")
+
+                if isinstance(emotion, str) and emotion.strip():
+                    state.emotion = emotion.strip()
+                if isinstance(awareness, (int, float)):
+                    state.awareness = max(0.0, min(1.0, float(awareness)))
+                if isinstance(trust, (int, float)):
+                    state.trust = max(0.0, min(1.0, float(trust)))
+                if isinstance(is_speaking, bool):
+                    state.is_speaking = is_speaking
+                if isinstance(is_observing, bool):
+                    state.is_observing = is_observing
+                state.updated_at = datetime.now(timezone.utc).isoformat()
+
+                unreal_agent_states[agent_id] = state
+                await websocket.send_json(state.model_dump())
+                continue
+
+            if msg_type == "ping":
+                await websocket.send_json(
+                    {
+                        "type": "pong",
+                        "protocol_version": "roomzero.unreal.v1",
+                        "agent_id": agent_id,
+                    }
+                )
+                continue
+
+            await websocket.send_json(
+                {
+                    "type": "error",
+                    "protocol_version": "roomzero.unreal.v1",
+                    "error": "unknown_message_type",
+                }
+            )
+    except WebSocketDisconnect:
+        _unregister_unreal_socket(agent_id, websocket)
+    except Exception:
+        _unregister_unreal_socket(agent_id, websocket)
 
 
 def _open_ui_after_delay(delay_seconds: float = 1.5) -> None:

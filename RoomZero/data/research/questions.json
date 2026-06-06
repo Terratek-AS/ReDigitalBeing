@@ -223,5 +223,821 @@
     "eir_answer": null,
     "reviewer_notes": null,
     "approved_summary": null
+  },
+  {
+    "question_id": "79a3be64-8b56-4153-a3f1-f6789aa3fae5",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:15:00.795858+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "967870da-ae80-441b-9d31-83dd5bfee491",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:00.822830+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "787ccc64-78e2-447a-ba1c-8f093f64d218",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:00.822847+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "8486cebe-7819-455f-a8df-2f48b1471470",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:00.822853+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "670aa5ba-c53e-4e0f-9ba6-584ccc494b69",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:00.822858+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "7263fd5e-3d1c-4d8f-a4e8-9d7acf39dbb7",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:00.822863+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "960c9c6c-ff9d-4fc3-8c3e-bc1e8c1fa9fd",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:15:12.212349+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "4041cd1c-ea17-4ae0-8277-3a93754a5418",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:12.244778+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "3aa801da-3cff-4b37-8138-8f4b970104e7",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:12.244797+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "e3a34720-fb36-4b71-bd94-1e656a9db974",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:12.244803+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "ed11b243-ffa6-4825-b0ab-9c7bdfd53944",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:12.244808+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "e3ece159-2c2e-4a93-9c8a-4195ebaf9c18",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:12.244813+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "58a581ad-c2e5-4c00-a61c-c0ed5f71f307",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:15:20.536553+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "f8872075-894a-4084-8f0b-6e52d003b8d4",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:20.570084+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "36bdd585-a60e-4ac3-9269-de56e7882cb2",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:20.570114+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "4d829e38-ea5c-450f-9edf-67d068a5d313",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:20.570129+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "22224dad-d729-49e1-ae89-d09371ecec37",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:20.570141+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "f2bdeff3-43c8-4971-b174-ea102d3b818d",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:20.570153+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "82316e93-9881-4cd9-86e6-73aae527eb50",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:15:27.921627+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "a6cc4846-db36-4254-b3db-c0c786eb0156",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:27.952080+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "2c70d024-3266-4691-8afe-ec9bbe90938c",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:27.952098+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "6f8cefe7-4b75-49a7-af39-b4f33f062c06",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:27.952104+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "a6cf9d83-488c-4753-9d4a-54ea8a7ab7d0",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:27.952108+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "a44456cd-edf9-4a51-a3d9-6aa49335abce",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:15:27.952139+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "95188989-bb57-4da1-870b-b6782ef3868e",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:16:20.416668+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "97c7dbd3-b138-49f2-9f1a-cf362f4d3553",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:16:20.449564+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "c604a6f2-e1c0-4222-aa77-e2ed4809013c",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:16:20.449584+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "91981982-dad6-4101-9d36-641198bbb3ca",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:16:20.449590+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "b017c5a6-e033-4a01-97a4-75e958a92dba",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:16:20.449595+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "7d075b15-fa9b-427b-9367-6510ffcc5221",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:16:20.449599+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "7b89a928-a9c8-4bd5-9d50-906e91df7c0b",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:23:11.510606+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "9969cdc1-7aec-4ec5-9220-5c24b684a0b6",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:11.549166+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "53a262d9-765a-4f82-ada7-200b464e0910",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:11.549185+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "a4aa5dc9-7747-459d-98c6-440d9d16240b",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:11.549191+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "e94b5c1a-63b4-4639-a507-390107d0bac2",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:11.549196+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "f31cd073-20f5-484a-b2c6-367d1645c7da",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:11.549202+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "d96eef03-3737-4335-bf39-dcdf04705386",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:23:19.387803+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "428153b2-fe2c-447b-9e5b-f0d7e168d089",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:19.418593+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "562f5068-2794-4f4b-8d6c-44c1e9cb2d10",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:19.418610+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "61b01281-41a6-475b-b24b-6711b9de336d",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:19.418616+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "907532f5-18e2-4e34-a917-9a17b011cbe4",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:19.418621+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "a81cd59a-bca6-4da7-9354-773bff30b87a",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:23:19.418626+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "f49f5a65-81f2-47fc-94c4-9639a415fa66",
+    "question": "What is the current state of local-first memory research?",
+    "category": "memory_systems",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:28:06.952616+00:00",
+    "status": "answered",
+    "priority": 5,
+    "tags": [
+      "memory",
+      "local-first"
+    ],
+    "linked_sources": [],
+    "eir_answer": "It is actively evolving.",
+    "reviewer_notes": "Initial answer.",
+    "approved_summary": null
+  },
+  {
+    "question_id": "a9db3f82-ac72-4657-9f73-df20d21ecae5",
+    "question": "What are the best architectures for long-term AI memory?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:28:06.978476+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "caca4b6a-331e-4886-a894-652f71d48627",
+    "question": "How can episodic and semantic memory be separated?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:28:06.978495+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "52e111d9-2e3b-411e-b08b-94db0fc95bf1",
+    "question": "How should memory decay be implemented safely?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:28:06.978502+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "9ebad42c-6670-4185-8440-348f3fa7417a",
+    "question": "What are risks of memory poisoning?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:28:06.978508+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
+  },
+  {
+    "question_id": "762bf3e2-2c73-49ef-ab1f-8e8037f13ea2",
+    "question": "What sources should be reviewed?",
+    "category": "memory_systems",
+    "submitted_by": "research_job_system",
+    "timestamp": "2026-06-05T00:28:06.978512+00:00",
+    "status": "submitted",
+    "priority": 5,
+    "tags": [
+      "research_job_generated",
+      "memory systems"
+    ],
+    "linked_sources": [],
+    "eir_answer": null,
+    "reviewer_notes": null,
+    "approved_summary": null
   }
 ]

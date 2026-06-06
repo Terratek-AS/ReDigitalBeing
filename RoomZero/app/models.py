@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Literal
+from typing import Any, Literal
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -321,3 +321,35 @@ class PlatformKnowledgeCreateRequest(BaseModel):
     linked_question_id: str | None = None
     linked_scenario_id: str | None = None
     linked_observation_id: str | None = None
+
+
+# --- Unreal bridge (local-first MVP) ---
+class AgentState(BaseModel):
+    protocol_version: str = "roomzero.unreal.v1"
+    agent_id: str
+    emotion: str = "neutral"
+    awareness: float = Field(default=0.5, ge=0.0, le=1.0)
+    trust: float = Field(default=0.2, ge=0.0, le=1.0)
+    is_speaking: bool = False
+    is_observing: bool = True
+    updated_at: str = Field(default_factory=utc_now_iso)
+
+
+class AgentCommand(BaseModel):
+    protocol_version: str = "roomzero.unreal.v1"
+    type: Literal["command"] = "command"
+    agent_id: str
+    command: str
+    text: str | None = None
+    emotion: str | None = None
+    animation: str | None = None
+    duration_seconds: float | None = None
+
+
+class ObservationEvent(BaseModel):
+    protocol_version: str = "roomzero.unreal.v1"
+    type: Literal["observation"] = "observation"
+    agent_id: str
+    event: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    created_at: str = Field(default_factory=utc_now_iso)

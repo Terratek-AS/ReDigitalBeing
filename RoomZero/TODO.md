@@ -16,6 +16,41 @@
 - [ ] Keep existing JSON flows and endpoints intact
 - [ ] Do not remove M1 functionality
 
+## Execution tracking: Unreal MVP WebSocket bridge (approved)
+- [x] Plan approved by maintainer
+- [x] Additive changes only (no route regressions)
+- [x] Update models with reusable Unreal bridge schemas
+- [x] Add WebSocket route `/ws/unreal/{agent_id}`
+- [x] Add REST routes:
+  - [x] `GET /ws/unreal/state/{agent_id}`
+  - [x] `POST /ws/unreal/command/{agent_id}`
+  - [x] `GET /ws/unreal/observations`
+- [x] Add optional token auth for `/ws/unreal/*` routes
+- [x] Add per-agent queued command fallback
+- [x] Add queued command flush on WebSocket connect
+- [x] Cap observation retention to 500
+- [x] Implement connect behavior:
+  - [x] Accept socket
+  - [x] Send current AgentState
+  - [x] Send greeting command
+- [x] Implement inbound handling:
+  - [x] `hello` -> current state
+  - [x] `observation` -> store + ack
+  - [x] `state_update` -> update + state response
+  - [x] `ping` -> pong
+  - [x] unknown type -> safe error response
+- [x] Add focused tests:
+  - [x] default state endpoint
+  - [x] websocket initial state
+  - [x] websocket greeting command
+  - [x] observation ack
+  - [x] ping/pong + unknown message safety
+  - [x] queue delivery behavior
+  - [x] observation cap pruning
+- [x] Run validation:
+  - [x] `python -m compileall -q RoomZero`
+  - [x] `python -m pytest -q`
+
 ## 1) Data layer (SQLite + migration/bootstrap)
 - [ ] Add SQLite database config path in app config
 - [ ] Add DB bootstrap/migration module

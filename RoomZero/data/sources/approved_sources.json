@@ -1,1 +1,86 @@
-[]
+[
+  {
+    "source_id": "624a8d52-5436-44be-a600-f8a48c5e7a4c",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:15:12.129387+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "f632a3ac-b67e-4beb-91dc-3b2d85954934",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:15:20.477551+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "01e3f48a-4d21-4c12-9b43-9d20f5cf4454",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:15:27.868252+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "fa8a1c34-0ddb-406c-b32c-02182902893a",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:16:20.366277+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "4ab40909-c3e0-4b8b-bddb-92dca7c58294",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:23:11.460680+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "ac230aa2-855a-4b85-a996-61c487b0f53c",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:23:19.337657+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "36715125-57b6-48e2-8fd9-41019f31e218",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-05T00:28:06.907496+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  }
+]
