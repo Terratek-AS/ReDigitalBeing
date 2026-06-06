@@ -7,7 +7,13 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 
-from app.main import app, unreal_observations, unreal_pending_commands
+from app.main import (
+    UNREAL_SIMULATION_EVENT_CAP,
+    app,
+    unreal_observations,
+    unreal_pending_commands,
+    unreal_simulation_events,
+)
 
 client = TestClient(app)
 FIXTURE_DIR = Path(__file__).parent / "fixtures" / "unreal_ws"
@@ -356,3 +362,93 @@ def test_websocket_runtime_responses_always_include_protocol_version() -> None:
         invalid_payload_response = ws.receive_json()
         assert invalid_payload_response["protocol_version"] == "roomzero.unreal.v1"
         assert invalid_payload_response["error"] == "invalid_payload"
+
+
+def test_simulation_event_normalization_from_observation() -> None:
+    unreal_observations.clear()
+    unreal_simulation_events.clear()
+    agent_id = "rz-test-sim-normalization"
+
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+
+        ws.send_json(
+            {
+                "type": "observation",
+                "event": "player_entered_room",
+                "payload": {"distance": 2.4, "zone": "A1"},
+            }
+        )
+        ack = ws.receive_json()
+        assert ack["type"] == "ack"
+        assert ack["kind"] == "observation"
+
+    assert len(unreal_simulation_events) >= 1
+    event = unreal_simulation_events[-1]
+    dumped = event.model_dump()
+
+    assert dumped["event_type"] == "unreal.observation.player_entered_room"
+    assert dumped["source"] == "unreal.websocket"
+    assert dumped["agent_id"] == agent_id
+    assert dumped["protocol_version"] == "roomzero.unreal.v1"
+    assert dumped["status"] == "accepted"
+    assert dumped["severity"] == "info"
+
+    assert dumped["metadata"]["observation_event"] == "player_entered_room"
+    assert dumped["metadata"]["transport"] == "websocket"
+    payload_summary = dumped["metadata"]["payload_summary"]
+    assert payload_summary["keys"] == ["distance", "zone"]
+    assert payload_summary["size"] == 2
+
+
+def test_simulation_event_retention_cap_prunes_oldest() -> None:
+    unreal_simulation_events.clear()
+    agent_id = "rz-test-sim-cap"
+
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+
+        for idx in range(UNREAL_SIMULATION_EVENT_CAP + 2):
+            ws.send_json(
+                {
+                    "type": "observation",
+                    "event": f"sim_event_{idx + 1}",
+                    "payload": {"index": idx + 1},
+                }
+            )
+            ack = ws.receive_json()
+            assert ack["type"] == "ack"
+
+    assert len(unreal_simulation_events) == UNREAL_SIMULATION_EVENT_CAP
+    first = unreal_simulation_events[0].model_dump()
+    last = unreal_simulation_events[-1].model_dump()
+    assert first["event_type"] == "unreal.observation.sim_event_3"
+    assert last["event_type"] == f"unreal.observation.sim_event_{UNREAL_SIMULATION_EVENT_CAP + 2}"
+
+
+def test_simulation_event_trace_logging_uses_payload_summary_only(capsys: pytest.CaptureFixture[str]) -> None:
+    unreal_simulation_events.clear()
+    agent_id = "rz-test-sim-trace"
+
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+
+        ws.send_json(
+            {
+                "type": "observation",
+                "event": "trace_check",
+                "payload": {"very_sensitive_value": "secret-123", "level": 7},
+            }
+        )
+        ack = ws.receive_json()
+        assert ack["type"] == "ack"
+
+    captured = capsys.readouterr().out
+    assert "[simulation-event]" in captured
+    assert "event_type=unreal.observation.trace_check" in captured
+    assert "payload_summary=" in captured
+    assert "very_sensitive_value" in captured
+    assert "secret-123" not in captured
