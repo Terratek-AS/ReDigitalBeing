@@ -456,6 +456,346 @@ $("btn-copy-build-installer").onclick = () =>
   copyText(".\\install.ps1 -WithBuilder && .\\build_installer.ps1", "Copied build-installer command");
 $("btn-copy-mobile-url").onclick = () => copyText(`${getUiBaseUrl()}/ui`, "Copied UI URL");
 
+function getSimulationFilters() {
+  const source = ($("sim-filter-source")?.value || "").trim();
+  const event_type = ($("sim-filter-event-type")?.value || "").trim();
+  const agent_id = ($("sim-filter-agent-id")?.value || "").trim();
+  const status = ($("sim-filter-status")?.value || "").trim();
+  const severity = ($("sim-filter-severity")?.value || "").trim();
+  const limit = ($("sim-filter-limit")?.value || "50").trim();
+
+  const params = new URLSearchParams();
+  if (source) params.set("source", source);
+  if (event_type) params.set("event_type", event_type);
+  if (agent_id) params.set("agent_id", agent_id);
+  if (status) params.set("status", status);
+  if (severity) params.set("severity", severity);
+  if (limit) params.set("limit", limit);
+  return params;
+}
+
+function renderSimulationSummary(summary) {
+  const el = $("simulation-events-summary");
+  if (!el) return;
+  if (!summary || typeof summary !== "object") {
+    el.textContent = "Summary unavailable.";
+    return;
+  }
+  const text = [
+    `total=${summary.total_events ?? 0}`,
+    `by_source=${JSON.stringify(summary.by_source || {})}`,
+    `by_event_type=${JSON.stringify(summary.by_event_type || {})}`,
+    `by_status=${JSON.stringify(summary.by_status || {})}`,
+    `by_severity=${JSON.stringify(summary.by_severity || {})}`,
+  ].join(" • ");
+  el.textContent = text;
+}
+
+function extractLinkageFromTrace(traceItem) {
+  const metadata = traceItem && typeof traceItem === "object" ? traceItem.metadata || {} : {};
+  const linkage = {};
+  const keys = ["research_question_id", "scenario_id", "simulation_run_id", "observation_id"];
+  keys.forEach((k) => {
+    const value = metadata[k];
+    if (value !== undefined && value !== null && String(value).trim() !== "") linkage[k] = value;
+  });
+  return linkage;
+}
+
+function setSimulationReviewNotesState(message) {
+  const el = $("simulation-review-notes-state");
+  if (el) el.textContent = message;
+}
+
+const REVIEW_NOTE_STATUSES = ["active", "resolved", "flagged", "archived"];
+
+function escapeHtml(value) {
+  const text = String(value ?? "");
+  return text.replace(/[&<>"']/g, function (ch) {
+    return "&#" + ch.charCodeAt(0) + ";";
+  });
+}
+
+function getReviewNoteStatus(status) {
+  const normalized = String(status || "").trim().toLowerCase();
+  return REVIEW_NOTE_STATUSES.includes(normalized) ? normalized : "active";
+}
+
+function setSimulationReviewAuditState(message, stateClass = "") {
+  const el = $("simulation-review-audit-state");
+  if (!el) return;
+  el.classList.remove("state-loading", "state-success", "state-error", "state-empty");
+  if (stateClass) el.classList.add(stateClass);
+  el.textContent = message;
+}
+
+function renderSimulationReviewAudit(items) {
+  const container = $("simulation-review-audit-output");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!Array.isArray(items) || items.length === 0) {
+    container.innerHTML = `<div class="audit-empty muted">No review audit entries for this event yet.</div>`;
+    return;
+  }
+
+  items.forEach((entry) => {
+    const row = document.createElement("article");
+    row.className = "review-audit-item";
+    row.innerHTML = `
+      <div class="review-audit-head">
+        <div class="review-audit-action">${escapeHtml(entry.action || "-")}</div>
+        <div class="review-audit-time">${escapeHtml(entry.created_at || "-")}</div>
+      </div>
+      <div class="review-audit-meta">
+        actor=${escapeHtml(entry.actor || "-")} • id=${escapeHtml(entry.id || "-")}
+      </div>
+      <div class="review-audit-detail">${escapeHtml(JSON.stringify(entry.details || {}))}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+async function loadSimulationReviewAudit(eventId) {
+  if (!eventId) {
+    setSimulationReviewAuditState("Select an event to load review audit.", "");
+    renderSimulationReviewAudit([]);
+    return;
+  }
+
+  setSimulationReviewAuditState("Loading review audit...", "state-loading");
+  try {
+    const data = await api(`/simulation/events/${eventId}/review-audit`);
+    const count = data.count || 0;
+    if (count === 0) {
+      setSimulationReviewAuditState("No review audit entries yet.", "state-empty");
+    } else {
+      setSimulationReviewAuditState(`Review audit loaded: ${count}`, "state-success");
+    }
+    renderSimulationReviewAudit(data.items || []);
+  } catch (e) {
+    setSimulationReviewAuditState(`Failed to load review audit: ${e.message}`, "state-error");
+    renderSimulationReviewAudit([]);
+  }
+}
+
+async function updateSimulationReviewNoteStatus(eventId, noteId, status) {
+  if (!eventId || !noteId) return;
+  const safeStatus = getReviewNoteStatus(status);
+  setSimulationReviewNotesState(`Updating note ${noteId} -> ${safeStatus}...`);
+  try {
+    await api(`/simulation/events/${eventId}/review-notes/${noteId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: safeStatus }),
+    });
+    setSimulationReviewNotesState(`Review note ${noteId} updated to ${safeStatus}.`);
+    await Promise.all([loadSimulationReviewNotes(eventId), loadSimulationReviewAudit(eventId)]);
+  } catch (e) {
+    setSimulationReviewNotesState(`Failed to update review note ${noteId}: ${e.message}`);
+  }
+}
+
+function renderSimulationReviewNotes(items) {
+  const container = $("simulation-review-notes-output");
+  const eventId = ($("simulation-selected-event-id")?.value || "").trim();
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!Array.isArray(items) || items.length === 0) {
+    container.innerHTML = `<div class="muted">No review notes for this event yet.</div>`;
+    return;
+  }
+
+  items.forEach((note) => {
+    const noteId = note.id || "";
+    const status = getReviewNoteStatus(note.status);
+    const row = document.createElement("article");
+    row.className = `review-note-item status-${status}${status === "archived" ? " is-archived" : ""}`;
+    row.innerHTML = `
+      <div class="review-note-head">
+        <div class="review-note-id">${escapeHtml(noteId || "-")}</div>
+        <div class="review-note-time">${escapeHtml(note.created_at || "-")}</div>
+      </div>
+      <div class="review-note-meta">
+        reviewer=${escapeHtml(note.reviewer_id || "-")}
+        <span class="review-note-status-badge status-${status}">${escapeHtml(status)}</span>
+      </div>
+      <div class="review-note-text">${escapeHtml(note.note_text || "")}</div>
+      <div class="review-note-actions" data-note-id="${escapeHtml(noteId)}">
+        <span class="review-note-actions-label">Set status:</span>
+        <button class="btn-secondary btn-note-status" data-status="active" ${status === "active" ? "disabled" : ""}>Mark active</button>
+        <button class="btn-secondary btn-note-status" data-status="resolved" ${status === "resolved" ? "disabled" : ""}>Mark resolved</button>
+        <button class="btn-secondary btn-note-status" data-status="flagged" ${status === "flagged" ? "disabled" : ""}>Mark flagged</button>
+        <button class="btn-secondary btn-note-status btn-note-archive" data-status="archived" ${status === "archived" ? "disabled" : ""}>Archive</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  container.querySelectorAll(".btn-note-status").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const targetStatus = btn.getAttribute("data-status");
+      const wrapper = btn.closest(".review-note-actions");
+      const noteId = wrapper ? wrapper.getAttribute("data-note-id") : "";
+      if (!eventId || !noteId || !targetStatus) return;
+      await updateSimulationReviewNoteStatus(eventId, noteId, targetStatus);
+    });
+  });
+}
+
+async function loadSimulationReviewNotes(eventId) {
+  const selected = $("simulation-selected-event-id");
+  if (selected) selected.value = eventId || "";
+
+  if (!eventId) {
+    setSimulationReviewNotesState("Select an event to load review notes.");
+    renderSimulationReviewNotes([]);
+    await loadSimulationReviewAudit("");
+    return;
+  }
+
+  setSimulationReviewNotesState("Loading review notes...");
+  try {
+    const data = await api(`/simulation/events/${eventId}/review-notes`);
+    setSimulationReviewNotesState(`Review notes loaded: ${data.count || 0}`);
+    renderSimulationReviewNotes(data.items || []);
+  } catch (e) {
+    setSimulationReviewNotesState(`Failed to load review notes: ${e.message}`);
+    renderSimulationReviewNotes([]);
+  }
+}
+
+function renderSimulationEvents(items) {
+  const container = $("simulation-events-output");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!Array.isArray(items) || items.length === 0) {
+    container.innerHTML = `<div class="muted">No simulation events match current filters.</div>`;
+    return;
+  }
+
+  items.forEach((eventItem) => {
+    const row = document.createElement("article");
+    row.className = "event-item";
+    row.innerHTML = `
+      <div class="event-item-head">
+        <div class="event-item-id">${eventItem.event_id || "-"}</div>
+        <div class="event-item-time">${eventItem.created_at || "-"}</div>
+      </div>
+      <div class="event-item-meta">
+        <span class="badge source">source: ${eventItem.source || "-"}</span>
+        <span class="badge type">type: ${eventItem.event_type || "-"}</span>
+        <span class="badge status">status: ${eventItem.status || "-"}</span>
+        <span class="badge severity">severity: ${eventItem.severity || "-"}</span>
+      </div>
+      <div class="event-item-summary">
+        agent=${eventItem.agent_id || "-"} • protocol=${eventItem.protocol_version || "-"} •
+        transport=${eventItem.transport || "-"} • schema=${eventItem.schema_version || "-"}
+      </div>
+      <div class="event-item-summary">
+        payload_summary=${JSON.stringify(eventItem.payload_summary || {})}
+      </div>
+      <div class="event-item-summary">
+        risk_summary=${JSON.stringify(eventItem.risk_summary || {})}
+      </div>
+      <div class="event-item-actions">
+        <button class="btn-secondary btn-event-trace" data-event-id="${eventItem.event_id || ""}">Trace</button>
+        <button class="btn-secondary btn-event-select" data-event-id="${eventItem.event_id || ""}">Select</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  container.querySelectorAll(".btn-event-trace").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const eventId = btn.getAttribute("data-event-id");
+      if (!eventId) return;
+      try {
+        const traces = await api(`/simulation/events/${eventId}/traces`);
+        const first = Array.isArray(traces.items) ? traces.items[0] : null;
+        const linkage = extractLinkageFromTrace(first);
+        if (Object.keys(linkage).length > 0) {
+          pretty($("simulation-event-detail"), { trace: traces, linkage });
+        } else {
+          pretty($("simulation-event-detail"), traces);
+        }
+      } catch (e) {
+        pretty($("simulation-event-detail"), { error: e.message });
+      }
+    });
+  });
+
+  container.querySelectorAll(".btn-event-select").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const eventId = btn.getAttribute("data-event-id");
+      if (!eventId) return;
+      await Promise.all([loadSimulationReviewNotes(eventId), loadSimulationReviewAudit(eventId)]);
+    });
+  });
+}
+
+async function addSimulationReviewNote() {
+  const eventId = ($("simulation-selected-event-id")?.value || "").trim();
+  const noteText = ($("simulation-review-note-text")?.value || "").trim();
+  const reviewerId = ($("simulation-reviewer-id")?.value || "").trim();
+
+  if (!eventId) {
+    setSimulationReviewNotesState("Select an event before adding a review note.");
+    return;
+  }
+  if (!noteText) {
+    setSimulationReviewNotesState("Review note cannot be empty.");
+    return;
+  }
+
+  try {
+    setSimulationReviewNotesState("Submitting review note...");
+    await api(`/simulation/events/${eventId}/review-notes`, {
+      method: "POST",
+      body: JSON.stringify({
+        note_text: noteText,
+        reviewer_id: reviewerId || undefined,
+      }),
+    });
+    $("simulation-review-note-text").value = "";
+    setSimulationReviewNotesState("Review note created.");
+    await Promise.all([loadSimulationReviewNotes(eventId), loadSimulationReviewAudit(eventId)]);
+  } catch (e) {
+    setSimulationReviewNotesState(`Failed to create review note: ${e.message}`);
+  }
+}
+
+async function loadSimulationEvents() {
+  const params = getSimulationFilters();
+  const query = params.toString();
+  const eventsPath = query ? `/simulation/events?${query}` : "/simulation/events";
+  const summaryPath = query ? `/simulation/events/summary?${query}` : "/simulation/events/summary";
+
+  try {
+    const [data, summary] = await Promise.all([api(eventsPath), api(summaryPath)]);
+    renderSimulationEvents(data.items || []);
+    renderSimulationSummary(summary);
+    pretty($("simulation-event-detail"), { count: data.count || 0, note: "Select Trace on an event row." });
+  } catch (e) {
+    renderSimulationEvents([]);
+    renderSimulationSummary({ total_events: 0 });
+    pretty($("simulation-event-detail"), { error: e.message });
+    const container = $("simulation-events-output");
+    if (container) container.innerHTML = `<div class="muted">Failed to load simulation events: ${e.message}</div>`;
+  }
+}
+
+const btnSimulationEvents = $("btn-list-simulation-events");
+if (btnSimulationEvents) {
+  btnSimulationEvents.onclick = loadSimulationEvents;
+}
+
+const btnAddReviewNote = $("btn-add-simulation-review-note");
+if (btnAddReviewNote) {
+  btnAddReviewNote.onclick = addSimulationReviewNote;
+}
+
 $("btn-mobile-help").onclick = () => {
   const help = [
     "Mobile install (PWA):",
@@ -475,3 +815,4 @@ refreshObserverOutput();
 setRolePanel("tester");
 setupPwaInstall();
 initHealthAndStatus();
+loadSimulationEvents();

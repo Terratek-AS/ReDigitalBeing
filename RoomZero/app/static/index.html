@@ -239,6 +239,41 @@
         <button id="btn-list-sources" class="btn-secondary">Queue</button>
       </div>
       <pre id="source-output" class="output"></pre>
+
+      <h3>Simulation Events</h3>
+      <p class="muted">Latest normalized simulation/unreal observations with safe audit summaries.</p>
+      <div class="sim-filters">
+        <input id="sim-filter-source" placeholder="source (e.g. unreal.websocket)" />
+        <input id="sim-filter-event-type" placeholder="event_type (e.g. unreal.observation.alpha_event)" />
+        <input id="sim-filter-agent-id" placeholder="agent_id" />
+        <input id="sim-filter-status" placeholder="status (e.g. accepted)" />
+        <input id="sim-filter-severity" placeholder="severity (e.g. info)" />
+        <input id="sim-filter-limit" type="number" min="1" max="500" value="50" placeholder="limit" />
+        <button id="btn-list-simulation-events">Refresh Simulation Events</button>
+      </div>
+      <div id="simulation-events-summary" class="sim-summary muted">Summary pending…</div>
+      <div id="simulation-events-output" class="event-list"></div>
+      <pre id="simulation-event-detail" class="output"></pre>
+
+      <h3>Event Review Notes</h3>
+      <p class="muted">Text-only reviewer notes for the selected simulation event.</p>
+      <div id="simulation-review-notes-state" class="sim-summary muted">Select an event to load review notes.</div>
+      <div class="row">
+        <input id="simulation-selected-event-id" placeholder="selected_event_id" readonly />
+      </div>
+      <div class="row">
+        <textarea id="simulation-review-note-text" placeholder="Add a reviewer note (text only)..."></textarea>
+      </div>
+      <div class="row">
+        <input id="simulation-reviewer-id" placeholder="reviewer_id (optional)" value="ui_reviewer" />
+        <button id="btn-add-simulation-review-note">Add Review Note</button>
+      </div>
+      <div id="simulation-review-notes-output" class="event-list"></div>
+
+      <h3>Review Audit</h3>
+      <p class="muted">Sanitized lifecycle audit for the selected event.</p>
+      <div id="simulation-review-audit-state" class="sim-summary muted">Select an event to load review audit.</div>
+      <div id="simulation-review-audit-output" class="event-list review-audit-list"></div>
     </section>
 
     <section class="card card-wide">

@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 from datetime import datetime, timezone
+import json
 import os
 import sys
 import threading
 import time
 import webbrowser
+from uuid import uuid4
 
 import uvicorn
 from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
@@ -69,6 +71,9 @@ from app.models import (
     AgentState,
     ObservationEvent,
     SimulationEvent,
+    SimulationEventTrace,
+    SimulationEventReviewNoteCreateRequest,
+    SimulationEventReviewNoteUpdateRequest,
 )
 from app.persona import PersonaStore
 from app.research import ResearchStore
@@ -78,6 +83,7 @@ from app.sources import SourceStore
 from app.state import StateStore
 from app.testers import TesterStore
 from app.platform_store import PlatformStore
+from app.db import get_connection, json_dumps
 
 
 class AdminToggleRequest(BaseModel):
@@ -114,6 +120,16 @@ safe_mode = True
 # --- Unreal bridge runtime (local in-memory MVP) ---
 UNREAL_OBSERVATION_CAP = 500
 UNREAL_SIMULATION_EVENT_CAP = 500
+SIMULATION_EVENT_REVIEW_NOTE_MAX_LENGTH = 2000
+SIMULATION_EVENT_REVIEW_AUDIT_DEFAULT_LIMIT = 50
+SIMULATION_EVENT_REVIEW_AUDIT_MAX_LIMIT = 200
+SIMULATION_EVENT_REVIEW_NOTE_ALLOWED_STATUSES = {"active", "resolved", "flagged", "archived"}
+SIMULATION_EVENT_REVIEW_AUDIT_ACTIONS = {
+    "simulation_event_review_note_created",
+    "simulation_event_review_note_updated",
+    "simulation_event_review_note_status_changed",
+    "simulation_event_review_note_archived",
+}
 unreal_agent_states: dict[str, AgentState] = {}
 unreal_agent_connections: dict[str, set[WebSocket]] = {}
 unreal_observations: list[ObservationEvent] = []
@@ -197,8 +213,12 @@ def _append_simulation_event(event: SimulationEvent) -> None:
 
 
 def _normalize_observation_to_simulation_event(observation: ObservationEvent) -> SimulationEvent:
+    normalized_event_name = observation.event.strip().lower().replace(" ", "_")
+    event_type = f"unreal.observation.{normalized_event_name or 'unknown'}"
+    payload_summary = _build_payload_summary(observation.payload)
+
     return SimulationEvent(
-        event_type=f"unreal.observation.{observation.event}",
+        event_type=event_type,
         source="unreal.websocket",
         payload=observation.payload,
         created_at=observation.created_at,
@@ -206,10 +226,14 @@ def _normalize_observation_to_simulation_event(observation: ObservationEvent) ->
         protocol_version=observation.protocol_version,
         status="accepted",
         severity="info",
+        transport="websocket",
+        correlation_id=f"{observation.agent_id}:{observation.created_at}",
+        schema_version="roomzero.simulation-event.v1",
         metadata={
             "observation_event": observation.event,
+            "normalization_rule": "strip+lower+space_to_underscore",
             "transport": "websocket",
-            "payload_summary": _build_payload_summary(observation.payload),
+            "payload_summary": payload_summary,
         },
     )
 
@@ -308,7 +332,7 @@ app.add_middleware(
 
 def _resolve_static_dir() -> Path:
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        candidate = Path(sys._MEIPASS) / "app" / "static"
+        candidate = Path(getattr(sys, "_MEIPASS")) / "app" / "static"
         if candidate.exists():
             return candidate
     return Path(__file__).resolve().parent / "static"
@@ -1015,6 +1039,505 @@ async def unreal_send_command(
 @app.get("/ws/unreal/observations")
 def unreal_list_observations() -> dict:
     return {"count": len(unreal_observations), "items": [o.model_dump() for o in unreal_observations]}
+
+
+def _safe_simulation_event_view(event: SimulationEvent) -> dict:
+    data = event.model_dump()
+    metadata = data.get("metadata", {}) if isinstance(data.get("metadata"), dict) else {}
+    payload_summary = metadata.get("payload_summary")
+    if not isinstance(payload_summary, dict):
+        payload = data.get("payload", {})
+        if not isinstance(payload, dict):
+            payload = {}
+        payload_summary = _build_payload_summary(payload)
+
+    risk_summary: dict = {}
+    maybe_risk_summary = metadata.get("risk_summary")
+    if isinstance(maybe_risk_summary, dict):
+        risk_summary = maybe_risk_summary
+    elif data.get("severity") or data.get("status"):
+        risk_summary = {
+            "severity": data.get("severity"),
+            "status": data.get("status"),
+        }
+
+    return {
+        "event_id": data["event_id"],
+        "created_at": data["created_at"],
+        "source": data["source"],
+        "event_type": data["event_type"],
+        "agent_id": data.get("agent_id"),
+        "status": data.get("status"),
+        "severity": data.get("severity"),
+        "protocol_version": data.get("protocol_version"),
+        "transport": data.get("transport"),
+        "schema_version": data.get("schema_version"),
+        "payload_summary": payload_summary,
+        "risk_summary": risk_summary,
+    }
+
+
+def _simulation_event_trace_view(event: SimulationEvent) -> dict:
+    safe = _safe_simulation_event_view(event)
+    data = event.model_dump()
+    metadata = data.get("metadata", {}) if isinstance(data.get("metadata"), dict) else {}
+    trace = SimulationEventTrace(
+        event_id=data["event_id"],
+        event_type=data["event_type"],
+        source=data["source"],
+        agent_id=data.get("agent_id"),
+        created_at=data["created_at"],
+        status=data.get("status"),
+        severity=data.get("severity"),
+        protocol_version=data.get("protocol_version"),
+        schema_version=data.get("schema_version") or "roomzero.simulation-event.v1",
+        payload_summary=safe["payload_summary"],
+        metadata={
+            "normalization_rule": metadata.get("normalization_rule"),
+            "observation_event": metadata.get("observation_event"),
+            "transport": metadata.get("transport"),
+            "correlation_id": data.get("correlation_id"),
+            "trace_id": data.get("trace_id"),
+            "parent_event_id": data.get("parent_event_id"),
+        },
+    )
+    return trace.model_dump()
+
+
+def _normalize_optional_filter(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip().lower()
+    return normalized or None
+
+
+def _matches_optional_filter(actual: str | None, expected: str | None) -> bool:
+    if expected is None:
+        return True
+    return (actual or "").strip().lower() == expected
+
+
+def _find_simulation_event(event_id: str) -> SimulationEvent | None:
+    for event in reversed(unreal_simulation_events):
+        if event.event_id == event_id:
+            return event
+    return None
+
+
+def _coerce_events_limit(limit: int) -> int:
+    if limit < 1:
+        raise HTTPException(status_code=400, detail="limit must be >= 1")
+    return min(limit, UNREAL_SIMULATION_EVENT_CAP)
+
+
+def _filter_simulation_events(
+    source: str | None = None,
+    event_type: str | None = None,
+    agent_id: str | None = None,
+    status: str | None = None,
+    severity: str | None = None,
+) -> list[SimulationEvent]:
+    source_filter = _normalize_optional_filter(source)
+    event_type_filter = _normalize_optional_filter(event_type)
+    agent_filter = _normalize_optional_filter(agent_id)
+    status_filter = _normalize_optional_filter(status)
+    severity_filter = _normalize_optional_filter(severity)
+
+    filtered: list[SimulationEvent] = []
+    for event in unreal_simulation_events:
+        if not _matches_optional_filter(event.source, source_filter):
+            continue
+        if not _matches_optional_filter(event.event_type, event_type_filter):
+            continue
+        if not _matches_optional_filter(event.agent_id, agent_filter):
+            continue
+        if not _matches_optional_filter(event.status, status_filter):
+            continue
+        if not _matches_optional_filter(event.severity, severity_filter):
+            continue
+        filtered.append(event)
+    return filtered
+
+
+def _build_simulation_event_summary(events: list[SimulationEvent]) -> dict:
+    by_source: dict[str, int] = {}
+    by_event_type: dict[str, int] = {}
+    by_status: dict[str, int] = {}
+    by_severity: dict[str, int] = {}
+
+    for event in events:
+        by_source[event.source] = by_source.get(event.source, 0) + 1
+        by_event_type[event.event_type] = by_event_type.get(event.event_type, 0) + 1
+        status_key = event.status or "unknown"
+        by_status[status_key] = by_status.get(status_key, 0) + 1
+        severity_key = event.severity or "unknown"
+        by_severity[severity_key] = by_severity.get(severity_key, 0) + 1
+
+    return {
+        "total_events": len(events),
+        "by_source": by_source,
+        "by_event_type": by_event_type,
+        "by_status": by_status,
+        "by_severity": by_severity,
+    }
+
+
+@app.get("/simulation/events")
+def list_simulation_events(
+    source: str | None = None,
+    event_type: str | None = None,
+    agent_id: str | None = None,
+    status: str | None = None,
+    severity: str | None = None,
+    limit: int = 50,
+) -> dict:
+    bounded_limit = _coerce_events_limit(limit)
+    filtered_events = _filter_simulation_events(
+        source=source,
+        event_type=event_type,
+        agent_id=agent_id,
+        status=status,
+        severity=severity,
+    )
+    items = [_safe_simulation_event_view(e) for e in reversed(filtered_events[-bounded_limit:])]
+    return {"count": len(filtered_events), "items": items}
+
+
+@app.get("/simulation/events/summary")
+def simulation_events_summary(
+    source: str | None = None,
+    event_type: str | None = None,
+    agent_id: str | None = None,
+    status: str | None = None,
+    severity: str | None = None,
+) -> dict:
+    filtered_events = _filter_simulation_events(
+        source=source,
+        event_type=event_type,
+        agent_id=agent_id,
+        status=status,
+        severity=severity,
+    )
+    return _build_simulation_event_summary(filtered_events)
+
+
+@app.get("/simulation/events/{event_id}")
+def get_simulation_event(event_id: str) -> dict:
+    event = _find_simulation_event(event_id)
+    if event is None:
+        raise HTTPException(status_code=404, detail="Simulation event not found.")
+    return _safe_simulation_event_view(event)
+
+
+@app.get("/simulation/events/{event_id}/traces")
+def get_simulation_event_traces(event_id: str) -> dict:
+    event = _find_simulation_event(event_id)
+    if event is None:
+        raise HTTPException(status_code=404, detail="Simulation event not found.")
+    return {"count": 1, "items": [_simulation_event_trace_view(event)]}
+
+
+def _normalize_reviewer_id(value: str | None) -> str:
+    if value is None:
+        return "ui_reviewer"
+    normalized = value.strip()
+    return normalized or "ui_reviewer"
+
+
+def _normalize_review_note_status(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip().lower()
+    if not normalized:
+        return None
+    if normalized not in SIMULATION_EVENT_REVIEW_NOTE_ALLOWED_STATUSES:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Invalid review note status. "
+                f"Allowed: {sorted(SIMULATION_EVENT_REVIEW_NOTE_ALLOWED_STATUSES)}"
+            ),
+        )
+    return normalized
+
+
+def _validate_review_note_text(note_text: str) -> str:
+    normalized = note_text.strip()
+    if not normalized:
+        raise HTTPException(status_code=400, detail="Review note text cannot be empty.")
+    if len(normalized) > SIMULATION_EVENT_REVIEW_NOTE_MAX_LENGTH:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Review note exceeds max length ({SIMULATION_EVENT_REVIEW_NOTE_MAX_LENGTH}).",
+        )
+    return normalized
+
+
+@app.get("/simulation/events/{event_id}/review-notes")
+def get_simulation_event_review_notes(event_id: str) -> dict:
+    event = _find_simulation_event(event_id)
+    if event is None:
+        raise HTTPException(status_code=404, detail="Simulation event not found.")
+
+    with get_connection(platform_db_path) as conn:
+        rows = conn.execute(
+            """
+            SELECT id, event_id, note_text, reviewer_id, status, created_at, updated_at
+            FROM simulation_event_review_notes
+            WHERE event_id = ?
+            ORDER BY created_at DESC
+            """,
+            (event_id,),
+        ).fetchall()
+
+    items = [dict(row) for row in rows]
+    return {"count": len(items), "items": items}
+
+
+def _get_simulation_event_review_note(event_id: str, note_id: str) -> dict | None:
+    with get_connection(platform_db_path) as conn:
+        row = conn.execute(
+            """
+            SELECT id, event_id, note_text, reviewer_id, status, created_at, updated_at
+            FROM simulation_event_review_notes
+            WHERE id = ? AND event_id = ?
+            LIMIT 1
+            """,
+            (note_id, event_id),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def _coerce_review_audit_limit(limit: int) -> int:
+    if limit < 1:
+        raise HTTPException(status_code=400, detail="limit must be >= 1")
+    return min(limit, SIMULATION_EVENT_REVIEW_AUDIT_MAX_LIMIT)
+
+
+@app.post("/simulation/events/{event_id}/review-notes")
+def create_simulation_event_review_note(
+    event_id: str,
+    request: SimulationEventReviewNoteCreateRequest,
+) -> dict:
+    event = _find_simulation_event(event_id)
+    if event is None:
+        raise HTTPException(status_code=404, detail="Simulation event not found.")
+
+    note_text = _validate_review_note_text(request.note_text)
+
+    reviewer_id = _normalize_reviewer_id(request.reviewer_id)
+    status_value = _normalize_review_note_status(request.status)
+    note_id = str(uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+
+    with get_connection(platform_db_path) as conn:
+        conn.execute(
+            """
+            INSERT INTO simulation_event_review_notes
+            (id, event_id, note_text, reviewer_id, status, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (note_id, event_id, note_text, reviewer_id, status_value, now, now),
+        )
+        conn.execute(
+            """
+            INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, details, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                str(uuid4()),
+                reviewer_id,
+                "simulation_event_review_note_created",
+                "simulation_event",
+                event_id,
+                json_dumps(
+                    {
+                        "event_id": event_id,
+                        "note_id": note_id,
+                        "note_length": len(note_text),
+                        "note_preview": note_text[:120],
+                    }
+                ),
+                now,
+            ),
+        )
+
+    return {
+        "status": "created",
+        "note": {
+            "id": note_id,
+            "event_id": event_id,
+            "note_text": note_text,
+            "reviewer_id": reviewer_id,
+            "status": status_value,
+            "created_at": now,
+            "updated_at": now,
+        },
+    }
+
+
+@app.patch("/simulation/events/{event_id}/review-notes/{note_id}")
+def update_simulation_event_review_note(
+    event_id: str,
+    note_id: str,
+    request: SimulationEventReviewNoteUpdateRequest,
+) -> dict:
+    event = _find_simulation_event(event_id)
+    if event is None:
+        raise HTTPException(status_code=404, detail="Simulation event not found.")
+
+    existing = _get_simulation_event_review_note(event_id, note_id)
+    if existing is None:
+        raise HTTPException(status_code=404, detail="Review note not found for simulation event.")
+
+    status_provided = request.status is not None
+    note_text_provided = request.note_text is not None
+    if not status_provided and not note_text_provided:
+        raise HTTPException(status_code=400, detail="No review note updates provided.")
+
+    old_status = existing.get("status")
+    new_status = _normalize_review_note_status(request.status) if status_provided else old_status
+    new_note_text = (
+        _validate_review_note_text(request.note_text or "")
+        if note_text_provided
+        else existing["note_text"]
+    )
+
+    now = datetime.now(timezone.utc).isoformat()
+    with get_connection(platform_db_path) as conn:
+        conn.execute(
+            """
+            UPDATE simulation_event_review_notes
+            SET note_text = ?, status = ?, updated_at = ?
+            WHERE id = ? AND event_id = ?
+            """,
+            (new_note_text, new_status, now, note_id, event_id),
+        )
+
+        if note_text_provided:
+            conn.execute(
+                """
+                INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, details, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    str(uuid4()),
+                    existing.get("reviewer_id") or "ui_reviewer",
+                    "simulation_event_review_note_updated",
+                    "simulation_event",
+                    event_id,
+                    json_dumps(
+                        {
+                            "event_id": event_id,
+                            "note_id": note_id,
+                            "note_length": len(new_note_text),
+                            "note_preview": new_note_text[:120],
+                        }
+                    ),
+                    now,
+                ),
+            )
+
+        if status_provided and old_status != new_status:
+            conn.execute(
+                """
+                INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, details, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    str(uuid4()),
+                    existing.get("reviewer_id") or "ui_reviewer",
+                    "simulation_event_review_note_status_changed",
+                    "simulation_event",
+                    event_id,
+                    json_dumps(
+                        {
+                            "event_id": event_id,
+                            "note_id": note_id,
+                            "old_status": old_status,
+                            "new_status": new_status,
+                        }
+                    ),
+                    now,
+                ),
+            )
+
+            if new_status == "archived":
+                conn.execute(
+                    """
+                    INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, details, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        str(uuid4()),
+                        existing.get("reviewer_id") or "ui_reviewer",
+                        "simulation_event_review_note_archived",
+                        "simulation_event",
+                        event_id,
+                        json_dumps(
+                            {
+                                "event_id": event_id,
+                                "note_id": note_id,
+                                "old_status": old_status,
+                                "new_status": new_status,
+                            }
+                        ),
+                        now,
+                    ),
+                )
+
+    updated = _get_simulation_event_review_note(event_id, note_id)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Review note not found for simulation event.")
+
+    return {"status": "updated", "note": updated}
+
+
+@app.get("/simulation/events/{event_id}/review-audit")
+def get_simulation_event_review_audit(event_id: str, limit: int = SIMULATION_EVENT_REVIEW_AUDIT_DEFAULT_LIMIT) -> dict:
+    event = _find_simulation_event(event_id)
+    if event is None:
+        raise HTTPException(status_code=404, detail="Simulation event not found.")
+
+    bounded_limit = _coerce_review_audit_limit(limit)
+    action_params = sorted(SIMULATION_EVENT_REVIEW_AUDIT_ACTIONS)
+    placeholders = ",".join("?" for _ in action_params)
+
+    with get_connection(platform_db_path) as conn:
+        rows = conn.execute(
+            f"""
+            SELECT action, created_at, target_id, details
+            FROM audit_logs
+            WHERE target_type = 'simulation_event'
+              AND target_id = ?
+              AND action IN ({placeholders})
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (event_id, *action_params, bounded_limit),
+        ).fetchall()
+
+    items: list[dict] = []
+    for row in rows:
+        details_raw = row["details"] if isinstance(row["details"], str) else "{}"
+        details = {}
+        try:
+            maybe = json.loads(details_raw)
+            if isinstance(maybe, dict):
+                details = maybe
+        except Exception:
+            details = {}
+
+        items.append(
+            {
+                "action": row["action"],
+                "created_at": row["created_at"],
+                "target_id": row["target_id"],
+                "details": details,
+            }
+        )
+
+    return {"count": len(items), "items": items}
 
 
 @app.websocket("/ws/unreal/{agent_id}")

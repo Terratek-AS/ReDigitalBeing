@@ -369,6 +369,13 @@ class SimulationEvent(BaseModel):
     severity: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
+    # Additive M3 transport/lifecycle trace fields
+    transport: str | None = None
+    correlation_id: str | None = None
+    parent_event_id: str | None = None
+    trace_id: str | None = None
+    schema_version: str = "roomzero.simulation-event.v1"
+
 
 class SimulationEventTrace(BaseModel):
     event_id: str
@@ -377,4 +384,46 @@ class SimulationEventTrace(BaseModel):
     agent_id: str | None = None
     created_at: str
     status: str | None = None
+    severity: str | None = None
+    protocol_version: str | None = None
+    schema_version: str = "roomzero.simulation-event.v1"
     payload_summary: dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class SimulationEventReviewNoteCreateRequest(BaseModel):
+    note_text: str = Field(min_length=1, max_length=2000)
+    reviewer_id: str | None = Field(default=None, max_length=200)
+    status: str | None = Field(default=None, max_length=100)
+
+
+class SimulationEventReviewNoteModel(BaseModel):
+    id: str
+    event_id: str
+    note_text: str
+    reviewer_id: str
+    status: str | None = None
+    created_at: str
+    updated_at: str
+
+
+class SimulationEventReviewNotesResponse(BaseModel):
+    count: int
+    items: list[SimulationEventReviewNoteModel]
+
+
+class SimulationEventReviewNoteUpdateRequest(BaseModel):
+    status: str | None = Field(default=None, max_length=100)
+    note_text: str | None = Field(default=None, max_length=2000)
+
+
+class SimulationEventReviewAuditEntryModel(BaseModel):
+    action: str
+    created_at: str
+    target_id: str
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
+class SimulationEventReviewAuditResponse(BaseModel):
+    count: int
+    items: list[SimulationEventReviewAuditEntryModel]

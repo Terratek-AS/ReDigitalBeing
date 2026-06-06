@@ -394,8 +394,12 @@ def test_simulation_event_normalization_from_observation() -> None:
     assert dumped["protocol_version"] == "roomzero.unreal.v1"
     assert dumped["status"] == "accepted"
     assert dumped["severity"] == "info"
+    assert dumped["transport"] == "websocket"
+    assert dumped["schema_version"] == "roomzero.simulation-event.v1"
+    assert dumped["correlation_id"] == f"{agent_id}:{dumped['created_at']}"
 
     assert dumped["metadata"]["observation_event"] == "player_entered_room"
+    assert dumped["metadata"]["normalization_rule"] == "strip+lower+space_to_underscore"
     assert dumped["metadata"]["transport"] == "websocket"
     payload_summary = dumped["metadata"]["payload_summary"]
     assert payload_summary["keys"] == ["distance", "zone"]
