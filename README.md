@@ -121,6 +121,30 @@ Use invite + registration workflow exposed by backend endpoints and UI flows.
 - M2.1 intentionally does not include full real-time chamber streaming implementation yet.
 - Local-first data and SQLite layout are suitable for prototype/research phase, not final production scale.
 
+## Project Progress
+
+### Milestone Status
+
+**M1.2 Unreal Integration Readiness**  
+`██████████ 100%` ✅ Completed
+
+**M1.3 Contract Fixtures & Protocol Stability**  
+`██████████ 100%` ✅ Completed
+
+**M1.4 Handshake / Schema Hardening**  
+`██████████ 100%` ✅ Completed
+
+**M3 Simulation Event Architecture**  
+`██████░░░░ 60%` ⏳ In progress
+
+**M4 Simulation Intelligence Layer**  
+`░░░░░░░░░░ 0%` Planned
+
+**M5 MetaHuman / Digital Human Runtime**  
+`░░░░░░░░░░ 0%` Planned
+
+Progress percentages are milestone-tracking indicators, not release guarantees. Completion requires passing tests, documentation updates, and review.
+
 ## Roadmap
 
 ### M1

@@ -1,8 +1,5 @@
-# Task TODO Tracking
+# TODO
 
-- [ ] CI update
-- [ ] dependency/lint setup
-- [ ] local test run
-- [ ] Docker smoke test
-- [ ] PR #19 review status
-- [ ] final pass/fail notes
+- [x] Add "Project Progress" section to root README.md
+- [x] Add "Project Progress" section to RoomZero/README.md
+- [x] Mark this TODO as completed after both README updates

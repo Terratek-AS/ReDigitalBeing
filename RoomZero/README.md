@@ -599,6 +599,30 @@ Protocol version verification:
 - Confirm value equals exactly `roomzero.unreal.v1`
 - If mismatched, log and drop payload (do not execute command blindly)
 
+## Project Progress
+
+### Milestone Status
+
+**M1.2 Unreal Integration Readiness**  
+`██████████ 100%` ✅ Completed
+
+**M1.3 Contract Fixtures & Protocol Stability**  
+`██████████ 100%` ✅ Completed
+
+**M1.4 Handshake / Schema Hardening**  
+`██████████ 100%` ✅ Completed
+
+**M3 Simulation Event Architecture**  
+`██████░░░░ 60%` ⏳ In progress
+
+**M4 Simulation Intelligence Layer**  
+`░░░░░░░░░░ 0%` Planned
+
+**M5 MetaHuman / Digital Human Runtime**  
+`░░░░░░░░░░ 0%` Planned
+
+Progress percentages are milestone-tracking indicators, not release guarantees. Completion requires passing tests, documentation updates, and review.
+
 ## Roadmap
 
 ### Phase 1B
