@@ -181,6 +181,23 @@ docker run -d \
 
 ---
 
+## Local Docker helper script
+
+For development, a convenience PowerShell script is included to build and start the compose stack and optionally probe the `/health` endpoint.
+
+From the repository root (PowerShell):
+
+```powershell
+.\scripts\start-docker-local.ps1 -ProbeHealth
+```
+
+This will:
+- verify `docker` is available on PATH
+- run `docker compose -f docker-compose.yml up --build -d`
+- print `http://127.0.0.1:8000`
+- probe `GET /health` (if `-ProbeHealth` provided) with retries and print logs on failure
+
+
 ## 7) PaaS notes (Render/Fly/Railway)
 
 - Start command:
