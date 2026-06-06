@@ -622,10 +622,531 @@ Protocol version verification:
 | M7 MetaHuman / Digital Human Runtime | Future | `░░░░░░░░░░ 0%` |
 | M8 Research Knowledge Engine | Future | `░░░░░░░░░░ 0%` |
 
-Progress percentages are milestone-tracking indicators, not release guarantees. Completion requires passing tests, documentation updates, and review.
+| Milestone | Status | Progress |
+|---|---|---|
+| M8.1 Real Research Material & Terratek Knowledge Paths | Planned | `░░░░░░░░░░ 0%` |
+
+Progress percentages are milestone-tracking indicators, not release guarantees. Completion requires passing tests, documentation updates, and review. M3 remains in progress. M8.1 remains planned.
 
 ## Roadmap
 
+### Phase 1B
+- richer emotional modeling
+- confidence/relevance scoring improvements
+- better semantic extraction and tagging
+- memory decay + reinforcement mechanics
+- optional ChromaDB/Qdrant adapters
+
+### Phase 1C
+- voice pipeline (STT/TTS)
+- Unreal Engine bridge
+- sensor/event input adapters
+- multi-agent room simulation primitives
+
+## M4 Roadmap: Simulation Intelligence & Digital Human Layer (Planning-Only)
+
+### M4 objective
+
+Define a future planning blueprint for the **Simulation Intelligence & Digital Human Layer** so M2/M3 architecture decisions remain forward-compatible. M4 in this phase is documentation-only and creates no implementation obligation in the current cycle.
+
+### What M4 is
+
+- A planning framework to evolve approved research scenarios into **controlled simulation runs**
+- A design model for repeatable, observable, and auditable simulation execution
+- A specification direction for agent behavior orchestration via explicit agent profiles
+- A governance roadmap for ethical reasoning tests, risk gating, and human oversight
+- A presentation-layer roadmap for Unreal/MetaHuman as avatar visualization only
+
+### What M4 is not
+
+- Not a runtime implementation milestone in this task
+- Not a bypass of M2.1.4 deployment ownership or M2.2 Research MVP Foundation
+- Not a replacement for M3 event/simulation transport hardening
+- Not a claim of real consciousness or proven sentience
+- Not permission to use MetaHuman-derived assets/data for AI/ML training, testing, benchmarking, evaluation, or enhancement
+
+### M4 dependencies
+
+- M2.1.4 deployment ownership and canonical URL authority completed
+- M2.2 research workflows stabilized with governance and auditability
+- M3 simulation-event architecture established (schema + transport + audit trail)
+- Stable role/approval model for research-to-simulation conversion
+- Baseline observability and incident-response readiness
+
+### Simulation runtime roadmap
+
+- Define simulation run lifecycle:
+  - draft -> approved -> scheduled -> running -> paused -> completed -> archived
+- Introduce deterministic configuration snapshots per run:
+  - scenario version
+  - agent profile version
+  - memory-state snapshot reference
+  - safety policy version
+- Add replayability primitives:
+  - event log stream
+  - seed/config capture
+  - run outcome digest
+- Enforce audit trace for all control-plane actions and state transitions
+
+### Agent profile roadmap
+
+- Define versioned agent profile schema:
+  - role
+  - objectives
+  - behavioral constraints
+  - response style boundaries
+  - tool/action permissions
+- Separate profile policy from runtime memory content
+- Require profile approval workflow for medium/high-impact behavior changes
+- Track profile-to-run linkage for post-run analysis and reproducibility
+
+### Memory state roadmap
+
+- Introduce simulation memory-state abstraction:
+  - working memory
+  - episodic simulation memory
+  - scenario-bound semantic memory overlays
+- Ensure memory states are:
+  - inspectable
+  - reversible
+  - environment-scoped
+- Maintain strict separation from private user data and production personal memory stores
+- Add snapshot/restore controls for repeatable testing and controlled rollback
+
+### Metrics and observation roadmap
+
+- Define mandatory telemetry for each controlled simulation run:
+  - run identifiers
+  - scenario/profile versions
+  - timing and transition events
+  - safety events and override events
+- Define synthetic consciousness markers and consciousness-adjacent behavioral markers as research observables (not consciousness claims)
+- Add observer dashboards for run health, drift indicators, and policy violations
+- Require exportable audit summaries for review and governance sign-off
+
+### Ethical simulation gate
+
+- Require ethical risk classification before run approval:
+  - low / medium / high
+- Require explicit ethical approval and human oversight for medium/high-risk scenarios
+- Block or flag harmful real-world operational simulation behavior
+- Require clear stop/abort controls and post-run incident review for flagged events
+
+### Unreal/MetaHuman presentation layer
+
+- Use Unreal/MetaHuman as visual avatar/presentation layer only
+- Keep cognition simulation, agent behavior logic, evaluation pipelines, and knowledge/research datasets outside Unreal/MetaHuman asset domain
+- Ensure transport boundary between simulation runtime and visual renderer is contract-based and auditable
+- Restrict visual layer to presentation, animation, and user-facing embodiment experiences only
+
+### Future database models
+
+(Planning targets only; no schema changes in this task)
+
+- `simulation_runs`
+- `simulation_run_events`
+- `agent_profiles`
+- `agent_profile_versions`
+- `memory_state_snapshots`
+- `memory_state_transitions`
+- `simulation_observations`
+- `simulation_metric_series`
+- `ethical_reviews`
+- `ethical_review_decisions`
+- `simulation_gate_decisions`
+- `visual_session_links`
+- `run_artifact_index`
+
+### Future APIs
+
+(Planning targets only; no API implementation in this task)
+
+- Simulation runs:
+  - `POST /platform/simulations/runs`
+  - `GET /platform/simulations/runs`
+  - `GET /platform/simulations/runs/{run_id}`
+  - `POST /platform/simulations/runs/{run_id}/start|pause|resume|stop`
+- Agent profiles:
+  - `POST /platform/simulations/agent-profiles`
+  - `GET /platform/simulations/agent-profiles`
+  - `POST /platform/simulations/agent-profiles/{id}/versions`
+- Memory state:
+  - `POST /platform/simulations/memory-snapshots`
+  - `POST /platform/simulations/runs/{run_id}/restore-memory`
+- Observation/metrics:
+  - `GET /platform/simulations/runs/{run_id}/events`
+  - `GET /platform/simulations/runs/{run_id}/metrics`
+- Ethical gate:
+  - `POST /platform/simulations/ethics/review`
+  - `POST /platform/simulations/runs/{run_id}/gate-decision`
+
+### Future UI
+
+(Planning targets only; no frontend implementation in this task)
+
+- Simulation Control Center
+- Agent Profile Manager
+- Memory State Inspector + Snapshot Diff Viewer
+- Observation & Metrics Console
+- Ethical Gate Queue + Decision Workspace
+- Run Replay/Audit Timeline Viewer
+- Visual Session Monitor (Unreal/MetaHuman presentation linkage only)
+
+### Testing checklist
+
+Docs/planning targets for future implementation:
+
+- Unit tests for run lifecycle state machine transitions
+- Contract tests for event schemas and API payloads
+- Deterministic replay tests for repeatable run verification
+- Access-control tests for simulation control and ethical gate actions
+- Safety policy tests for blocked/flagged behavior pathways
+- Audit integrity tests (completeness, tamper-evidence assumptions, traceability)
+- Renderer-boundary tests confirming no prohibited data crossing into MetaHuman pipelines
+
+### Safety constraints
+
+- No real-consciousness claims in product or research outputs
+- Use terms such as:
+  - synthetic consciousness markers
+  - consciousness-adjacent behavioral markers
+  - cognition simulation
+- Medium/high-risk scenarios require ethical approval and active human oversight
+- Harmful real-world operational simulation behavior must be blocked or flagged
+- Emergency stop and post-incident review process required for flagged runs
+
+### Licensing constraints
+
+- MetaHuman may only be used as a visual avatar/presentation layer
+- MetaHuman assets, animation curves, rendered outputs, facial/motion data, or derived datasets must not be used for AI/ML training, testing, benchmarking, evaluation, or enhancement
+- RoomZero cognition, training, evaluation, simulation research datasets, and knowledge-base data must remain separated from Unreal/MetaHuman assets
+- License/compliance review is required before commercial release, paid distribution, enterprise deployment, or public launch using Unreal/MetaHuman presentation components
+
+### Implementation order
+
+1. Complete M2.1.4 deployment ownership authority
+2. Complete M2.2 research MVP governance and lifecycle hardening
+3. Complete M3 event architecture and simulation transport foundation
+4. Implement M4 simulation runtime control plane (minimal vertical slice)
+5. Add agent profile versioning and approval workflows
+6. Add memory snapshot/restore and observability primitives
+7. Add ethical gate enforcement for medium/high-risk scenarios
+8. Integrate Unreal/MetaHuman presentation linkage under strict boundary controls
+9. Expand validation, audit exports, and operational readiness checks
+
+### Risks
+
+- Scope creep risk if planning language is interpreted as immediate implementation mandate
+- Governance risk if ethical gate is bypassed for medium/high-risk runs
+- Auditability risk if replay/event capture is incomplete
+- Data-boundary risk between cognition simulation data and visual asset ecosystems
+- Compliance risk from improper MetaHuman/Unreal usage in AI/ML evaluation flows
+- Terminology risk from over-claiming consciousness rather than measured behavioral markers
+
+### Next recommended milestone after M4
+
+**M4.1 Controlled Simulation Pilot (post-M2/M3 completion)**
+
+- Run a constrained internal pilot with approved low-risk scenarios
+- Validate repeatability, observability, auditability, and ethical gate operations
+- Validate boundary-safe Unreal/MetaHuman presentation workflow
+- Publish governance evidence package and readiness decision for wider simulation rollout
+
+## Execution Plan Snapshot (Windows Install + Advanced UI/UX)
+
+This snapshot mirrors the actionable checklist in `TODO.md` for delivery readiness.
+
+### Advanced UI/UX workstreams
+- UX architecture and navigation
+  - define primary user journeys
+  - reduce action depth for tester/research/feedback/source tasks
+  - improve section hierarchy and contextual actions
+- Visual design system consistency
+  - standard spacing/typography/component hierarchy
+  - semantic status colors and clear button hierarchy
+- Interaction quality
+  - loading, empty, success, and error states
+  - inline validation and clearer user feedback loops
+- Accessibility and responsiveness
+  - keyboard/focus behavior, semantic landmarks, contrast checks
+  - mobile-first usability for quick admin/testing actions
+- Functional wiring and acceptance
+  - ensure dashboard controls map cleanly to existing API endpoints
+  - verify critical flows can be completed from `/ui` without relying on `/docs`
+
+### Windows installer hardening workstreams
+- Build chain verification
+  - run and validate full chain:
+    - `.\install.ps1 -WithBuilder`
+    - `.\build_installer.ps1`
+    - `iscc .\installer\RoomZero.iss`
+- Installer QA on Windows
+  - clean-machine install validation
+  - first-run checks (`/health`, `/ui`)
+  - uninstall and upgrade-path behavior checks
+- Trust and release readiness
+  - SmartScreen/signing expectations for unsigned builds
+  - rollback guidance and release-note discipline
+- Acceptance criteria
+  - non-dev installability from docs
+  - reproducible build/install flow by another team member
+  - checklist/log evidence for final verification
+
+## M8.1 — Real Research Material & Terratek Knowledge Paths (Planning-Only)
+
+Purpose:
+Build a structured, traceable research material layer that connects real sources, standards, material profiles, research questions, simulation scenarios, observations, findings, and Terratek project decisions.
+
+Scope:
+- curated real research source database
+- Terratek-specific research paths
+- source reliability scoring
+- research claims linked to evidence
+- material profiles linked to standards, EPD/LCA data, and simulation scenarios
+- human review workflow for approving sources and claims
+- exportable research packs for Terratek projects
+- future ingestion of papers, PDFs, APIs, manual uploads, standards metadata, and case studies
+
+### Terratek research paths
+
+- Terratek.Materials
+  - timber
+  - mass timber
+  - low-carbon concrete
+  - recycled steel
+  - reclaimed brick
+  - wood fibre insulation
+  - hemp/hempcrete
+  - clay/earth materials
+  - bio-based boards
+  - long-life facades
+  - demountable construction systems
+
+- Terratek.Circularity
+  - reuse mapping
+  - material passports
+  - deconstruction planning
+  - waste reduction
+  - product documentation
+  - reuse logistics
+  - quality control
+  - circular procurement
+
+- Terratek.CarbonLCA
+  - NS 3720
+  - NS-EN 15978
+  - EPD
+  - product modules A1-A3
+  - transport A4
+  - maintenance B2
+  - replacement B4
+  - construction waste
+  - BIM quantity takeoff to carbon calculations
+
+- Terratek.BuildingPhysics
+  - moisture safety
+  - thermal bridges
+  - air tightness
+  - vapour control
+  - coastal climate
+  - durability
+  - repairability
+  - robust detailing
+
+- Terratek.DigitalTwin
+  - Revit / IFC
+  - sensor data
+  - temperature
+  - relative humidity
+  - CO2 levels
+  - energy use
+  - operation monitoring
+  - design-performance gap
+
+- Terratek.LowImpactSite
+  - reduced excavation
+  - reduced blasting
+  - sloped terrain
+  - point foundations
+  - screw foundations
+  - stormwater
+  - erosion
+  - terrain preservation
+
+- Terratek.SocialSustainability
+  - local craftsmen
+  - training
+  - workforce inclusion
+  - young professionals
+  - people outside employment
+  - local value creation
+  - cultural heritage and building traditions
+
+### Proposed future data model
+
+- `research_sources`
+  - source_id
+  - title
+  - authors
+  - publisher
+  - year
+  - source_type
+  - url or local_reference
+  - jurisdiction
+  - domain
+  - reliability_level
+  - review_status
+  - tags
+  - added_by
+  - created_at
+  - updated_at
+
+- `research_paths`
+  - path_id
+  - name
+  - description
+  - domain
+  - owner
+  - priority
+  - status
+  - created_at
+  - updated_at
+
+- `research_materials`
+  - material_id
+  - name
+  - category
+  - description
+  - use_cases
+  - benefits
+  - risks
+  - documentation_needed
+  - standards_refs
+  - source_ids
+  - tags
+
+- `research_claims`
+  - claim_id
+  - claim
+  - evidence_level
+  - source_ids
+  - limitations
+  - related_materials
+  - related_paths
+  - review_status
+
+- `research_evidence_links`
+  - evidence_id
+  - source_id
+  - claim_id
+  - quote_or_summary
+  - relevance_score
+  - reviewer_notes
+
+- `material_profiles`
+  - material_id
+  - name
+  - category
+  - structural_use
+  - climate_impact_notes
+  - moisture_risk_notes
+  - durability_notes
+  - reuse_potential
+  - required_documentation
+  - BIM_mapping
+  - related_standards
+
+- `standard_references`
+  - standard_id
+  - name
+  - jurisdiction
+  - description
+  - status
+  - copyright_note
+  - external_reference
+  - related_paths
+
+- `case_studies`
+  - case_id
+  - title
+  - location
+  - project_type
+  - materials
+  - outcomes
+  - source_ids
+  - lessons_learned
+
+- `source_reviews`
+  - review_id
+  - source_id
+  - reviewer_id
+  - reliability_assessment
+  - relevance_assessment
+  - approval_status
+  - notes
+  - reviewed_at
+
+### Example research question templates
+
+- Which material combinations provide the lowest embodied carbon while maintaining moisture safety and long service life in Norwegian coastal climate?
+- How can BIM quantity takeoff be connected to EPD and NS3720-based early-phase carbon calculations?
+- Which reused building products are safest and most practical for early Terratek pilot projects?
+- How can low-impact foundations reduce blasting, excavation, cost, and environmental damage on sloped terrain?
+- How can sustainable building projects become training arenas for people entering or returning to work?
+
+### Source quality levels
+
+- Level A — legal/standard/official authority  
+  Examples: TEK17 / DiBK, Norwegian Standards metadata, EU regulations, official environmental product declarations
+
+- Level B — research institution / peer-reviewed / technical report  
+  Examples: SINTEF, NTNU, universities, peer-reviewed journals, research project reports
+
+- Level C — industry guidance / certification / professional practice  
+  Examples: FutureBuilt, BREEAM-NOR guidance, Enova guidance, manufacturer technical documentation
+
+- Level D — case study / field observation  
+  Examples: pilot projects, Terratek internal observations, interviews, construction site learnings
+
+- Level E — unverified idea / hypothesis  
+  Examples: early concept notes, AI-generated proposals, speculative design ideas
+
+### Safety, copyright, and review rules
+
+- Do not copy paid standards verbatim into the repository.
+- Store metadata, references, summaries, and project-specific notes.
+- Use quotes only when legally safe and short.
+- Keep clear distinction between source text, human summary, and AI-generated synthesis.
+- Research claims must link to evidence.
+- Human review is required before claims influence project decisions.
+- AI-generated suggestions must be treated as hypotheses until reviewed.
+
+### Initial Terratek Source Pack plan
+
+Categories:
+- TEK17 climate/lifecycle and construction waste provisions
+- NS 3720 / NS-EN 15978 / NS 3451 metadata references
+- SINTEF reuse and building material reports
+- EPD/LCA data sources
+- FutureBuilt / circular building criteria
+- Enova and energy efficiency references
+- Terratek internal field notes and pilot cases
+
+Notes:
+- Do not include copyrighted standards text.
+- Only include references, summaries, and metadata-level descriptions.
+- This is documentation and architecture planning only.
+- No database migrations were added.
+- No production code changed.
+- No source ingestion is implemented yet.
+
+## Safety and Data Defaults
+
+- Local data storage by default (JSON files under `data/`)
+- No hardcoded secrets
+- Human override is respected
+- Eir avoids claims of proven consciousness
+- Sensitive memory should require explicit user consent
 ### M0 — Repository Stabilization & CI Recovery
 
 Purpose:  
