@@ -68,6 +68,7 @@ from app.models import (
     AgentCommand,
     AgentState,
     ObservationEvent,
+    SimulationEvent,
 )
 from app.persona import PersonaStore
 from app.research import ResearchStore
@@ -112,9 +113,11 @@ safe_mode = True
 
 # --- Unreal bridge runtime (local in-memory MVP) ---
 UNREAL_OBSERVATION_CAP = 500
+UNREAL_SIMULATION_EVENT_CAP = 500
 unreal_agent_states: dict[str, AgentState] = {}
 unreal_agent_connections: dict[str, set[WebSocket]] = {}
 unreal_observations: list[ObservationEvent] = []
+unreal_simulation_events: list[SimulationEvent] = []
 unreal_pending_commands: dict[str, list[AgentCommand]] = {}
 
 
@@ -177,6 +180,51 @@ def _append_unreal_observation(obs: ObservationEvent) -> None:
 def _queue_unreal_command(agent_id: str, command: AgentCommand) -> None:
     queue = unreal_pending_commands.setdefault(agent_id, [])
     queue.append(command)
+
+
+def _build_payload_summary(payload: dict) -> dict:
+    return {
+        "keys": sorted([str(k) for k in payload.keys()])[:10],
+        "size": len(payload),
+    }
+
+
+def _append_simulation_event(event: SimulationEvent) -> None:
+    unreal_simulation_events.append(event)
+    overflow = len(unreal_simulation_events) - UNREAL_SIMULATION_EVENT_CAP
+    if overflow > 0:
+        del unreal_simulation_events[0:overflow]
+
+
+def _normalize_observation_to_simulation_event(observation: ObservationEvent) -> SimulationEvent:
+    return SimulationEvent(
+        event_type=f"unreal.observation.{observation.event}",
+        source="unreal.websocket",
+        payload=observation.payload,
+        created_at=observation.created_at,
+        agent_id=observation.agent_id,
+        protocol_version=observation.protocol_version,
+        status="accepted",
+        severity="info",
+        metadata={
+            "observation_event": observation.event,
+            "transport": "websocket",
+            "payload_summary": _build_payload_summary(observation.payload),
+        },
+    )
+
+
+def _trace_simulation_event(event: SimulationEvent) -> None:
+    print(
+        "[simulation-event]"
+        f" event_id={event.event_id}"
+        f" event_type={event.event_type}"
+        f" source={event.source}"
+        f" agent_id={event.agent_id or '-'}"
+        f" created_at={event.created_at}"
+        f" status={event.status or '-'}"
+        f" payload_summary={event.metadata.get('payload_summary', {})}"
+    )
 
 
 async def _drain_queued_unreal_commands(agent_id: str, websocket: WebSocket) -> None:
@@ -985,7 +1033,28 @@ async def unreal_ws(websocket: WebSocket, agent_id: str) -> None:
 
     try:
         while True:
-            message = await websocket.receive_json()
+            try:
+                message = await websocket.receive_json()
+            except ValueError:
+                await websocket.send_json(
+                    {
+                        "type": "error",
+                        "protocol_version": "roomzero.unreal.v1",
+                        "error": "invalid_payload",
+                    }
+                )
+                continue
+
+            if not isinstance(message, dict):
+                await websocket.send_json(
+                    {
+                        "type": "error",
+                        "protocol_version": "roomzero.unreal.v1",
+                        "error": "invalid_payload",
+                    }
+                )
+                continue
+
             msg_type = str(message.get("type", "")).strip().lower()
 
             if msg_type == "hello":
@@ -1008,6 +1077,9 @@ async def unreal_ws(websocket: WebSocket, agent_id: str) -> None:
                     payload = {}
                 obs = ObservationEvent(agent_id=agent_id, event=event_name, payload=payload)
                 _append_unreal_observation(obs)
+                sim_event = _normalize_observation_to_simulation_event(obs)
+                _append_simulation_event(sim_event)
+                _trace_simulation_event(sim_event)
                 await websocket.send_json(
                     {
                         "type": "ack",

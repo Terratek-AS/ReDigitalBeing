@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RoomZero Unreal Agent Command",
+  "type": "object",
+  "properties": {
+    "protocol_version": {
+      "type": "string",
+      "const": "roomzero.unreal.v1"
+    },
+    "type": {
+      "type": "string",
+      "const": "command"
+    },
+    "agent_id": {
+      "type": "string"
+    },
+    "command": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "emotion": {
+      "type": "string"
+    },
+    "animation": {
+      "type": "string"
+    },
+    "duration_seconds": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "type",
+    "agent_id",
+    "command"
+  ],
+  "additionalProperties": true
+}

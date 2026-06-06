@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RoomZero Unreal Ping",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "ping"
+    }
+  },
+  "required": [
+    "type"
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,10 @@
+{
+  "protocol_version": "roomzero.unreal.v1",
+  "type": "command",
+  "agent_id": "rz-fixture",
+  "command": "speak",
+  "text": "I am RZ-01. I observe, learn, and reflect.",
+  "emotion": "curious",
+  "animation": "Gesture_Explain",
+  "duration_seconds": 4.0
+}

@@ -1,0 +1,10 @@
+{
+  "protocol_version": "roomzero.unreal.v1",
+  "agent_id": "rz-fixture",
+  "emotion": "neutral",
+  "awareness": 0.5,
+  "trust": 0.2,
+  "is_speaking": false,
+  "is_observing": true,
+  "updated_at": "__ISO_TIMESTAMP__"
+}

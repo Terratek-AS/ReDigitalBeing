@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RoomZero Unreal Observation Event",
+  "type": "object",
+  "properties": {
+    "protocol_version": {
+      "type": "string",
+      "const": "roomzero.unreal.v1"
+    },
+    "type": {
+      "type": "string",
+      "const": "observation"
+    },
+    "agent_id": {
+      "type": "string"
+    },
+    "event": {
+      "type": "string",
+      "minLength": 1
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "type",
+    "agent_id",
+    "event"
+  ],
+  "additionalProperties": true
+}

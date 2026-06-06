@@ -353,3 +353,28 @@ class ObservationEvent(BaseModel):
     event: str
     payload: dict[str, Any] = Field(default_factory=dict)
     created_at: str = Field(default_factory=utc_now_iso)
+
+
+class SimulationEvent(BaseModel):
+    event_id: str = Field(default_factory=lambda: str(uuid4()))
+    event_type: str
+    source: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    created_at: str = Field(default_factory=utc_now_iso)
+    agent_id: str | None = None
+    scenario_id: str | None = None
+    simulation_id: str | None = None
+    protocol_version: str | None = None
+    status: str | None = None
+    severity: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class SimulationEventTrace(BaseModel):
+    event_id: str
+    event_type: str
+    source: str
+    agent_id: str | None = None
+    created_at: str
+    status: str | None = None
+    payload_summary: dict[str, Any] = Field(default_factory=dict)

@@ -1,0 +1,5 @@
+{
+  "type": "error",
+  "protocol_version": "roomzero.unreal.v1",
+  "error": "unknown_message_type"
+}
