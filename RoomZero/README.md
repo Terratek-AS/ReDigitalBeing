@@ -18,6 +18,10 @@ Repository: https://github.com/Terratek-AS/ReDigitalBeing
 RoomZero is a research prototype for a persistent digital being simulation system.  
 Phase 1 creates the first digital being, **Eir**, with local-first memory, persona continuity, emotional state simulation, CLI/API interfaces, and safety boundaries.
 
+## Strategic Direction
+
+RoomZero should evolve as a local-first, testable, ethically governed simulation laboratory where Unreal/MetaHuman acts as the embodiment layer, while the core value lives in the research, event, audit, intelligence, and knowledge architecture behind it.
+
 ## Important Ethical Warning
 
 RoomZero does **not** claim true biological consciousness or scientifically proven sentience.  
@@ -601,297 +605,189 @@ Protocol version verification:
 
 ## Project Progress
 
-### Milestone Status
-
-**M1.2 Unreal Integration Readiness**  
-`██████████ 100%` ✅ Completed
-
-**M1.3 Contract Fixtures & Protocol Stability**  
-`██████████ 100%` ✅ Completed
-
-**M1.4 Handshake / Schema Hardening**  
-`██████████ 100%` ✅ Completed
-
-**M3 Simulation Event Architecture**  
-`██████░░░░ 60%` ⏳ In progress
-
-**M4 Simulation Intelligence Layer**  
-`░░░░░░░░░░ 0%` Planned
-
-**M5 MetaHuman / Digital Human Runtime**  
-`░░░░░░░░░░ 0%` Planned
+| Milestone | Status | Progress |
+|---|---|---:|
+| M0 Repository Stabilization | ⚠️ Active | `██████░░░░ 60%` |
+| M1 PWA / Mobile Launcher | ✅ Completed | `██████████ 100%` |
+| M1.2 Unreal Integration Readiness | ✅ Completed | `██████████ 100%` |
+| M1.3 Contract Fixtures & Protocol Stability | ✅ Completed | `██████████ 100%` |
+| M1.4 Handshake / Schema Hardening | ✅ Completed | `██████████ 100%` |
+| M1.5 UI / Product Polish | ⏳ In progress | `██████░░░░ 60%` |
+| M2 SQLite Platform Layer | ✅ Foundation complete | `████████░░ 80%` |
+| M2.1 Public Backend Configuration | ✅ Foundation complete | `████████░░ 80%` |
+| M3 Simulation Event Architecture & Real-Time Chamber | ⏳ In progress | `██████░░░░ 60%` |
+| M4 Model Adapter & Intelligence Interface | Planned | `░░░░░░░░░░ 0%` |
+| M5 Expanded Simulation Data Model | Planned | `░░░░░░░░░░ 0%` |
+| M6 Full Simulation Room Console UI | Planned | `░░░░░░░░░░ 0%` |
+| M7 MetaHuman / Digital Human Runtime | Future | `░░░░░░░░░░ 0%` |
+| M8 Research Knowledge Engine | Future | `░░░░░░░░░░ 0%` |
 
 Progress percentages are milestone-tracking indicators, not release guarantees. Completion requires passing tests, documentation updates, and review.
 
 ## Roadmap
 
-### Phase 1B
-- richer emotional modeling
-- confidence/relevance scoring improvements
-- better semantic extraction and tagging
-- memory decay + reinforcement mechanics
-- optional ChromaDB/Qdrant adapters
+### M0 — Repository Stabilization & CI Recovery
 
-### Phase 1C
-- voice pipeline (STT/TTS)
-- Unreal Engine bridge
-- sensor/event input adapters
-- multi-agent room simulation primitives
+Purpose:  
+Restore trust in main, resolve failed CI, keep local artifacts out of commits, and maintain a safe development baseline.
 
-## M4 Roadmap: Simulation Intelligence & Digital Human Layer (Planning-Only)
+Includes:
+- Diagnose and fix failed GitHub Actions after PR #25.
+- Restore green CI on main.
+- Keep runtime artifacts, local data, cache files, logs, and secrets out of commits.
+- Document environment-limited checks such as Codacy CLI requiring WSL on Windows.
+- Maintain branch discipline and focused PRs.
 
-### M4 objective
+### M1 — PWA / Mobile Launcher
 
-Define a future planning blueprint for the **Simulation Intelligence & Digital Human Layer** so M2/M3 architecture decisions remain forward-compatible. M4 in this phase is documentation-only and creates no implementation obligation in the current cycle.
+Purpose:  
+Create the first accessible RoomZero shell that can run as a mobile-friendly, installable research interface.
 
-### What M4 is
+Includes:
+- PWA/mobile launcher.
+- Service worker.
+- Offline fallback.
+- GitHub Pages shell.
+- Mobile-friendly app entry point.
+- Basic app-like launch experience.
 
-- A planning framework to evolve approved research scenarios into **controlled simulation runs**
-- A design model for repeatable, observable, and auditable simulation execution
-- A specification direction for agent behavior orchestration via explicit agent profiles
-- A governance roadmap for ethical reasoning tests, risk gating, and human oversight
-- A presentation-layer roadmap for Unreal/MetaHuman as avatar visualization only
+### M1.2 — Unreal Integration Readiness
 
-### What M4 is not
+Purpose:  
+Make RoomZero ready to communicate with Unreal Engine through a clear WebSocket bridge.
 
-- Not a runtime implementation milestone in this task
-- Not a bypass of M2.1.4 deployment ownership or M2.2 Research MVP Foundation
-- Not a replacement for M3 event/simulation transport hardening
-- Not a claim of real consciousness or proven sentience
-- Not permission to use MetaHuman-derived assets/data for AI/ML training, testing, benchmarking, evaluation, or enhancement
+Includes:
+- Unreal WebSocket protocol documentation.
+- Smoke tooling.
+- Initial state payload.
+- Command payload.
+- Observation payload.
+- Ping/pong behavior.
+- Error handling.
+- Local bridge validation.
 
-### M4 dependencies
+### M1.3 — Contract Fixtures & Protocol Stability
 
-- M2.1.4 deployment ownership and canonical URL authority completed
-- M2.2 research workflows stabilized with governance and auditability
-- M3 simulation-event architecture established (schema + transport + audit trail)
-- Stable role/approval model for research-to-simulation conversion
-- Baseline observability and incident-response readiness
+Purpose:  
+Make the Unreal bridge regression-safe and contract-based.
 
-### Simulation runtime roadmap
+Includes:
+- Protocol contract document.
+- JSON fixtures.
+- Fixture-backed tests.
+- Stable protocol version checks.
+- Runtime message examples.
 
-- Define simulation run lifecycle:
-  - draft -> approved -> scheduled -> running -> paused -> completed -> archived
-- Introduce deterministic configuration snapshots per run:
-  - scenario version
-  - agent profile version
-  - memory-state snapshot reference
-  - safety policy version
-- Add replayability primitives:
-  - event log stream
-  - seed/config capture
-  - run outcome digest
-- Enforce audit trace for all control-plane actions and state transitions
+### M1.4 — Handshake / Schema Hardening
 
-### Agent profile roadmap
+Purpose:  
+Strengthen Unreal WebSocket safety, compatibility, and negative-path behavior.
 
-- Define versioned agent profile schema:
-  - role
-  - objectives
-  - behavioral constraints
-  - response style boundaries
-  - tool/action permissions
-- Separate profile policy from runtime memory content
-- Require profile approval workflow for medium/high-impact behavior changes
-- Track profile-to-run linkage for post-run analysis and reproducibility
+Includes:
+- Handshake lifecycle clarification.
+- JSON schema artifacts.
+- Protocol compatibility policy.
+- Invalid/non-object payload handling.
+- Negative-path WebSocket tests.
+- Smoke client hardening.
+- Optional token handling documentation.
 
-### Memory state roadmap
+### M1.5 — UI / Product Polish
 
-- Introduce simulation memory-state abstraction:
-  - working memory
-  - episodic simulation memory
-  - scenario-bound semantic memory overlays
-- Ensure memory states are:
-  - inspectable
-  - reversible
-  - environment-scoped
-- Maintain strict separation from private user data and production personal memory stores
-- Add snapshot/restore controls for repeatable testing and controlled rollback
+Purpose:  
+Make RoomZero usable, serious, and understandable for testers, researchers, observers, and admins.
 
-### Metrics and observation roadmap
+Includes:
+- UI/product polish.
+- Onboarding.
+- Mobile role navigation.
+- Role-based entry points.
+- Dashboard cards.
+- Research-lab visual identity.
+- Better empty states.
+- Mobile ergonomics.
+- Backend/research/simulation/Unreal status indicators.
 
-- Define mandatory telemetry for each controlled simulation run:
-  - run identifiers
-  - scenario/profile versions
-  - timing and transition events
-  - safety events and override events
-- Define synthetic consciousness markers and consciousness-adjacent behavioral markers as research observables (not consciousness claims)
-- Add observer dashboards for run health, drift indicators, and policy violations
-- Require exportable audit summaries for review and governance sign-off
+### M2 — SQLite Platform Layer
 
-### Ethical simulation gate
+Purpose:  
+Create the local-first platform database for users, invitations, research, scenarios, knowledge, and auditability.
 
-- Require ethical risk classification before run approval:
-  - low / medium / high
-- Require explicit ethical approval and human oversight for medium/high-risk scenarios
-- Block or flag harmful real-world operational simulation behavior
-- Require clear stop/abort controls and post-run incident review for flagged events
+Includes:
+- SQLite platform layer.
+- Users.
+- Roles.
+- Invitations.
+- Research questions.
+- Comments.
+- Simulation scenarios.
+- Knowledge entries.
+- Audit logs.
+- Permission checks.
 
-### Unreal/MetaHuman presentation layer
+Likely platform tables:
+- `users`
+- `roles`
+- `invitations`
+- `research_questions`
+- `comments`
+- `simulation_scenarios`
+- `knowledge_entries`
+- `audit_logs`
+- `sources`
 
-- Use Unreal/MetaHuman as visual avatar/presentation layer only
-- Keep cognition simulation, agent behavior logic, evaluation pipelines, and knowledge/research datasets outside Unreal/MetaHuman asset domain
-- Ensure transport boundary between simulation runtime and visual renderer is contract-based and auditable
-- Restrict visual layer to presentation, animation, and user-facing embodiment experiences only
+### M2.1 — Public Backend Configuration & Deployment Model
 
-### Future database models
+Purpose:  
+Make RoomZero deployable and understandable as a public-facing app with a backend connection model.
 
-(Planning targets only; no schema changes in this task)
+Includes:
+- Public backend configuration.
+- CORS.
+- Deployment documentation.
+- Root README.
+- GitHub Pages-to-backend connection model.
+- Unreal integration readiness docs.
+- Smoke tooling.
 
-- `simulation_runs`
-- `simulation_run_events`
-- `agent_profiles`
-- `agent_profile_versions`
-- `memory_state_snapshots`
-- `memory_state_transitions`
-- `simulation_observations`
-- `simulation_metric_series`
-- `ethical_reviews`
-- `ethical_review_decisions`
-- `simulation_gate_decisions`
-- `visual_session_links`
-- `run_artifact_index`
+### M3 — Simulation Event Architecture & Real-Time Chamber
 
-### Future APIs
+Purpose:  
+Create the core event layer that lets RoomZero behave like a live simulation laboratory.
 
-(Planning targets only; no API implementation in this task)
+Status: **In progress (not complete).**
 
-- Simulation runs:
-  - `POST /platform/simulations/runs`
-  - `GET /platform/simulations/runs`
-  - `GET /platform/simulations/runs/{run_id}`
-  - `POST /platform/simulations/runs/{run_id}/start|pause|resume|stop`
-- Agent profiles:
-  - `POST /platform/simulations/agent-profiles`
-  - `GET /platform/simulations/agent-profiles`
-  - `POST /platform/simulations/agent-profiles/{id}/versions`
-- Memory state:
-  - `POST /platform/simulations/memory-snapshots`
-  - `POST /platform/simulations/runs/{run_id}/restore-memory`
-- Observation/metrics:
-  - `GET /platform/simulations/runs/{run_id}/events`
-  - `GET /platform/simulations/runs/{run_id}/metrics`
-- Ethical gate:
-  - `POST /platform/simulations/ethics/review`
-  - `POST /platform/simulations/runs/{run_id}/gate-decision`
+Includes:
+- Real-time chamber layer using WebSocket or SSE.
+- Live simulation room events.
+- Experiment run streaming.
+- Activity/event bus.
+- Internal simulation event schema.
+- Unreal observation → simulation event mapping.
+- Audit/log traceability.
+- Event lifecycle documentation.
 
-### Future UI
+Conceptual event flow:
 
-(Planning targets only; no frontend implementation in this task)
+External input / Unreal observation  
+→ normalized simulation event  
+→ audit/log trace  
+→ chamber state update  
+→ optional agent response  
+→ streamed to UI / client
 
-- Simulation Control Center
-- Agent Profile Manager
-- Memory State Inspector + Snapshot Diff Viewer
-- Observation & Metrics Console
-- Ethical Gate Queue + Decision Workspace
-- Run Replay/Audit Timeline Viewer
-- Visual Session Monitor (Unreal/MetaHuman presentation linkage only)
+Proposed simulation event shape:
 
-### Testing checklist
-
-Docs/planning targets for future implementation:
-
-- Unit tests for run lifecycle state machine transitions
-- Contract tests for event schemas and API payloads
-- Deterministic replay tests for repeatable run verification
-- Access-control tests for simulation control and ethical gate actions
-- Safety policy tests for blocked/flagged behavior pathways
-- Audit integrity tests (completeness, tamper-evidence assumptions, traceability)
-- Renderer-boundary tests confirming no prohibited data crossing into MetaHuman pipelines
-
-### Safety constraints
-
-- No real-consciousness claims in product or research outputs
-- Use terms such as:
-  - synthetic consciousness markers
-  - consciousness-adjacent behavioral markers
-  - cognition simulation
-- Medium/high-risk scenarios require ethical approval and active human oversight
-- Harmful real-world operational simulation behavior must be blocked or flagged
-- Emergency stop and post-incident review process required for flagged runs
-
-### Licensing constraints
-
-- MetaHuman may only be used as a visual avatar/presentation layer
-- MetaHuman assets, animation curves, rendered outputs, facial/motion data, or derived datasets must not be used for AI/ML training, testing, benchmarking, evaluation, or enhancement
-- RoomZero cognition, training, evaluation, simulation research datasets, and knowledge-base data must remain separated from Unreal/MetaHuman assets
-- License/compliance review is required before commercial release, paid distribution, enterprise deployment, or public launch using Unreal/MetaHuman presentation components
-
-### Implementation order
-
-1. Complete M2.1.4 deployment ownership authority
-2. Complete M2.2 research MVP governance and lifecycle hardening
-3. Complete M3 event architecture and simulation transport foundation
-4. Implement M4 simulation runtime control plane (minimal vertical slice)
-5. Add agent profile versioning and approval workflows
-6. Add memory snapshot/restore and observability primitives
-7. Add ethical gate enforcement for medium/high-risk scenarios
-8. Integrate Unreal/MetaHuman presentation linkage under strict boundary controls
-9. Expand validation, audit exports, and operational readiness checks
-
-### Risks
-
-- Scope creep risk if planning language is interpreted as immediate implementation mandate
-- Governance risk if ethical gate is bypassed for medium/high-risk runs
-- Auditability risk if replay/event capture is incomplete
-- Data-boundary risk between cognition simulation data and visual asset ecosystems
-- Compliance risk from improper MetaHuman/Unreal usage in AI/ML evaluation flows
-- Terminology risk from over-claiming consciousness rather than measured behavioral markers
-
-### Next recommended milestone after M4
-
-**M4.1 Controlled Simulation Pilot (post-M2/M3 completion)**
-
-- Run a constrained internal pilot with approved low-risk scenarios
-- Validate repeatability, observability, auditability, and ethical gate operations
-- Validate boundary-safe Unreal/MetaHuman presentation workflow
-- Publish governance evidence package and readiness decision for wider simulation rollout
-
-## Execution Plan Snapshot (Windows Install + Advanced UI/UX)
-
-This snapshot mirrors the actionable checklist in `TODO.md` for delivery readiness.
-
-### Advanced UI/UX workstreams
-- UX architecture and navigation
-  - define primary user journeys
-  - reduce action depth for tester/research/feedback/source tasks
-  - improve section hierarchy and contextual actions
-- Visual design system consistency
-  - standard spacing/typography/component hierarchy
-  - semantic status colors and clear button hierarchy
-- Interaction quality
-  - loading, empty, success, and error states
-  - inline validation and clearer user feedback loops
-- Accessibility and responsiveness
-  - keyboard/focus behavior, semantic landmarks, contrast checks
-  - mobile-first usability for quick admin/testing actions
-- Functional wiring and acceptance
-  - ensure dashboard controls map cleanly to existing API endpoints
-  - verify critical flows can be completed from `/ui` without relying on `/docs`
-
-### Windows installer hardening workstreams
-- Build chain verification
-  - run and validate full chain:
-    - `.\install.ps1 -WithBuilder`
-    - `.\build_installer.ps1`
-    - `iscc .\installer\RoomZero.iss`
-- Installer QA on Windows
-  - clean-machine install validation
-  - first-run checks (`/health`, `/ui`)
-  - uninstall and upgrade-path behavior checks
-- Trust and release readiness
-  - SmartScreen/signing expectations for unsigned builds
-  - rollback guidance and release-note discipline
-- Acceptance criteria
-  - non-dev installability from docs
-  - reproducible build/install flow by another team member
-  - checklist/log evidence for final verification
-
-## Safety and Data Defaults
-
-- Local data storage by default (JSON files under `data/`)
-- No hardcoded secrets
-- Human override is respected
-- Eir avoids claims of proven consciousness
-- Sensitive memory should require explicit user consent
-
+```json
+{
+  "event_id": "evt_...",
+  "event_type": "unreal.observation.player_entered_room",
+  "source": "unreal.websocket",
+  "agent_id": "rz-01",
+  "scenario_id": null,
+  "simulation_id": null,
+  "payload": {},
+  "status": "accepted",
+  "severity": "info",
+  "protocol_version": "roomzero.unreal.v1",
+  "created_at": "2026-06-06T16:00Now I need to update RoomZero/README.md with the same advanced roadmap content. Let me create the full updated version.
