@@ -18,6 +18,10 @@ Repository: https://github.com/Terratek-AS/ReDigitalBeing
 RoomZero is a research prototype for a persistent digital being simulation system.  
 Phase 1 creates the first digital being, **Eir**, with local-first memory, persona continuity, emotional state simulation, CLI/API interfaces, and safety boundaries.
 
+## Strategic Direction
+
+RoomZero should evolve as a local-first, testable, ethically governed simulation laboratory where Unreal/MetaHuman acts as the embodiment layer, while the core value lives in the research, event, audit, intelligence, and knowledge architecture behind it.
+
 ## Important Ethical Warning
 
 RoomZero does **not** claim true biological consciousness or scientifically proven sentience.  
@@ -601,25 +605,22 @@ Protocol version verification:
 
 ## Project Progress
 
-### Milestone Status
-
-**M1.2 Unreal Integration Readiness**  
-`██████████ 100%` ✅ Completed
-
-**M1.3 Contract Fixtures & Protocol Stability**  
-`██████████ 100%` ✅ Completed
-
-**M1.4 Handshake / Schema Hardening**  
-`██████████ 100%` ✅ Completed
-
-**M3 Simulation Event Architecture**  
-`██████░░░░ 60%` ⏳ In progress
-
-**M4 Simulation Intelligence Layer**  
-`░░░░░░░░░░ 0%` Planned
-
-**M5 MetaHuman / Digital Human Runtime**  
-`░░░░░░░░░░ 0%` Planned
+| Milestone | Status | Progress |
+|---|---|---:|
+| M0 Repository Stabilization | ⚠️ Active | `██████░░░░ 60%` |
+| M1 PWA / Mobile Launcher | ✅ Completed | `██████████ 100%` |
+| M1.2 Unreal Integration Readiness | ✅ Completed | `██████████ 100%` |
+| M1.3 Contract Fixtures & Protocol Stability | ✅ Completed | `██████████ 100%` |
+| M1.4 Handshake / Schema Hardening | ✅ Completed | `██████████ 100%` |
+| M1.5 UI / Product Polish | ⏳ In progress | `██████░░░░ 60%` |
+| M2 SQLite Platform Layer | ✅ Foundation complete | `████████░░ 80%` |
+| M2.1 Public Backend Configuration | ✅ Foundation complete | `████████░░ 80%` |
+| M3 Simulation Event Architecture & Real-Time Chamber | ⏳ In progress | `██████░░░░ 60%` |
+| M4 Model Adapter & Intelligence Interface | Planned | `░░░░░░░░░░ 0%` |
+| M5 Expanded Simulation Data Model | Planned | `░░░░░░░░░░ 0%` |
+| M6 Full Simulation Room Console UI | Planned | `░░░░░░░░░░ 0%` |
+| M7 MetaHuman / Digital Human Runtime | Future | `░░░░░░░░░░ 0%` |
+| M8 Research Knowledge Engine | Future | `░░░░░░░░░░ 0%` |
 
 | Milestone | Status | Progress |
 |---|---|---|
@@ -1146,4 +1147,168 @@ Notes:
 - Human override is respected
 - Eir avoids claims of proven consciousness
 - Sensitive memory should require explicit user consent
+### M0 — Repository Stabilization & CI Recovery
 
+Purpose:  
+Restore trust in main, resolve failed CI, keep local artifacts out of commits, and maintain a safe development baseline.
+
+Includes:
+- Diagnose and fix failed GitHub Actions after PR #25.
+- Restore green CI on main.
+- Keep runtime artifacts, local data, cache files, logs, and secrets out of commits.
+- Document environment-limited checks such as Codacy CLI requiring WSL on Windows.
+- Maintain branch discipline and focused PRs.
+
+### M1 — PWA / Mobile Launcher
+
+Purpose:  
+Create the first accessible RoomZero shell that can run as a mobile-friendly, installable research interface.
+
+Includes:
+- PWA/mobile launcher.
+- Service worker.
+- Offline fallback.
+- GitHub Pages shell.
+- Mobile-friendly app entry point.
+- Basic app-like launch experience.
+
+### M1.2 — Unreal Integration Readiness
+
+Purpose:  
+Make RoomZero ready to communicate with Unreal Engine through a clear WebSocket bridge.
+
+Includes:
+- Unreal WebSocket protocol documentation.
+- Smoke tooling.
+- Initial state payload.
+- Command payload.
+- Observation payload.
+- Ping/pong behavior.
+- Error handling.
+- Local bridge validation.
+
+### M1.3 — Contract Fixtures & Protocol Stability
+
+Purpose:  
+Make the Unreal bridge regression-safe and contract-based.
+
+Includes:
+- Protocol contract document.
+- JSON fixtures.
+- Fixture-backed tests.
+- Stable protocol version checks.
+- Runtime message examples.
+
+### M1.4 — Handshake / Schema Hardening
+
+Purpose:  
+Strengthen Unreal WebSocket safety, compatibility, and negative-path behavior.
+
+Includes:
+- Handshake lifecycle clarification.
+- JSON schema artifacts.
+- Protocol compatibility policy.
+- Invalid/non-object payload handling.
+- Negative-path WebSocket tests.
+- Smoke client hardening.
+- Optional token handling documentation.
+
+### M1.5 — UI / Product Polish
+
+Purpose:  
+Make RoomZero usable, serious, and understandable for testers, researchers, observers, and admins.
+
+Includes:
+- UI/product polish.
+- Onboarding.
+- Mobile role navigation.
+- Role-based entry points.
+- Dashboard cards.
+- Research-lab visual identity.
+- Better empty states.
+- Mobile ergonomics.
+- Backend/research/simulation/Unreal status indicators.
+
+### M2 — SQLite Platform Layer
+
+Purpose:  
+Create the local-first platform database for users, invitations, research, scenarios, knowledge, and auditability.
+
+Includes:
+- SQLite platform layer.
+- Users.
+- Roles.
+- Invitations.
+- Research questions.
+- Comments.
+- Simulation scenarios.
+- Knowledge entries.
+- Audit logs.
+- Permission checks.
+
+Likely platform tables:
+- `users`
+- `roles`
+- `invitations`
+- `research_questions`
+- `comments`
+- `simulation_scenarios`
+- `knowledge_entries`
+- `audit_logs`
+- `sources`
+
+### M2.1 — Public Backend Configuration & Deployment Model
+
+Purpose:  
+Make RoomZero deployable and understandable as a public-facing app with a backend connection model.
+
+Includes:
+- Public backend configuration.
+- CORS.
+- Deployment documentation.
+- Root README.
+- GitHub Pages-to-backend connection model.
+- Unreal integration readiness docs.
+- Smoke tooling.
+
+### M3 — Simulation Event Architecture & Real-Time Chamber
+
+Purpose:  
+Create the core event layer that lets RoomZero behave like a live simulation laboratory.
+
+Status: **In progress (not complete).**
+
+Includes:
+- Real-time chamber layer using WebSocket or SSE.
+- Live simulation room events.
+- Experiment run streaming.
+- Activity/event bus.
+- Internal simulation event schema.
+- Unreal observation → simulation event mapping.
+- Audit/log traceability.
+- Event lifecycle documentation.
+
+Conceptual event flow:
+
+External input / Unreal observation  
+→ normalized simulation event  
+→ audit/log trace  
+→ chamber state update  
+→ optional agent response  
+→ streamed to UI / client
+
+Proposed simulation event shape:
+
+```json
+{
+  "event_id": "evt_...",
+  "event_type": "unreal.observation.player_entered_room",
+  "source": "unreal.websocket",
+  "agent_id": "rz-01",
+  "scenario_id": null,
+  "simulation_id": null,
+  "payload": {},
+  "status": "accepted",
+  "severity": "info",
+  "protocol_version": "roomzero.unreal.v1",
+  "created_at": "2026-06-06T16:00Now I need to update RoomZero/README.md with the same advanced roadmap content. Let me create the full updated version.

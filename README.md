@@ -15,6 +15,10 @@ Repository: https://github.com/Terratek-AS/ReDigitalBeing
 - Root documentation is now established here for project orientation and backend integration guidance.
 - M2.1 focuses on making the static frontend safely configurable for a public backend deployment.
 
+## Strategic Direction
+
+RoomZero should evolve as a local-first, testable, ethically governed simulation laboratory where Unreal/MetaHuman acts as the embodiment layer, while the core value lives in the research, event, audit, intelligence, and knowledge architecture behind it.
+
 ## GitHub Pages Preview
 
 Preview URL:  
@@ -123,25 +127,22 @@ Use invite + registration workflow exposed by backend endpoints and UI flows.
 
 ## Project Progress
 
-### Milestone Status
-
-**M1.2 Unreal Integration Readiness**  
-`██████████ 100%` ✅ Completed
-
-**M1.3 Contract Fixtures & Protocol Stability**  
-`██████████ 100%` ✅ Completed
-
-**M1.4 Handshake / Schema Hardening**  
-`██████████ 100%` ✅ Completed
-
-**M3 Simulation Event Architecture**  
-`██████░░░░ 60%` ⏳ In progress
-
-**M4 Simulation Intelligence Layer**  
-`░░░░░░░░░░ 0%` Planned
-
-**M5 MetaHuman / Digital Human Runtime**  
-`░░░░░░░░░░ 0%` Planned
+| Milestone | Status | Progress |
+|---|---|---:|
+| M0 Repository Stabilization | ⚠️ Active | `██████░░░░ 60%` |
+| M1 PWA / Mobile Launcher | ✅ Completed | `██████████ 100%` |
+| M1.2 Unreal Integration Readiness | ✅ Completed | `██████████ 100%` |
+| M1.3 Contract Fixtures & Protocol Stability | ✅ Completed | `██████████ 100%` |
+| M1.4 Handshake / Schema Hardening | ✅ Completed | `██████████ 100%` |
+| M1.5 UI / Product Polish | ⏳ In progress | `██████░░░░ 60%` |
+| M2 SQLite Platform Layer | ✅ Foundation complete | `████████░░ 80%` |
+| M2.1 Public Backend Configuration | ✅ Foundation complete | `████████░░ 80%` |
+| M3 Simulation Event Architecture & Real-Time Chamber | ⏳ In progress | `██████░░░░ 60%` |
+| M4 Model Adapter & Intelligence Interface | Planned | `░░░░░░░░░░ 0%` |
+| M5 Expanded Simulation Data Model | Planned | `░░░░░░░░░░ 0%` |
+| M6 Full Simulation Room Console UI | Planned | `░░░░░░░░░░ 0%` |
+| M7 MetaHuman / Digital Human Runtime | Future | `░░░░░░░░░░ 0%` |
+| M8 Research Knowledge Engine | Future | `░░░░░░░░░░ 0%` |
 
 | Milestone | Status | Progress |
 |---|---|---|
@@ -151,60 +152,180 @@ Progress percentages are milestone-tracking indicators, not release guarantees. 
 
 ## Roadmap
 
-### M1
-- PWA/mobile launcher
-- service worker
-- offline fallback
-- GitHub Pages shell
+### M0 — Repository Stabilization & CI Recovery
 
-### M1.5
-- UI/product polish
-- onboarding
-- mobile role navigation
+Purpose:  
+Restore trust in main, resolve failed CI, keep local artifacts out of commits, and maintain a safe development baseline.
 
-### M2
-- SQLite platform layer
-- users
-- invitations
-- research questions
-- comments
-- scenarios
-- knowledge entries
-- audit logs
-- permission checks
+Includes:
+- Diagnose and fix failed GitHub Actions after PR #25.
+- Restore green CI on main.
+- Keep runtime artifacts, local data, cache files, logs, and secrets out of commits.
+- Document environment-limited checks such as Codacy CLI requiring WSL on Windows.
+- Maintain branch discipline and focused PRs.
 
-### M2.1
-- public backend configuration
-- CORS
-- deployment documentation
-- root README
-- Pages-to-backend connection model
-- Unreal integration readiness docs + smoke tooling (`RoomZero/README.md`, `RoomZero/scripts/ws_unreal_smoke.py`)
+### M1 — PWA / Mobile Launcher
 
-### M3
-- real-time chamber layer using WebSocket or SSE
-- live simulation room events
-- experiment run streaming
-- activity/event bus
+Purpose:  
+Create the first accessible RoomZero shell that can run as a mobile-friendly, installable research interface.
 
-### M4
-- model adapter interface in `llm.py`
-- clean provider swapping: Local ↔ OpenAI ↔ other providers
-- provider metadata and fallback policy
+Includes:
+- PWA/mobile launcher.
+- Service worker.
+- Offline fallback.
+- GitHub Pages shell.
+- Mobile-friendly app entry point.
+- Basic app-like launch experience.
 
-### M5
-- expanded simulation data model:
-  - memory embeddings store
-  - experiment runs
-  - metrics time-series
-  - richer audit trail
-  - future Postgres migration path
+### M1.2 — Unreal Integration Readiness
 
-### M6
-- full simulation room console UI
-- panel-based lab interface
-- live chamber monitor
-- agent/memory/experiment panels
+Purpose:  
+Make RoomZero ready to communicate with Unreal Engine through a clear WebSocket bridge.
+
+Includes:
+- Unreal WebSocket protocol documentation.
+- Smoke tooling.
+- Initial state payload.
+- Command payload.
+- Observation payload.
+- Ping/pong behavior.
+- Error handling.
+- Local bridge validation.
+
+### M1.3 — Contract Fixtures & Protocol Stability
+
+Purpose:  
+Make the Unreal bridge regression-safe and contract-based.
+
+Includes:
+- Protocol contract document.
+- JSON fixtures.
+- Fixture-backed tests.
+- Stable protocol version checks.
+- Runtime message examples.
+
+### M1.4 — Handshake / Schema Hardening
+
+Purpose:  
+Strengthen Unreal WebSocket safety, compatibility, and negative-path behavior.
+
+Includes:
+- Handshake lifecycle clarification.
+- JSON schema artifacts.
+- Protocol compatibility policy.
+- Invalid/non-object payload handling.
+- Negative-path WebSocket tests.
+- Smoke client hardening.
+- Optional token handling documentation.
+
+### M1.5 — UI / Product Polish
+
+Purpose:  
+Make RoomZero usable, serious, and understandable for testers, researchers, observers, and admins.
+
+Includes:
+- UI/product polish.
+- Onboarding.
+- Mobile role navigation.
+- Role-based entry points.
+- Dashboard cards.
+- Research-lab visual identity.
+- Better empty states.
+- Mobile ergonomics.
+- Backend/research/simulation/Unreal status indicators.
+
+### M2 — SQLite Platform Layer
+
+Purpose:  
+Create the local-first platform database for users, invitations, research, scenarios, knowledge, and auditability.
+
+Includes:
+- SQLite platform layer.
+- Users.
+- Roles.
+- Invitations.
+- Research questions.
+- Comments.
+- Simulation scenarios.
+- Knowledge entries.
+- Audit logs.
+- Permission checks.
+
+Likely platform tables:
+- `users`
+- `roles`
+- `invitations`
+- `research_questions`
+- `comments`
+- `simulation_scenarios`
+- `knowledge_entries`
+- `audit_logs`
+- `sources`
+
+### M2.1 — Public Backend Configuration & Deployment Model
+
+Purpose:  
+Make RoomZero deployable and understandable as a public-facing app with a backend connection model.
+
+Includes:
+- Public backend configuration.
+- CORS.
+- Deployment documentation.
+- Root README.
+- GitHub Pages-to-backend connection model.
+- Unreal integration readiness docs.
+- Smoke tooling.
+
+### M3 — Simulation Event Architecture & Real-Time Chamber
+
+Purpose:  
+Create the core event layer that lets RoomZero behave like a live simulation laboratory.
+
+Status: **In progress (not complete).**
+
+Includes:
+- Real-time chamber layer using WebSocket or SSE.
+- Live simulation room events.
+- Experiment run streaming.
+- Activity/event bus.
+- Internal simulation event schema.
+- Unreal observation → simulation event mapping.
+- Audit/log traceability.
+- Event lifecycle documentation.
+
+Conceptual event flow:
+
+External input / Unreal observation  
+→ normalized simulation event  
+→ audit/log trace  
+→ chamber state update  
+→ optional agent response  
+→ streamed to UI / client
+
+Proposed simulation event shape:
+
+```json
+{
+  "event_id": "evt_...",
+  "event_type": "unreal.observation.player_entered_room",
+  "source": "unreal.websocket",
+  "agent_id": "rz-01",
+  "scenario_id": null,
+  "simulation_id": null,
+  "payload": {},
+  "status": "accepted",
+  "severity": "info",
+  "protocol_version": "roomzero.unreal.v1",
+  "created_at": "2026-06-06T16:00:00Z",
+  "metadata": {
+    "transport": "websocket",
+    "payload_summary": {
+      "keys": [],
+      "size": 0
+    }
+  }
+}
+```
 
 ### M8.1 — Real Research Material & Terratek Knowledge Paths (Planning-Only)
 
@@ -451,3 +572,171 @@ Notes:
 - Include references, summaries, and metadata-level descriptions only.
 - This section is documentation and architecture planning only; no ingestion or migrations are implemented here.
 
+Example event types:
+- `unreal.observation.*`
+- `scenario.started`
+- `scenario.completed`
+- `agent.command.issued`
+- `research.question.approved`
+- `chamber.state.updated`
+- `safety.flag.created`
+
+Transport options:
+- WebSocket: active foundation
+- SSE: planned option
+- REST: existing/foundation
+- File replay: future
+- Queue/broker: future only, not required for MVP
+
+M3 definition of done:
+- Internal simulation event model exists.
+- Unreal observations normalize into simulation events.
+- Events can be traced safely.
+- Payload summaries avoid sensitive full dumps.
+- Tests cover event normalization.
+- README/TODO clearly mark M3 complete only after validation.
+
+### M4 — Model Adapter & Intelligence Interface
+
+Purpose:  
+Create a clean model provider interface so RoomZero can swap intelligence providers without rewriting simulation logic.
+
+Includes:
+- Model adapter interface in `llm.py`.
+- Clean provider swapping: Local ↔ OpenAI ↔ other providers.
+- Provider metadata.
+- Timeout handling.
+- Fallback policy.
+- Safe error handling.
+- Provider capability declaration.
+
+Target architecture:
+
+Simulation Runtime  
+→ Model Adapter Interface  
+→ Provider Router  
+→ Local / OpenAI / Other  
+→ Response Normalizer  
+→ Safety Filter  
+→ Agent Command
+
+Provider interface should eventually support:
+- `generate_response()`
+- `summarize_observation()`
+- `classify_intent()`
+- `score_risk()`
+- `suggest_agent_command()`
+- `extract_memory_candidate()`
+
+### M5 — Expanded Simulation Data Model
+
+Purpose:  
+Expand the platform from basic records into a research-grade simulation database.
+
+Includes:
+- Memory embeddings store.
+- Experiment runs.
+- Metrics time-series.
+- Richer audit trail.
+- Observation history.
+- Result summaries.
+- Future Postgres migration path.
+
+Proposed future tables:
+- `simulation_events`
+- `experiment_runs`
+- `experiment_metrics`
+- `agent_memory_entries`
+- `memory_embeddings`
+- `scenario_results`
+- `safety_reviews`
+- `model_provider_logs`
+
+### M6 — Full Simulation Room Console UI
+
+Purpose:  
+Build the central lab interface where researchers can observe, control, and review live simulations.
+
+Includes:
+- Full simulation room console UI.
+- Panel-based lab interface.
+- Live chamber monitor.
+- Agent panel.
+- Memory panel.
+- Experiment panel.
+- Event stream panel.
+- Safety/audit panel.
+- Scenario control panel.
+
+Suggested panel layout:
+- Chamber Monitor
+- Agent State
+- Event Stream
+- Scenario Panel
+- Memory Panel
+- Metrics Panel
+- Safety Panel
+- Admin Panel
+
+### M7 — MetaHuman / Digital Human Runtime
+
+Purpose:  
+Connect RoomZero cognition and events to a believable embodied digital human in Unreal Engine.
+
+Includes:
+- MetaHuman command mapping.
+- Emotion → facial expression hooks.
+- Speech command → audio/animation flow.
+- Animation command → Unreal behavior.
+- Look-at / attention commands.
+- Idle behavior.
+- Observation-driven reactions.
+- Safe-mode behavior.
+
+Command categories:
+- `speak`
+- `set_emotion`
+- `play_animation`
+- `look_at`
+- `set_attention`
+- `enter_idle`
+- `react_to_observation`
+- `safe_pause`
+
+### M8 — Research Knowledge Engine
+
+Purpose:  
+Turn RoomZero from a simulation platform into a continuously growing research knowledge system.
+
+Includes:
+- Knowledge base enrichment.
+- Source references.
+- Research findings.
+- Scenario result summaries.
+- Human review workflow.
+- Exportable research logs.
+- Source-to-simulation traceability.
+- Future paper/API ingestion.
+
+Knowledge relationship:
+
+Research Question  
+→ Scenario  
+→ Experiment Run  
+→ Simulation Events  
+→ Observations  
+→ Result Summary  
+→ Knowledge Entry  
+→ Source References
+
+## Recommended Implementation Order
+
+1. M0 — Fix CI and repository hygiene.
+2. Review / merge docs-only progress PR if clean.
+3. Complete M3 simulation-event architecture.
+4. Continue M1.5 UI polish around stable platform features.
+5. Start M4 model adapter interface.
+6. Expand M5 memory/metrics/data model.
+7. Build M6 simulation room console.
+8. Connect M7 MetaHuman runtime.
+9. Grow M8 research knowledge engine.
