@@ -151,6 +151,7 @@ Use invite + registration workflow exposed by backend endpoints and UI flows.
 - deployment documentation
 - root README
 - Pages-to-backend connection model
+- Unreal integration readiness docs + smoke tooling (`RoomZero/README.md`, `RoomZero/scripts/ws_unreal_smoke.py`)
 
 ### M3
 - real-time chamber layer using WebSocket or SSE

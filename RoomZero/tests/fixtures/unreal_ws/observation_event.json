@@ -1,0 +1,7 @@
+{
+  "type": "observation",
+  "event": "player_entered_room",
+  "payload": {
+    "distance": 2.4
+  }
+}

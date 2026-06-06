@@ -217,6 +217,9 @@ The CI workflow is configured for pushes to `main`, `develop`, and `blackboxai/*
 
 Validation tests for RoomZero are:
 - `python -m pytest -q`
+- `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`
+  - expected pass output: `[smoke] completed successfully`
+  - if Unreal token auth is enabled: set `ROOMZERO_WS_TOKEN` or pass `--token`
 - `powershell -ExecutionPolicy Bypass -File .\scripts\verify.ps1`
 - `powershell -ExecutionPolicy Bypass -File .\build_installer.ps1`
 
@@ -385,6 +388,216 @@ Planned connectors:
 - no direct tester edits to core persona/memory/approved knowledge
 - reviewer-controlled promotion into approved knowledge
 - explicit consent required for tester registration and sensitive memory flows
+
+## Unreal WebSocket Protocol (M1.2)
+
+RoomZero exposes an Unreal-focused WebSocket bridge for local-first agent embodiment integration.
+
+### Endpoints
+
+- WebSocket connect: `ws://127.0.0.1:8000/ws/unreal/{agent_id}`
+- State snapshot (REST): `GET /ws/unreal/state/{agent_id}`
+- Send command to agent (REST): `POST /ws/unreal/command/{agent_id}`
+- Observation list (REST): `GET /ws/unreal/observations`
+
+`agent_id` is the canonical agent key for state/commands/observations.
+
+### Optional auth token
+
+If `ROOMZERO_UNREAL_TOKEN` is unset, Unreal routes are public for local development.
+
+If set, token is required for:
+- `POST /ws/unreal/command/{agent_id}`
+- `WS /ws/unreal/{agent_id}`
+
+Accepted token inputs:
+- query string: `?token=...`
+- header: `X-RoomZero-Unreal-Token: ...`
+- header: `Authorization: Bearer ...`
+
+### Protocol version
+
+Current expected value: `"roomzero.unreal.v1"`.
+
+All bridge model payloads include `protocol_version` and Unreal clients should verify it on every received message before processing.
+
+### Initial WebSocket state payload
+
+Immediately after connect, backend sends current agent state:
+
+```json
+{
+  "protocol_version": "roomzero.unreal.v1",
+  "agent_id": "rz-01",
+  "emotion": "neutral",
+  "awareness": 0.5,
+  "trust": 0.2,
+  "is_speaking": false,
+  "is_observing": true,
+  "updated_at": "2025-01-01T12:00:00+00:00"
+}
+```
+
+Then backend sends a greeting command payload (`type = "command"`).
+
+### Command message shape (backend -> Unreal)
+
+Commands are sent over WS and accepted via REST enqueue/broadcast path:
+
+```json
+{
+  "protocol_version": "roomzero.unreal.v1",
+  "type": "command",
+  "agent_id": "rz-01",
+  "command": "speak",
+  "text": "I am RZ-01. I observe, learn, and reflect.",
+  "emotion": "curious",
+  "animation": "Gesture_Explain",
+  "duration_seconds": 4.0
+}
+```
+
+Notes:
+- `command` is required.
+- `text`, `emotion`, `animation`, `duration_seconds` are optional and command-specific.
+
+### Observation event shape (Unreal -> backend)
+
+Send observations over WS with message `type = "observation"`:
+
+```json
+{
+  "type": "observation",
+  "event": "player_entered_room",
+  "payload": {
+    "distance": 2.4
+  }
+}
+```
+
+Backend stores observation with server timestamp and returns:
+
+```json
+{
+  "type": "ack",
+  "protocol_version": "roomzero.unreal.v1",
+  "kind": "observation",
+  "agent_id": "rz-01",
+  "created_at": "2025-01-01T12:00:02+00:00"
+}
+```
+
+If `event` is missing/empty, backend responds with:
+
+```json
+{
+  "type": "error",
+  "protocol_version": "roomzero.unreal.v1",
+  "error": "missing_event"
+}
+```
+
+### Ping / pong behavior
+
+Unreal may send:
+
+```json
+{ "type": "ping" }
+```
+
+Backend responds:
+
+```json
+{
+  "type": "pong",
+  "protocol_version": "roomzero.unreal.v1",
+  "agent_id": "rz-01"
+}
+```
+
+### Unknown/invalid message handling
+
+Unknown message type returns safe error payload:
+
+```json
+{
+  "type": "error",
+  "protocol_version": "roomzero.unreal.v1",
+  "error": "unknown_message_type"
+}
+```
+
+Additional safety behaviors:
+- token failure on WS connect closes socket with code `1008`
+- command path/body `agent_id` mismatch returns HTTP 400
+- malformed observation payload defaults to `{}` for `payload` if non-object
+
+### Unreal Integration Quick Guide
+
+Protocol contract reference:
+- `docs/unreal_ws_contract.md` (schema-focused contract for `roomzero.unreal.v1`)
+
+1. Start backend (`.\run.ps1` or uvicorn).
+2. Unreal connects a WebSocket client to:
+   - `ws://127.0.0.1:8000/ws/unreal/{agent_id}`
+   - add token in query/header if enabled.
+3. On connect:
+   - read initial `AgentState`
+   - read greeting/queued `command` messages
+   - verify `protocol_version == "roomzero.unreal.v1"` before handling.
+4. Send world observations as `type: "observation"` messages.
+5. Listen continuously for command messages and map them to animation/audio/behavior.
+6. Optionally send periodic `ping` and verify `pong`.
+
+Blueprint/C++ notes:
+- Keep a small dispatcher keyed by `type` (`command`, `ack`, `pong`, `error`, state payload).
+- Normalize numeric fields from JSON (`awareness`, `trust`, `duration_seconds`) with clamping.
+- Treat unknown fields as forward-compatible extensions; ignore safely.
+- Reconnect with backoff and re-read initial state after reconnect.
+
+Local testing:
+- Run automated test coverage:
+  - `python -m pytest -q RoomZero/tests/test_ws_unreal.py`
+- Use smoke client:
+  - `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`
+  - optional token via env:
+    - `set ROOMZERO_WS_TOKEN=your_token_here` (Windows cmd)
+- Inspect observations:
+  - `GET http://127.0.0.1:8000/ws/unreal/observations`
+
+CI/local validation note:
+- Keep smoke execution local/controlled by running backend in the same job/session, then executing:
+  - `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`
+- This avoids secret requirements when Unreal token auth is disabled for CI smoke scope.
+- If token auth is enabled in CI, provide token via ephemeral environment variable and never commit credentials.
+
+### Manual Unreal Integration Readiness Checklist
+
+Backend start command:
+- `python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`
+
+WebSocket smoke command:
+- `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`
+
+Expected smoke output (high level):
+- Connected to WS endpoint
+- Received initial state with `protocol_version=roomzero.unreal.v1`
+- Received greeting command (`type=command`)
+- Ping sent and pong received
+- Observation sent and observation ack received
+- Clean close/disconnect
+
+Common failure causes:
+- Wrong endpoint path or port
+- Backend not running
+- token set in backend but missing/incorrect in client
+- firewall/proxy interference on localhost WS
+- invalid JSON message shape in client sender
+
+Protocol version verification:
+- Confirm every inbound payload includes `protocol_version`
+- Confirm value equals exactly `roomzero.unreal.v1`
+- If mismatched, log and drop payload (do not execute command blindly)
 
 ## Roadmap
 

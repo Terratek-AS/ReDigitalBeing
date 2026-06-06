@@ -1,0 +1,7 @@
+{
+  "type": "ack",
+  "protocol_version": "roomzero.unreal.v1",
+  "kind": "observation",
+  "agent_id": "rz-fixture",
+  "created_at": "__ISO_TIMESTAMP__"
+}

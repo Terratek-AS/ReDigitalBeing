@@ -1,0 +1,5 @@
+{
+  "type": "pong",
+  "protocol_version": "roomzero.unreal.v1",
+  "agent_id": "rz-fixture"
+}

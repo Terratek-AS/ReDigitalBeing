@@ -1,12 +1,57 @@
 # TODO - Milestone M2: RoomZero research platform MVP (SQLite parallel layer)
 
-## M1.1 runtime hardening implementation tracker (current task)
-- [x] Review runtime bridge files and tests
+## M3 — Simulation Event Architecture & Transport Foundation (current task)
+- [x] Review runtime bridge files, models, tests, and docs
 - [x] Draft and confirm implementation plan with maintainer
-- [ ] Implement main.py hardening updates
-- [ ] Expand ws unreal tests for M1.1
-- [ ] Run compile/test/compose validation commands
-- [ ] Finalize TODO runtime hardening checklist updates
+- [ ] Add internal simulation-event schema model(s) (additive, no DB migration)
+- [ ] Add minimal normalization mapping for Unreal observation -> simulation event
+- [ ] Add minimal simulation event trace/audit-safe logging
+- [ ] Preserve Unreal websocket ack/error compatibility and existing behavior
+- [ ] Add focused tests for simulation event normalization and trace behavior
+- [ ] Update docs for simulation event lifecycle, transport foundation, and limitations
+- [ ] Update README status wording to clearly track M3 completion state
+- [ ] Add Codacy Windows/WSL limitation note in M3 context docs
+- [ ] Run validation:
+  - [ ] `python -m compileall -q RoomZero`
+  - [ ] `python -m pytest -q`
+  - [ ] `python -m pytest -q RoomZero/tests/test_ws_unreal.py`
+  - [ ] `python -m pytest -q RoomZero/tests/test_api_endpoints.py RoomZero/tests/test_research_jobs.py RoomZero/tests/test_m2_platform.py`
+  - [ ] `docker compose -f docker-compose.yml config`
+  - [ ] `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke` (if backend start is safe)
+- [ ] Finalize M3 completion report with files changed, schema summary, transport summary, audit behavior, validations, risks, and next milestone
+
+## M1.3 Contract Hardening & Integration Fixtures (current task)
+- [x] Review runtime bridge files, models, tests, and docs
+- [x] Draft and confirm implementation plan with maintainer
+- [ ] Add compact Unreal WS contract document (`docs/unreal_ws_contract.md`)
+- [ ] Add reusable Unreal WS JSON fixtures (`tests/fixtures/unreal_ws/`)
+- [ ] Add fixture-backed protocol stability tests in `tests/test_ws_unreal.py`
+- [ ] Harden `scripts/ws_unreal_smoke.py` minimally (env token + clearer errors)
+- [ ] Add README note for contract doc + CI/local smoke validation guidance
+- [ ] Run validation:
+  - [ ] `python -m compileall -q RoomZero`
+  - [ ] `python -m pytest -q`
+  - [ ] `python -m pytest -q RoomZero/tests/test_ws_unreal.py`
+  - [ ] `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke`
+  - [ ] `docker compose -f docker-compose.yml config`
+- [ ] Finalize M1.3 TODO updates and completion report
+
+## M1.4 Unreal WebSocket contract + schema hardening
+- [ ] Clarify handshake lifecycle, endpoint format, agent_id routing, v1 compatibility, and error behavior in `RoomZero/docs/unreal_ws_contract.md`
+- [ ] Add dependency-free JSON Schema artifacts for Unreal WS messages in `RoomZero/docs/schemas/unreal_ws/`
+- [ ] Harden smoke client in `RoomZero/scripts/ws_unreal_smoke.py` with `--expect-protocol`, `--send-unknown-message`, and `--timeout`
+- [ ] Add focused websocket negative-path tests in `RoomZero/tests/test_ws_unreal.py`
+- [ ] Update `RoomZero/README.md` with smoke validation guidance, backend startup notes, `ROOMZERO_WS_TOKEN`, and expected pass output
+- [ ] Validate compileall, full pytest, ws-only pytest, smoke client, and `docker compose config`
+
+## M1.2 Unreal integration readiness tracker (completed baseline)
+- [x] Review runtime bridge files, models, tests, and docs
+- [x] Draft and confirm implementation plan with maintainer
+- [x] Add Unreal protocol documentation and integration guide
+- [x] Add standalone Unreal WebSocket smoke client script
+- [x] Add manual Unreal integration readiness checklist
+- [x] Run compile/test/compose validation commands
+- [x] Finalize TODO M1.2 checklist updates
 
 ## Planning notice: M4 Simulation Intelligence & Digital Human Layer (future only)
 

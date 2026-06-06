@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RoomZero Unreal Initial State",
+  "type": "object",
+  "properties": {
+    "protocol_version": {
+      "type": "string",
+      "const": "roomzero.unreal.v1"
+    },
+    "agent_id": {
+      "type": "string"
+    },
+    "emotion": {
+      "type": "string"
+    },
+    "awareness": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "trust": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "is_speaking": {
+      "type": "boolean"
+    },
+    "is_observing": {
+      "type": "boolean"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "agent_id",
+    "emotion",
+    "awareness",
+    "trust",
+    "is_speaking",
+    "is_observing",
+    "updated_at"
+  ],
+  "additionalProperties": true
+}

@@ -1,4 +1,7 @@
+import json
 import os
+from pathlib import Path
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -7,6 +10,11 @@ from starlette.websockets import WebSocketDisconnect
 from app.main import app, unreal_observations, unreal_pending_commands
 
 client = TestClient(app)
+FIXTURE_DIR = Path(__file__).parent / "fixtures" / "unreal_ws"
+
+
+def _load_fixture(name: str) -> dict[str, Any]:
+    return json.loads((FIXTURE_DIR / name).read_text(encoding="utf-8"))
 
 
 def test_default_agent_state_endpoint() -> None:
@@ -14,15 +22,16 @@ def test_default_agent_state_endpoint() -> None:
     response = client.get(f"/ws/unreal/state/{agent_id}")
     assert response.status_code == 200
     body = response.json()
+    expected = _load_fixture("initial_state.json")
+    assert body["protocol_version"] == expected["protocol_version"]
     assert body["agent_id"] == agent_id
-    assert body["emotion"] == "neutral"
-    assert body["awareness"] == 0.5
-    assert body["trust"] == 0.2
-    assert body["is_speaking"] is False
-    assert body["is_observing"] is True
+    assert body["emotion"] == expected["emotion"]
+    assert body["awareness"] == expected["awareness"]
+    assert body["trust"] == expected["trust"]
+    assert body["is_speaking"] == expected["is_speaking"]
+    assert body["is_observing"] == expected["is_observing"]
     assert isinstance(body["updated_at"], str)
     assert "T" in body["updated_at"]
-    assert body["protocol_version"] == "roomzero.unreal.v1"
 
 
 def test_token_auth_unset_allows_public_access() -> None:
@@ -133,22 +142,24 @@ def test_websocket_initial_state_and_greeting_command() -> None:
         first_msg = ws.receive_json()
         second_msg = ws.receive_json()
 
+        expected_state = _load_fixture("initial_state.json")
+        assert first_msg["protocol_version"] == expected_state["protocol_version"]
         assert first_msg["agent_id"] == agent_id
-        assert first_msg["emotion"] == "neutral"
-        assert first_msg["awareness"] == 0.5
-        assert first_msg["trust"] == 0.2
-        assert first_msg["is_speaking"] is False
-        assert first_msg["is_observing"] is True
-        assert first_msg["protocol_version"] == "roomzero.unreal.v1"
+        assert first_msg["emotion"] == expected_state["emotion"]
+        assert first_msg["awareness"] == expected_state["awareness"]
+        assert first_msg["trust"] == expected_state["trust"]
+        assert first_msg["is_speaking"] == expected_state["is_speaking"]
+        assert first_msg["is_observing"] == expected_state["is_observing"]
 
-        assert second_msg["type"] == "command"
-        assert second_msg["protocol_version"] == "roomzero.unreal.v1"
+        expected_command = _load_fixture("greeting_command.json")
+        assert second_msg["type"] == expected_command["type"]
+        assert second_msg["protocol_version"] == expected_command["protocol_version"]
         assert second_msg["agent_id"] == agent_id
-        assert second_msg["command"] == "speak"
-        assert second_msg["text"] == "I am RZ-01. I observe, learn, and reflect."
-        assert second_msg["emotion"] == "curious"
-        assert second_msg["animation"] == "Gesture_Explain"
-        assert second_msg["duration_seconds"] == 4.0
+        assert second_msg["command"] == expected_command["command"]
+        assert second_msg["text"] == expected_command["text"]
+        assert second_msg["emotion"] == expected_command["emotion"]
+        assert second_msg["animation"] == expected_command["animation"]
+        assert second_msg["duration_seconds"] == expected_command["duration_seconds"]
 
 
 def test_queued_command_flush_on_connect() -> None:
@@ -205,18 +216,13 @@ def test_observation_ack() -> None:
         _ = ws.receive_json()
         _ = ws.receive_json()
 
-        ws.send_json(
-            {
-                "type": "observation",
-                "event": "player_entered_room",
-                "payload": {"distance": 2.4},
-            }
-        )
+        ws.send_json(_load_fixture("observation_event.json"))
         ack = ws.receive_json()
 
-        assert ack["type"] == "ack"
-        assert ack["protocol_version"] == "roomzero.unreal.v1"
-        assert ack["kind"] == "observation"
+        expected_ack = _load_fixture("observation_ack.json")
+        assert ack["type"] == expected_ack["type"]
+        assert ack["protocol_version"] == expected_ack["protocol_version"]
+        assert ack["kind"] == expected_ack["kind"]
         assert ack["agent_id"] == agent_id
         assert isinstance(ack["created_at"], str)
 
@@ -263,14 +269,90 @@ def test_ping_pong_and_unknown_message_safety() -> None:
         _ = ws.receive_json()
         _ = ws.receive_json()
 
-        ws.send_json({"type": "ping"})
+        ws.send_json(_load_fixture("ping.json"))
         pong = ws.receive_json()
-        assert pong["type"] == "pong"
+        expected_pong = _load_fixture("pong.json")
+        assert pong["type"] == expected_pong["type"]
         assert pong["agent_id"] == agent_id
-        assert pong["protocol_version"] == "roomzero.unreal.v1"
+        assert pong["protocol_version"] == expected_pong["protocol_version"]
 
         ws.send_json({"type": "something_else"})
         err = ws.receive_json()
+        expected_error = _load_fixture("unknown_message_error.json")
+        assert err["type"] == expected_error["type"]
+        assert err["error"] == expected_error["error"]
+        assert err["protocol_version"] == expected_error["protocol_version"]
+
+
+def test_websocket_invalid_non_object_payload_returns_invalid_payload_error() -> None:
+    agent_id = "rz-test-invalid-payload"
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+
+        ws.send_text(json.dumps("not-an-object"))
+        err = ws.receive_json()
+
         assert err["type"] == "error"
-        assert err["error"] == "unknown_message_type"
+        assert err["error"] == "invalid_payload"
         assert err["protocol_version"] == "roomzero.unreal.v1"
+
+
+def test_websocket_observation_payload_non_object_is_normalized() -> None:
+    unreal_observations.clear()
+    agent_id = "rz-test-observation-non-object-payload"
+
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+
+        ws.send_json(
+            {
+                "type": "observation",
+                "event": "smoke_payload_normalization",
+                "payload": "not-an-object",
+            }
+        )
+        ack = ws.receive_json()
+
+        assert ack["type"] == "ack"
+        assert ack["protocol_version"] == "roomzero.unreal.v1"
+        assert ack["agent_id"] == agent_id
+
+    obs_response = client.get("/ws/unreal/observations")
+    assert obs_response.status_code == 200
+    assert obs_response.json()["items"][-1]["payload"] == {}
+
+
+def test_websocket_missing_observation_event_returns_error() -> None:
+    agent_id = "rz-test-missing-event"
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+
+        ws.send_json({"type": "observation", "payload": {"distance": 1.0}})
+        err = ws.receive_json()
+
+        assert err["type"] == "error"
+        assert err["error"] == "missing_event"
+        assert err["protocol_version"] == "roomzero.unreal.v1"
+
+
+def test_websocket_runtime_responses_always_include_protocol_version() -> None:
+    agent_id = "rz-test-protocol-version"
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+
+        ws.send_json({"type": "hello"})
+        hello_response = ws.receive_json()
+        assert hello_response["protocol_version"] == "roomzero.unreal.v1"
+
+        ws.send_json({"type": "ping"})
+        pong = ws.receive_json()
+        assert pong["protocol_version"] == "roomzero.unreal.v1"
+
+        ws.send_text(json.dumps("broken payload"))
+        invalid_payload_response = ws.receive_json()
+        assert invalid_payload_response["protocol_version"] == "roomzero.unreal.v1"
+        assert invalid_payload_response["error"] == "invalid_payload"

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RoomZero Unreal Pong",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "pong"
+    },
+    "protocol_version": {
+      "type": "string",
+      "const": "roomzero.unreal.v1"
+    },
+    "agent_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "protocol_version",
+    "agent_id"
+  ],
+  "additionalProperties": true
+}
