@@ -302,5 +302,53 @@
     "trust_score": 9,
     "free_text": "API feedback test.",
     "suggested_improvement": "No changes needed."
+  },
+  {
+    "feedback_id": "c1d755da-02c2-484a-9f0e-7e7152db6f30",
+    "tester_id": "tester-api",
+    "session_id": "session-54d04bbb-7587-4bf0-8983-7d48330c6368",
+    "timestamp": "2026-06-06T15:21:54.319683+00:00",
+    "realism_score": 8,
+    "coherence_score": 7,
+    "memory_score": 9,
+    "emotional_presence_score": 8,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 9,
+    "free_text": "API feedback test.",
+    "suggested_improvement": "No changes needed."
+  },
+  {
+    "feedback_id": "42c2c128-125d-49f9-a029-496f38ecfbd6",
+    "tester_id": "tester-api",
+    "session_id": "session-4af364c9-0c25-47d1-afd2-1e82d8dfa3d7",
+    "timestamp": "2026-06-06T15:22:00.781304+00:00",
+    "realism_score": 8,
+    "coherence_score": 7,
+    "memory_score": 9,
+    "emotional_presence_score": 8,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 9,
+    "free_text": "API feedback test.",
+    "suggested_improvement": "No changes needed."
+  },
+  {
+    "feedback_id": "33ee5600-6853-456f-97e8-dd1ce763ce4b",
+    "tester_id": "tester-api",
+    "session_id": "session-3e73c67a-c3c4-4873-832e-f4d586f10882",
+    "timestamp": "2026-06-06T15:30:07.661680+00:00",
+    "realism_score": 8,
+    "coherence_score": 7,
+    "memory_score": 9,
+    "emotional_presence_score": 8,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 9,
+    "free_text": "API feedback test.",
+    "suggested_improvement": "No changes needed."
   }
 ]

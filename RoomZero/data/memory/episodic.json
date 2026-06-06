@@ -206,5 +206,41 @@
     ],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "1be31922-2951-43f4-8648-e47338e8d24e",
+    "timestamp": "2026-06-06T15:21:54.305314+00:00",
+    "category": "episodic",
+    "content": "Test memory content 72a174ba-38c5-4453-9ead-1338f882fc5b",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "e908e88a-1d22-4cde-b24b-a9fb7f29bc63",
+    "timestamp": "2026-06-06T15:22:00.767662+00:00",
+    "category": "episodic",
+    "content": "Test memory content 0598d693-27fa-4b9e-873a-d032e79bbd50",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "206392b6-2269-445e-8cc8-1cab281634da",
+    "timestamp": "2026-06-06T15:30:07.644636+00:00",
+    "category": "episodic",
+    "content": "Test memory content 55c37e1f-0663-4f11-a2b6-cdd105a178b7",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

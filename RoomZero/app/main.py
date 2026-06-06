@@ -123,14 +123,27 @@ def _get_real_unreal_token() -> str | None:
     return token or None
 
 
-def _extract_unreal_token(authorization: str | None = None, query_token: str | None = None) -> str | None:
+def _extract_unreal_token(
+    authorization: str | None = None,
+    query_token: str | None = None,
+    header_token: str | None = None,
+) -> str | None:
     if query_token:
-        return query_token.strip()
+        token = query_token.strip()
+        if token:
+            return token
+    if header_token:
+        token = header_token.strip()
+        if token:
+            return token
     if authorization:
         auth = authorization.strip()
         if auth.lower().startswith("bearer "):
-            return auth[7:].strip()
-        return auth
+            bearer = auth[7:].strip()
+            if bearer:
+                return bearer
+        elif auth:
+            return auth
     return None
 
 
@@ -149,6 +162,7 @@ def _validate_unreal_websocket_token(websocket: WebSocket) -> bool:
     token = _extract_unreal_token(
         authorization=websocket.headers.get("authorization"),
         query_token=websocket.query_params.get("token"),
+        header_token=websocket.headers.get("x-roomzero-unreal-token"),
     )
     return token == expected
 
@@ -912,12 +926,7 @@ def platform_recent_activity(request: PlatformActorRequest) -> dict:
 
 # --- Unreal WebSocket bridge routes (local in-memory MVP) ---
 @app.get("/ws/unreal/state/{agent_id}")
-def unreal_get_state(
-    agent_id: str,
-    token: str | None = None,
-    authorization: str | None = Header(None),
-) -> dict:
-    _validate_unreal_token(_extract_unreal_token(authorization=authorization, query_token=token))
+def unreal_get_state(agent_id: str) -> dict:
     return _get_or_create_unreal_state(agent_id).model_dump()
 
 
@@ -927,31 +936,36 @@ async def unreal_send_command(
     request: AgentCommand,
     token: str | None = None,
     authorization: str | None = Header(None),
+    x_roomzero_unreal_token: str | None = Header(None),
 ) -> dict:
-    _validate_unreal_token(_extract_unreal_token(authorization=authorization, query_token=token))
+    _validate_unreal_token(
+        _extract_unreal_token(
+            authorization=authorization,
+            query_token=token,
+            header_token=x_roomzero_unreal_token,
+        )
+    )
     if request.agent_id != agent_id:
         raise HTTPException(status_code=400, detail="agent_id path/body mismatch")
 
-    delivered = await _broadcast_unreal_command(agent_id, request)
-    if delivered == 0:
+    delivered_count = await _broadcast_unreal_command(agent_id, request)
+    delivered = delivered_count > 0
+    queued = False
+    if not delivered:
         _queue_unreal_command(agent_id, request)
-        status = "queued"
-    else:
-        status = "delivered"
+        queued = True
 
     return {
-        "status": status,
+        "queued": queued,
         "delivered": delivered,
+        "agent_id": agent_id,
         "command": request.model_dump(),
+        "protocol_version": request.protocol_version,
     }
 
 
 @app.get("/ws/unreal/observations")
-def unreal_list_observations(
-    token: str | None = None,
-    authorization: str | None = Header(None),
-) -> dict:
-    _validate_unreal_token(_extract_unreal_token(authorization=authorization, query_token=token))
+def unreal_list_observations() -> dict:
     return {"count": len(unreal_observations), "items": [o.model_dump() for o in unreal_observations]}
 
 

@@ -1,5 +1,13 @@
 # TODO - Milestone M2: RoomZero research platform MVP (SQLite parallel layer)
 
+## M1.1 runtime hardening implementation tracker (current task)
+- [x] Review runtime bridge files and tests
+- [x] Draft and confirm implementation plan with maintainer
+- [ ] Implement main.py hardening updates
+- [ ] Expand ws unreal tests for M1.1
+- [ ] Run compile/test/compose validation commands
+- [ ] Finalize TODO runtime hardening checklist updates
+
 ## Planning notice: M4 Simulation Intelligence & Digital Human Layer (future only)
 
 - [ ] M4 is documentation/planning-only in the current cycle.

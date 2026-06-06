@@ -26,17 +26,38 @@ def test_default_agent_state_endpoint() -> None:
 
 
 def test_token_auth_unset_allows_public_access() -> None:
+    original_token = os.environ.get("ROOMZERO_UNREAL_TOKEN")
     os.environ.pop("ROOMZERO_UNREAL_TOKEN", None)
     agent_id = "rz-test-token-unset"
 
-    response = client.get(f"/ws/unreal/state/{agent_id}")
-    assert response.status_code == 200
-    assert response.json()["agent_id"] == agent_id
+    try:
+        response = client.get(f"/ws/unreal/state/{agent_id}")
+        assert response.status_code == 200
+        assert response.json()["agent_id"] == agent_id
 
-    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
-        state = ws.receive_json()
-        assert state["agent_id"] == agent_id
-        assert state["protocol_version"] == "roomzero.unreal.v1"
+        post_payload = {
+            "protocol_version": "roomzero.unreal.v1",
+            "agent_id": agent_id,
+            "command": "speak",
+            "text": "No token required",
+        }
+        post_response = client.post(f"/ws/unreal/command/{agent_id}", json=post_payload)
+        assert post_response.status_code == 200
+        body = post_response.json()
+        assert body["queued"] is True
+        assert body["delivered"] is False
+        assert body["agent_id"] == agent_id
+        assert body["protocol_version"] == "roomzero.unreal.v1"
+
+        with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+            state = ws.receive_json()
+            assert state["agent_id"] == agent_id
+            assert state["protocol_version"] == "roomzero.unreal.v1"
+    finally:
+        if original_token is None:
+            os.environ.pop("ROOMZERO_UNREAL_TOKEN", None)
+        else:
+            os.environ["ROOMZERO_UNREAL_TOKEN"] = original_token
 
 
 def test_token_auth_valid_invalid_for_rest_and_websocket() -> None:
@@ -48,23 +69,52 @@ def test_token_auth_valid_invalid_for_rest_and_websocket() -> None:
     try:
         agent_id = "rz-test-token-auth"
 
-        response = client.get(
-            f"/ws/unreal/state/{agent_id}",
-            params={"token": "secret-token"},
-        )
-        assert response.status_code == 200
-        assert response.json()["agent_id"] == agent_id
+        state_response = client.get(f"/ws/unreal/state/{agent_id}")
+        assert state_response.status_code == 200
+        assert state_response.json()["agent_id"] == agent_id
 
-        response = client.get(
-            f"/ws/unreal/state/{agent_id}",
+        payload = {
+            "protocol_version": "roomzero.unreal.v1",
+            "agent_id": agent_id,
+            "command": "speak",
+            "text": "token guarded command",
+        }
+
+        missing_token = client.post(f"/ws/unreal/command/{agent_id}", json=payload)
+        assert missing_token.status_code == 401
+
+        invalid_token = client.post(
+            f"/ws/unreal/command/{agent_id}",
+            json=payload,
             params={"token": "invalid"},
         )
-        assert response.status_code == 401
+        assert invalid_token.status_code == 401
+
+        valid_query_token = client.post(
+            f"/ws/unreal/command/{agent_id}",
+            json=payload,
+            params={"token": "secret-token"},
+        )
+        assert valid_query_token.status_code == 200
+        assert valid_query_token.json()["protocol_version"] == "roomzero.unreal.v1"
+
+        valid_header_token = client.post(
+            f"/ws/unreal/command/{agent_id}",
+            json=payload,
+            headers={"X-RoomZero-Unreal-Token": "secret-token"},
+        )
+        assert valid_header_token.status_code == 200
+        assert valid_header_token.json()["protocol_version"] == "roomzero.unreal.v1"
 
         with pytest.raises(WebSocketDisconnect) as exc_info:
             with client.websocket_connect(f"/ws/unreal/{agent_id}?token=invalid"):
                 pass
         assert exc_info.value.code == 1008
+
+        with pytest.raises(WebSocketDisconnect) as exc_missing:
+            with client.websocket_connect(f"/ws/unreal/{agent_id}"):
+                pass
+        assert exc_missing.value.code == 1008
 
         with client.websocket_connect(f"/ws/unreal/{agent_id}?token=secret-token") as ws:
             state = ws.receive_json()
@@ -121,13 +171,15 @@ def test_queued_command_flush_on_connect() -> None:
 
     res1 = client.post(f"/ws/unreal/command/{agent_id}", json=first_payload)
     assert res1.status_code == 200
-    assert res1.json()["status"] == "queued"
-    assert res1.json()["delivered"] == 0
+    assert res1.json()["queued"] is True
+    assert res1.json()["delivered"] is False
+    assert res1.json()["protocol_version"] == "roomzero.unreal.v1"
 
     res2 = client.post(f"/ws/unreal/command/{agent_id}", json=second_payload)
     assert res2.status_code == 200
-    assert res2.json()["status"] == "queued"
-    assert res2.json()["delivered"] == 0
+    assert res2.json()["queued"] is True
+    assert res2.json()["delivered"] is False
+    assert res2.json()["protocol_version"] == "roomzero.unreal.v1"
 
     with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
         _ = ws.receive_json()
