@@ -1,28 +1,24 @@
-# TODO - M3.4 FINALIZE FRONTEND PARITY + STABILIZATION
+# TODO - M3 transport/schema/doc completion pass
 
-- [ ] Update `RoomZero/app/static/index.html` with additive Review Audit, Simulation Events, and Event Review Notes sections (stable IDs only).
-- [ ] Update `RoomZero/app/static/app.js` minimally:
-  - [ ] Add exact approved `escapeHtml` helper:
-    - `function escapeHtml(value) { const text = String(value ?? ""); return text.replace(/[&<>"']/g, (ch) => \`&#\${ch.charCodeAt(0)};\`); }`
-  - [ ] Ensure safe rendering for Review Audit action output.
-  - [ ] Keep Simulation Events and Event Review Notes functional.
-  - [ ] Avoid broad rewrites and preserve existing flows.
-- [ ] Update `RoomZero/app/static/styles.css` with Review Audit panel styling matching existing dark lab aesthetic.
-- [ ] Update `RoomZero/TODO.md` with:
-  - [ ] M3.4 completion status
-  - [ ] Exact validation commands run
-  - [ ] Remaining risks/limitations
-  - [ ] Next recommended milestone
+- [ ] Inspect transport path:
+  - [ ] `RoomZero/app/main.py`
+  - [ ] `RoomZero/app/models.py`
+  - [ ] `RoomZero/tests/test_ws_unreal.py`
+  - [ ] `RoomZero/docs/unreal_ws_contract.md`
+  - [ ] `RoomZero/README.md`
+- [ ] Add internal simulation-event schema model(s) (additive, no DB migration).
+- [ ] Add minimal normalization mapping for Unreal observation -> simulation event.
+- [ ] Add minimal trace/audit-safe logging for normalized simulation events.
+- [ ] Preserve websocket ack/error compatibility.
+- [ ] Add focused tests for normalization + trace behavior.
+- [ ] Update docs:
+  - [ ] lifecycle / transport / limitations
+  - [ ] codacy windows/wsl note
+  - [ ] README status wording
 - [ ] Run validations:
   - [ ] `python -m compileall -q RoomZero`
   - [ ] `python -m pytest -q`
   - [ ] `python -m pytest -q RoomZero/tests/test_ws_unreal.py`
+  - [ ] `python -m pytest -q RoomZero/tests/test_api_endpoints.py RoomZero/tests/test_research_jobs.py RoomZero/tests/test_m2_platform.py`
   - [ ] `docker compose -f docker-compose.yml config`
-- [ ] If frontend scripts exist, run:
-  - [ ] `npm run lint`
-  - [ ] `npm run build`
-  - [ ] `npm test`
-- [ ] Smoke checks (if app can be started safely):
-  - [ ] `GET /health`
-  - [ ] `GET /ui`
-- [ ] Final structured report with exact files changed, command pass/fail, smoke status, risks, and next task.
+- [ ] Update `RoomZero/TODO.md` with completion status, validations, and risks.

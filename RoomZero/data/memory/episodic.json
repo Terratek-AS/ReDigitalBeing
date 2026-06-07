@@ -374,5 +374,65 @@
     ],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "d7070481-bdee-4c8e-8e2d-baea828083cf",
+    "timestamp": "2026-06-07T01:03:29.562888+00:00",
+    "category": "episodic",
+    "content": "Test memory content 502936a6-cfa7-40a4-a7df-4843b4bce819",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "792428c4-5470-40de-9569-3111e5aa6b73",
+    "timestamp": "2026-06-07T01:44:23.978841+00:00",
+    "category": "episodic",
+    "content": "Test memory content d57c73ba-f308-4c1d-a3ad-8cf566c6ef5f",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "ea12abcd-ba2d-457d-bcdd-5c82d0ad9189",
+    "timestamp": "2026-06-07T01:44:34.971688+00:00",
+    "category": "episodic",
+    "content": "Test memory content a1bb6160-4442-4a99-b3c0-c2509f0f07ec",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "a34ed7d5-74d5-46c6-9241-9c7f066b57e7",
+    "timestamp": "2026-06-07T01:44:34.989872+00:00",
+    "category": "episodic",
+    "content": "Test memory content d145d524-cea2-4949-85ad-3e506040dd1d",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "bd50c6b0-887f-4448-82d2-41a339c1eee1",
+    "timestamp": "2026-06-07T01:44:43.142408+00:00",
+    "category": "episodic",
+    "content": "Test memory content dc7a5ed4-2123-4d26-8afd-6f42ac58d987",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

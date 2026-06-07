@@ -427,5 +427,70 @@
     "next_run": null,
     "created_by": "api-test",
     "notes": "Flow test"
+  },
+  {
+    "job_id": "d1933c9d-1529-482f-920e-0627500e3a56",
+    "name": "API test job",
+    "topic": "memory systems",
+    "category": "memory_systems",
+    "query": "Generate research prompts for memory systems",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-06-07T01:03:29.671652+00:00",
+    "next_run": null,
+    "created_by": "api-test",
+    "notes": "Flow test"
+  },
+  {
+    "job_id": "1c11c4e5-b52f-48c7-82f1-915435b37ed5",
+    "name": "API test job",
+    "topic": "memory systems",
+    "category": "memory_systems",
+    "query": "Generate research prompts for memory systems",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-06-07T01:44:24.087104+00:00",
+    "next_run": null,
+    "created_by": "api-test",
+    "notes": "Flow test"
+  },
+  {
+    "job_id": "ddb20e30-bcb9-43d3-aeb8-c3e8ecb9c109",
+    "name": "API test job",
+    "topic": "memory systems",
+    "category": "memory_systems",
+    "query": "Generate research prompts for memory systems",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-06-07T01:44:35.109860+00:00",
+    "next_run": null,
+    "created_by": "api-test",
+    "notes": "Flow test"
+  },
+  {
+    "job_id": "737f12e2-c4df-4e2b-9870-b7cd5d93db20",
+    "name": "API test job",
+    "topic": "memory systems",
+    "category": "memory_systems",
+    "query": "Generate research prompts for memory systems",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-06-07T01:44:35.199804+00:00",
+    "next_run": null,
+    "created_by": "api-test",
+    "notes": "Flow test"
+  },
+  {
+    "job_id": "451dbdb8-08d1-42f9-b016-35f2d151d6d3",
+    "name": "API test job",
+    "topic": "memory systems",
+    "category": "memory_systems",
+    "query": "Generate research prompts for memory systems",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-06-07T01:44:43.246707+00:00",
+    "next_run": null,
+    "created_by": "api-test",
+    "notes": "Flow test"
   }
 ]

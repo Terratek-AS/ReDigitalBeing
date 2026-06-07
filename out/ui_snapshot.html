@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoomZero | Welcome to Eir</title>
+  <meta name="description" content="RoomZero is a safe, local-first research space for testers, observers, and researchers collaborating with Eir." />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#101828" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <header class="topbar">
+    <div class="hero">
+      <p class="eyebrow">RoomZero • Digital Being Lab</p>
+      <h1>Welcome to Eir</h1>
+      <p class="subtitle">
+        A safe and inspiring space to explore conversations, observations, and research with clarity.
+      </p>
+    </div>
+    <div class="topbar-actions">
+      <div class="status-pill" id="health-pill">Checking system…</div>
+      <button id="btn-install-pwa" class="btn-secondary hidden">Install RoomZero</button>
+      <div id="install-state" class="muted small"></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card card-wide">
+      <h2>System Status</h2>
+      <p class="muted">Live readiness indicators for today’s collaboration session.</p>
+      <div class="status-grid">
+        <article class="status-tile">
+          <h3>System online</h3>
+          <p id="status-system">Checking…</p>
+        </article>
+        <article class="status-tile">
+          <h3>Research active</h3>
+          <p id="status-research">Checking…</p>
+        </article>
+        <article class="status-tile">
+          <h3>Memory & logs available</h3>
+          <p id="status-memory">Checking…</p>
+        </article>
+        <article class="status-tile">
+          <h3>Feedback ready</h3>
+          <p id="status-feedback">Checking…</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card card-wide">
+      <h2>Choose your role</h2>
+      <p class="muted">Start where you feel most comfortable. You can switch roles any time.</p>
+      <div class="onboarding-bar">
+        <div class="step done"><span>1</span> Choose role</div>
+        <div class="step"><span>2</span> Complete first action</div>
+        <div class="step"><span>3</span> Review status</div>
+      </div>
+      <div class="role-grid">
+        <article class="role-card" data-role="tester">
+          <h3>Tester</h3>
+          <p>Chat with Eir, run guided checks, and share structured feedback.</p>
+          <button class="btn-role" data-open-role="tester">Open Tester Dashboard</button>
+        </article>
+        <article class="role-card" data-role="observer">
+          <h3>Observer</h3>
+          <p>Capture neutral observation notes and monitor system behavior safely.</p>
+          <button class="btn-role" data-open-role="observer">Open Observer Dashboard</button>
+        </article>
+        <article class="role-card" data-role="researcher">
+          <h3>Researcher</h3>
+          <p>Submit questions, manage research jobs, and curate source quality.</p>
+          <button class="btn-role" data-open-role="researcher">Open Researcher Dashboard</button>
+        </article>
+      </div>
+    </section>
+
+    <nav class="mobile-role-nav">
+      <button class="btn-secondary" data-open-role="tester">Tester</button>
+      <button class="btn-secondary" data-open-role="observer">Observer</button>
+      <button class="btn-secondary" data-open-role="researcher">Researcher</button>
+    </nav>
+
+    <section class="card role-panel" id="dashboard-tester">
+      <h2>Tester Dashboard</h2>
+      <p class="muted">Invite, register, chat, and send session feedback in one place.</p>
+
+      <h3>Access setup</h3>
+      <div class="row">
+        <label class="sr-only" for="invite-role">Invite role</label>
+        <select id="invite-role" title="Invite role">
+          <option value="observer">observer</option>
+          <option value="tester" selected>tester</option>
+          <option value="researcher">researcher</option>
+          <option value="reviewer">reviewer</option>
+          <option value="admin">admin</option>
+        </select>
+        <button id="btn-create-invite">Create Invite</button>
+      </div>
+      <pre id="invite-output" class="output"></pre>
+
+      <div class="row">
+        <input id="register-name" placeholder="Display name" />
+        <input id="register-code" placeholder="Invite code" />
+        <button id="btn-register">Register</button>
+      </div>
+      <pre id="register-output" class="output"></pre>
+
+      <h3>Conversation with Eir</h3>
+      <div class="row">
+        <input id="chat-tester-id" placeholder="Optional tester ID" />
+      </div>
+      <div class="row">
+        <input id="chat-message" placeholder="Message to Eir..." />
+        <button id="btn-chat">Send</button>
+      </div>
+      <pre id="chat-output" class="output"></pre>
+
+      <h3>Session feedback</h3>
+      <div class="row">
+        <input id="fb-tester-id" placeholder="tester_id" />
+        <input id="fb-session-id" placeholder="session_id" value="ui-session-1" />
+      </div>
+      <div class="row">
+        <label class="sr-only" for="fb-realism">Realism score</label>
+        <input id="fb-realism" type="number" min="1" max="10" value="8" title="Realism score" placeholder="Realism (1-10)" />
+        <label class="sr-only" for="fb-coherence">Coherence score</label>
+        <input id="fb-coherence" type="number" min="1" max="10" value="8" title="Coherence score" placeholder="Coherence (1-10)" />
+        <label class="sr-only" for="fb-memory">Memory score</label>
+        <input id="fb-memory" type="number" min="1" max="10" value="7" title="Memory score" placeholder="Memory (1-10)" />
+        <label class="sr-only" for="fb-emotional">Emotional presence score</label>
+        <input id="fb-emotional" type="number" min="1" max="10" value="7" title="Emotional presence score" placeholder="Emotional presence (1-10)" />
+      </div>
+      <div class="row">
+        <label class="sr-only" for="fb-ethical">Ethical safety score</label>
+        <input id="fb-ethical" type="number" min="1" max="10" value="9" title="Ethical safety score" placeholder="Ethical safety (1-10)" />
+        <label class="sr-only" for="fb-usefulness">Usefulness score</label>
+        <input id="fb-usefulness" type="number" min="1" max="10" value="8" title="Usefulness score" placeholder="Usefulness (1-10)" />
+        <label class="sr-only" for="fb-uncanny">Uncanny score</label>
+        <input id="fb-uncanny" type="number" min="1" max="10" value="4" title="Uncanny score" placeholder="Uncanny (1-10)" />
+        <label class="sr-only" for="fb-trust">Trust score</label>
+        <input id="fb-trust" type="number" min="1" max="10" value="8" title="Trust score" placeholder="Trust (1-10)" />
+      </div>
+      <div class="row">
+        <input id="fb-text" placeholder="What felt strong?" />
+        <input id="fb-improvement" placeholder="What should improve next?" />
+      </div>
+      <div class="row">
+        <button id="btn-submit-feedback">Submit Feedback</button>
+        <button id="btn-feedback-stats" class="btn-secondary">View Feedback Stats</button>
+      </div>
+      <pre id="feedback-output" class="output"></pre>
+    </section>
+
+    <section class="card role-panel" id="dashboard-observer">
+      <h2>Observer Dashboard</h2>
+      <p class="muted">Keep calm, structured notes during sessions. Notes stay in your browser on this device.</p>
+
+      <div class="row">
+        <input id="obs-title" placeholder="Observation title" />
+        <input id="obs-tag" placeholder="Tag (e.g., empathy, memory, safety)" />
+      </div>
+      <div class="row">
+        <textarea id="obs-note" placeholder="Write your observation note..."></textarea>
+      </div>
+      <div class="row">
+        <button id="btn-save-observation">Save Observation</button>
+        <button id="btn-clear-observations" class="btn-secondary">Clear Notes</button>
+      </div>
+      <pre id="observer-output" class="output"></pre>
+
+      <h3>Simulation Events</h3>
+      <p class="muted">Recent simulation observations received by the local bridge.</p>
+      <pre id="simulation-events-output" class="output"></pre>
+
+      <h3>Event Review Notes</h3>
+      <div class="row">
+        <textarea id="event-review-note-input" placeholder="Write structured review notes for simulation events..."></textarea>
+      </div>
+      <div class="row">
+        <button id="btn-save-event-review-note">Save Event Review Note</button>
+        <button id="btn-clear-event-review-notes" class="btn-secondary">Clear Event Review Notes</button>
+      </div>
+      <pre id="event-review-notes-output" class="output"></pre>
+
+      <h3>Review Audit</h3>
+      <p class="muted">Focused audit guidance for manual review quality and issue spotting.</p>
+      <div id="review-audit-panel" class="review-audit-panel">
+        <div class="review-audit-header">
+          <span class="review-audit-title">Audit Action</span>
+          <span id="review-audit-status" class="review-audit-status">ready</span>
+        </div>
+        <div id="review-audit-action" class="review-audit-action"></div>
+      </div>
+
+      <h3>Quick visibility</h3>
+      <div class="row">
+        <button id="btn-quick-health">Check System Health</button>
+        <button id="btn-open-docs" class="btn-secondary">Open API Docs</button>
+      </div>
+      <pre id="quick-output" class="output"></pre>
+    </section>
+
+    <section class="card role-panel" id="dashboard-researcher">
+      <h2>Researcher Dashboard</h2>
+      <p class="muted">Submit questions, run manual research jobs, and curate incoming sources.</p>
+
+      <h3>Research questions</h3>
+      <div class="row">
+        <input id="rq-question" placeholder="Question" />
+        <label class="sr-only" for="rq-category">Research category</label>
+        <select id="rq-category" title="Research category">
+          <option value="other">other</option>
+          <option value="memory_systems">memory_systems</option>
+          <option value="ethics">ethics</option>
+          <option value="cognitive_architecture">cognitive_architecture</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="rq-submitted-by" placeholder="submitted_by" value="ui_researcher" />
+        <button id="btn-submit-rq">Submit</button>
+        <button id="btn-list-rq" class="btn-secondary">Refresh</button>
+      </div>
+      <pre id="rq-output" class="output"></pre>
+
+      <h3>Research jobs (manual)</h3>
+      <div class="row">
+        <input id="job-topic" placeholder="Topic (e.g., persistent memory in AI agents)" />
+        <button id="btn-create-job">Create Job</button>
+      </div>
+      <div class="row">
+        <input id="job-id" placeholder="job_id" />
+        <button id="btn-run-job">Run</button>
+        <button id="btn-pause-job" class="btn-secondary">Pause</button>
+        <button id="btn-activate-job" class="btn-secondary">Activate</button>
+      </div>
+      <div class="row">
+        <button id="btn-list-jobs">List Jobs</button>
+      </div>
+      <pre id="job-output" class="output"></pre>
+
+      <h3>Sources</h3>
+      <div class="row">
+        <input id="source-title" placeholder="Title" />
+        <input id="source-url" placeholder="URL or reference" />
+      </div>
+      <div class="row">
+        <input id="source-by" placeholder="submitted_by" value="ui_researcher" />
+        <label class="sr-only" for="source-category">Source category</label>
+        <select id="source-category" title="Source category">
+          <option value="other">other</option>
+          <option value="memory_systems">memory_systems</option>
+          <option value="ethics">ethics</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="source-relevance" placeholder="Claimed relevance" />
+        <button id="btn-submit-source">Submit Source</button>
+        <button id="btn-list-sources" class="btn-secondary">Queue</button>
+      </div>
+      <pre id="source-output" class="output"></pre>
+    </section>
+
+    <section class="card card-wide">
+      <h2>Install & access</h2>
+      <p class="muted">One-click options for desktop and mobile setup.</p>
+      <p class="muted">
+        Android: open RoomZero in Chrome and tap <strong>Install RoomZero</strong> (or browser menu → Add to Home screen).
+      </p>
+
+      <h3>Windows desktop</h3>
+      <div class="row quick-actions">
+        <button id="btn-copy-install">Copy install.ps1 command</button>
+        <button id="btn-copy-run">Copy run.ps1 command</button>
+        <button id="btn-copy-build-installer">Copy build installer command</button>
+      </div>
+
+      <h3>Mobile (PWA)</h3>
+      <div class="row quick-actions">
+        <button id="btn-mobile-help">Show mobile install steps</button>
+        <button id="btn-copy-mobile-url" class="btn-secondary">Copy local UI URL</button>
+      </div>
+
+      <div class="row quick-links">
+        <a id="quick-link-docs" href="#" target="_blank" rel="noopener">API docs</a>
+        <a id="quick-link-health" href="#" target="_blank" rel="noopener">Health endpoint</a>
+        <a href="https://github.com/Terratek-AS/ReDigitalBeing" target="_blank" rel="noopener">Repository</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

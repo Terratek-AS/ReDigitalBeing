@@ -1,24 +1,42 @@
 # TODO - Milestone M2: RoomZero research platform MVP (SQLite parallel layer)
 
-## M3 — Simulation Event Architecture & Transport Foundation (current task)
-- [x] Review runtime bridge files, models, tests, and docs
-- [x] Draft and confirm implementation plan with maintainer
-- [ ] Add internal simulation-event schema model(s) (additive, no DB migration)
-- [ ] Add minimal normalization mapping for Unreal observation -> simulation event
-- [ ] Add minimal simulation event trace/audit-safe logging
-- [ ] Preserve Unreal websocket ack/error compatibility and existing behavior
-- [ ] Add focused tests for simulation event normalization and trace behavior
-- [ ] Update docs for simulation event lifecycle, transport foundation, and limitations
-- [ ] Update README status wording to clearly track M3 completion state
-- [ ] Add Codacy Windows/WSL limitation note in M3 context docs
-- [ ] Run validation:
-  - [ ] `python -m compileall -q RoomZero`
-  - [ ] `python -m pytest -q`
-  - [ ] `python -m pytest -q RoomZero/tests/test_ws_unreal.py`
-  - [ ] `python -m pytest -q RoomZero/tests/test_api_endpoints.py RoomZero/tests/test_research_jobs.py RoomZero/tests/test_m2_platform.py`
-  - [ ] `docker compose -f docker-compose.yml config`
-  - [ ] `python RoomZero/scripts/ws_unreal_smoke.py --agent-id rz-smoke` (if backend start is safe)
-- [ ] Finalize M3 completion report with files changed, schema summary, transport summary, audit behavior, validations, risks, and next milestone
+## M3.4 — Frontend parity + stabilization (closure)
+- [x] Confirm exact safe escaping helper in `RoomZero/app/static/app.js`:
+  - [x] `function escapeHtml(value) { const text = String(value ?? ""); return text.replace(/[&<>"']/g, (ch) => \`&#${ch.charCodeAt(0)};\`); }`
+- [x] Keep rendering safe:
+  - [x] Use `escapeHtml` where HTML rendering is required (Review Audit action).
+  - [x] Preserve `textContent`/`pretty()` usage for non-HTML rendering paths.
+- [x] Add/verify additive frontend parity sections in `RoomZero/app/static/index.html`:
+  - [x] Simulation Events
+  - [x] Event Review Notes
+  - [x] Review Audit mini-panel
+- [x] Complete Review Audit styling in `RoomZero/app/static/styles.css` with existing dark lab aesthetic.
+- [x] Preserve existing frontend flow:
+  - [x] Simulation Events remain functional
+  - [x] Event Review Notes remain functional (save/reload/clear wiring present)
+  - [x] Existing dashboard/status behavior preserved
+- [x] Validation commands executed:
+  - [x] `python -m compileall -q RoomZero` → PASS
+  - [x] `python -m pytest -q` → PASS (`42 passed`)
+  - [x] `python -m pytest -q RoomZero/tests/test_ws_unreal.py` → PASS (`15 passed`)
+  - [x] `python -m pytest -q RoomZero/tests/test_api_endpoints.py` → PASS (`7 passed`)
+  - [x] `python -m pytest -q RoomZero/tests/test_research_jobs.py RoomZero/tests/test_m2_platform.py` → PASS (`7 passed`)
+  - [x] `docker compose -f docker-compose.yml config` → PASS
+- [x] Smoke checks:
+  - [x] `GET /health` → PASS (`200`)
+  - [x] `GET /ui` → PASS (`200`)
+- [x] Environment/tooling limitations captured:
+  - [x] `docker compose -f docker-compose.yml up -d roomzero-backend` unavailable locally (Docker daemon not running).
+  - [x] Browser automation unavailable (browser tool disabled); interactive browser verification could not be fully automated.
+- [x] Files changed for M3.4 closure:
+  - [x] `RoomZero/app/static/index.html`
+  - [x] `RoomZero/app/static/app.js`
+  - [x] `RoomZero/app/static/styles.css`
+  - [x] `RoomZero/TODO.md`
+- [x] Remaining risks / limitations:
+  - [x] Manual in-browser click-through verification should be run when browser tooling is available.
+- [x] Next recommended milestone:
+  - [x] Continue with M3 transport/schema/doc completion tasks after this frontend stabilization closeout.
 
 ## M1.3 Contract Hardening & Integration Fixtures (current task)
 - [x] Review runtime bridge files, models, tests, and docs
