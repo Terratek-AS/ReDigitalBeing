@@ -173,6 +173,30 @@
       </div>
       <pre id="observer-output" class="output"></pre>
 
+      <h3>Simulation Events</h3>
+      <p class="muted">Recent simulation observations received by the local bridge.</p>
+      <pre id="simulation-events-output" class="output"></pre>
+
+      <h3>Event Review Notes</h3>
+      <div class="row">
+        <textarea id="event-review-note-input" placeholder="Write structured review notes for simulation events..."></textarea>
+      </div>
+      <div class="row">
+        <button id="btn-save-event-review-note">Save Event Review Note</button>
+        <button id="btn-clear-event-review-notes" class="btn-secondary">Clear Event Review Notes</button>
+      </div>
+      <pre id="event-review-notes-output" class="output"></pre>
+
+      <h3>Review Audit</h3>
+      <p class="muted">Focused audit guidance for manual review quality and issue spotting.</p>
+      <div id="review-audit-panel" class="review-audit-panel">
+        <div class="review-audit-header">
+          <span class="review-audit-title">Audit Action</span>
+          <span id="review-audit-status" class="review-audit-status">ready</span>
+        </div>
+        <div id="review-audit-action" class="review-audit-action"></div>
+      </div>
+
       <h3>Quick visibility</h3>
       <div class="row">
         <button id="btn-quick-health">Check System Health</button>

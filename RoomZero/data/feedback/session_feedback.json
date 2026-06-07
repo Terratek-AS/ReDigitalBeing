@@ -494,5 +494,37 @@
     "trust_score": 9,
     "free_text": "API feedback test.",
     "suggested_improvement": "No changes needed."
+  },
+  {
+    "feedback_id": "1deeff53-d9de-40a0-9ebf-4d1f397b8807",
+    "tester_id": "tester-api",
+    "session_id": "session-98d1c5ce-b317-47de-a77d-cab415d4601a",
+    "timestamp": "2026-06-07T00:51:11.104691+00:00",
+    "realism_score": 8,
+    "coherence_score": 7,
+    "memory_score": 9,
+    "emotional_presence_score": 8,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 9,
+    "free_text": "API feedback test.",
+    "suggested_improvement": "No changes needed."
+  },
+  {
+    "feedback_id": "60de82d9-8e79-4c56-a740-8a57b7f283f9",
+    "tester_id": "tester-api",
+    "session_id": "session-ffe9610a-c5c6-44d8-b446-b71e862f2fe7",
+    "timestamp": "2026-06-07T00:58:34.037378+00:00",
+    "realism_score": 8,
+    "coherence_score": 7,
+    "memory_score": 9,
+    "emotional_presence_score": 8,
+    "ethical_safety_score": 9,
+    "usefulness_score": 8,
+    "uncanny_score": 3,
+    "trust_score": 9,
+    "free_text": "API feedback test.",
+    "suggested_improvement": "No changes needed."
   }
 ]

@@ -226,5 +226,29 @@
     "reliability_score": 8,
     "status": "approved",
     "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "af0589ae-8fa8-4c22-a131-09ab2fe52a69",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-07T00:51:11.117156+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
+  },
+  {
+    "source_id": "9b65459c-1730-4ef8-972c-1d52a8725377",
+    "url_or_reference": "https://example.edu/research-paper",
+    "title": "Test research source",
+    "submitted_by": "api-test",
+    "timestamp": "2026-06-07T00:58:34.053549+00:00",
+    "category": "other",
+    "claimed_relevance": "Valid reference for API testing.",
+    "reliability_score": 8,
+    "status": "approved",
+    "reviewer_notes": "Approved for testing."
   }
 ]

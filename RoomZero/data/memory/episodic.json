@@ -350,5 +350,29 @@
     ],
     "source": "user",
     "decay_factor": 1.0
+  },
+  {
+    "id": "3bb4350b-1743-4214-85b3-d8b8db315133",
+    "timestamp": "2026-06-07T00:51:11.091704+00:00",
+    "category": "episodic",
+    "content": "Test memory content ef07b64b-145f-4f1d-a587-9276a2ba4223",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
+  },
+  {
+    "id": "1c65229f-c4c6-4986-b170-ae80033a8d65",
+    "timestamp": "2026-06-07T00:58:34.020718+00:00",
+    "category": "episodic",
+    "content": "Test memory content 8622ddc4-42bf-4c15-a046-ee858b4f4385",
+    "importance": 0.75,
+    "tags": [
+      "api_test"
+    ],
+    "source": "user",
+    "decay_factor": 1.0
   }
 ]

@@ -21,6 +21,11 @@ function getUiBaseUrl() {
   return API_BASE_URL;
 }
 
+function escapeHtml(value) {
+  const text = String(value ?? "");
+  return text.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
+}
+
 function showToast(message) {
   const t = $("toast");
   if (!t) return;
@@ -103,6 +108,52 @@ function refreshObserverOutput() {
     return;
   }
   pretty($("observer-output"), notes);
+}
+
+function getEventReviewNotes() {
+  try {
+    const raw = localStorage.getItem("roomzero_event_review_notes");
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveEventReviewNotes(notes) {
+  localStorage.setItem("roomzero_event_review_notes", JSON.stringify(notes));
+}
+
+function renderReviewAuditAction() {
+  const actionEl = $("review-audit-action");
+  const statusEl = $("review-audit-status");
+  if (!actionEl || !statusEl) return;
+
+  const prompt =
+    "auditAction: Review code for readability, quality, and issues (see below for action prompt) output safely.";
+  actionEl.innerHTML = `<code>${escapeHtml(prompt)}</code>`;
+  statusEl.textContent = "active";
+}
+
+function refreshSimulationEvents() {
+  const el = $("simulation-events-output");
+  if (!el) return;
+
+  api("/ws/unreal/observations")
+    .then((data) => {
+      pretty(el, data);
+    })
+    .catch(() => {
+      pretty(el, "Simulation events unavailable.");
+    });
+}
+
+function refreshEventReviewNotes() {
+  const notes = getEventReviewNotes();
+  if (!notes.length) {
+    pretty($("event-review-notes-output"), "No event review notes yet.");
+    return;
+  }
+  pretty($("event-review-notes-output"), notes);
 }
 
 async function initHealthAndStatus() {
@@ -312,6 +363,33 @@ $("btn-clear-observations").onclick = () => {
   showToast("Observer notes cleared");
 };
 
+$("btn-save-event-review-note").onclick = () => {
+  const input = $("event-review-note-input");
+  if (!input) return;
+  const note = input.value.trim();
+
+  if (!note) {
+    showToast("Please enter an event review note.");
+    return;
+  }
+
+  const notes = getEventReviewNotes();
+  notes.unshift({
+    created_at: new Date().toISOString(),
+    note,
+  });
+  saveEventReviewNotes(notes);
+  input.value = "";
+  refreshEventReviewNotes();
+  showToast("Event review note saved");
+};
+
+$("btn-clear-event-review-notes").onclick = () => {
+  localStorage.removeItem("roomzero_event_review_notes");
+  refreshEventReviewNotes();
+  showToast("Event review notes cleared");
+};
+
 $("btn-submit-rq").onclick = async () => {
   try {
     const data = await api("/research/questions", {
@@ -472,6 +550,9 @@ $("btn-mobile-help").onclick = () => {
 };
 
 refreshObserverOutput();
+refreshEventReviewNotes();
+refreshSimulationEvents();
+renderReviewAuditAction();
 setRolePanel("tester");
 setupPwaInstall();
 initHealthAndStatus();

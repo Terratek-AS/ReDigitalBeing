@@ -1,36 +1,28 @@
-# TODO
+# TODO - M3.4 FINALIZE FRONTEND PARITY + STABILIZATION
 
-## Documentation — Advanced Roadmap Refresh
-- [x] Review existing roadmap and progress sections
-- [x] Add/refresh Project Progress milestone table
-- [x] Expand roadmap M0–M8
-- [x] Preserve accurate M3 in-progress status
-- [x] Keep changes documentation-only
-- [x] Confirm unrelated local artifacts are not staged
-
-- [x] Add "Project Progress" section to root README.md
-- [x] Add "Project Progress" section to RoomZero/README.md
-- [x] Mark this TODO as completed after both README updates
-
-## Coordinated task execution checklist
-- [x] Part 1: Push/open M3 simulation-event websocket coverage PR
-- [x] Part 2: Inspect and categorize runtime/data artifacts
-- [ ] Part 3: Add Terratek research material and knowledge paths roadmap docs
-  - [x] Update README.md with M8.1 roadmap content
-  - [x] Update RoomZero/README.md with M8.1 roadmap content
-  - [x] Update TODO.md with M8.1 planning checklist
-  - [ ] Validate docs-only diff
-  - [ ] Commit docs-only changes
-  - [ ] Open docs PR
-
-## M8.1 — Real Research Material & Terratek Knowledge Paths
-- [ ] Define research source schema
-- [ ] Define research path schema
-- [ ] Define material profile schema
-- [ ] Define evidence/claim relationship
-- [ ] Add Terratek research paths
-- [ ] Add source quality levels
-- [ ] Add copyright and human-review rules
-- [ ] Add first curated source pack plan
-- [ ] Plan future UI for research library
-- [ ] Plan future import workflow for PDFs/manual sources/APIs
+- [ ] Update `RoomZero/app/static/index.html` with additive Review Audit, Simulation Events, and Event Review Notes sections (stable IDs only).
+- [ ] Update `RoomZero/app/static/app.js` minimally:
+  - [ ] Add exact approved `escapeHtml` helper:
+    - `function escapeHtml(value) { const text = String(value ?? ""); return text.replace(/[&<>"']/g, (ch) => \`&#\${ch.charCodeAt(0)};\`); }`
+  - [ ] Ensure safe rendering for Review Audit action output.
+  - [ ] Keep Simulation Events and Event Review Notes functional.
+  - [ ] Avoid broad rewrites and preserve existing flows.
+- [ ] Update `RoomZero/app/static/styles.css` with Review Audit panel styling matching existing dark lab aesthetic.
+- [ ] Update `RoomZero/TODO.md` with:
+  - [ ] M3.4 completion status
+  - [ ] Exact validation commands run
+  - [ ] Remaining risks/limitations
+  - [ ] Next recommended milestone
+- [ ] Run validations:
+  - [ ] `python -m compileall -q RoomZero`
+  - [ ] `python -m pytest -q`
+  - [ ] `python -m pytest -q RoomZero/tests/test_ws_unreal.py`
+  - [ ] `docker compose -f docker-compose.yml config`
+- [ ] If frontend scripts exist, run:
+  - [ ] `npm run lint`
+  - [ ] `npm run build`
+  - [ ] `npm test`
+- [ ] Smoke checks (if app can be started safely):
+  - [ ] `GET /health`
+  - [ ] `GET /ui`
+- [ ] Final structured report with exact files changed, command pass/fail, smoke status, risks, and next task.

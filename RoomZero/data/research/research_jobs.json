@@ -401,5 +401,31 @@
     "next_run": null,
     "created_by": "api-test",
     "notes": "Flow test"
+  },
+  {
+    "job_id": "33a9f50f-8864-4089-9137-9365991baaef",
+    "name": "API test job",
+    "topic": "memory systems",
+    "category": "memory_systems",
+    "query": "Generate research prompts for memory systems",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-06-07T00:51:11.195137+00:00",
+    "next_run": null,
+    "created_by": "api-test",
+    "notes": "Flow test"
+  },
+  {
+    "job_id": "b1ced59a-3d75-4b20-84a2-9738ead7567e",
+    "name": "API test job",
+    "topic": "memory systems",
+    "category": "memory_systems",
+    "query": "Generate research prompts for memory systems",
+    "schedule": "manual",
+    "status": "active",
+    "last_run": "2026-06-07T00:58:34.168400+00:00",
+    "next_run": null,
+    "created_by": "api-test",
+    "notes": "Flow test"
   }
 ]
