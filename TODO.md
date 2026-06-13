@@ -1,3 +1,7 @@
+# Temporary execution helper - not active tracker
+
+The active RoomZero project tracker is `RoomZero/TODO.md`. This root `TODO.md` is a temporary execution helper only and must not be treated as the authoritative tracker.
+
 # TODO - M3 transport/schema/doc completion pass
 
 - [ ] Inspect transport path:

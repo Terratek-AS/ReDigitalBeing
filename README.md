@@ -10,6 +10,7 @@ Repository: https://github.com/Terratek-AS/ReDigitalBeing
 ## Current Status
 
 - M1, M1.5, and M2 foundations are implemented in the RoomZero backend and UI.
+- M4.1 is the Admin Research Dashboard backend foundation. The earlier Model Adapter / Intelligence Interface roadmap item is deferred to M5 or later unless the maintainer reprioritizes it.
 - Public GitHub Pages preview exists:
   - https://knoksen.github.io/ReDigitalBeing
 - Root documentation is now established here for project orientation and backend integration guidance.

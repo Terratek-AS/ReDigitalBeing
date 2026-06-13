@@ -68,6 +68,9 @@ ResearchCategory = Literal[
 ]
 SourceStatus = Literal["submitted", "approved", "rejected", "needs_review"]
 ResearchJobStatus = Literal["active", "paused", "completed", "failed"]
+PlatformResearchStatus = Literal["proposed", "approved", "rejected", "testing", "completed", "archived"]
+PlatformRiskLevel = Literal["low", "medium", "high", "critical"]
+PlatformApprovalStatus = Literal["pending", "approved", "rejected", "needs_review"]
 
 
 class ChatRequest(BaseModel):
@@ -279,6 +282,12 @@ class PlatformResearchQuestionCreateRequest(BaseModel):
     ethical_risk: str = Field(min_length=1, max_length=2000)
     suggested_conditions: str = Field(min_length=1, max_length=5000)
     tags: list[str] = Field(default_factory=list)
+    risk_level: PlatformRiskLevel = "low"
+    possible_harm: str = Field(default="", max_length=5000)
+    mitigation_notes: str = Field(default="", max_length=5000)
+    human_oversight_required: bool = True
+    approval_status: PlatformApprovalStatus = "pending"
+    priority: int = Field(default=5, ge=1, le=10)
 
 
 class PlatformResearchQuestionUpdateRequest(BaseModel):
@@ -290,11 +299,40 @@ class PlatformResearchQuestionUpdateRequest(BaseModel):
     ethical_risk: str | None = None
     suggested_conditions: str | None = None
     tags: list[str] | None = None
+    risk_level: PlatformRiskLevel | None = None
+    possible_harm: str | None = None
+    mitigation_notes: str | None = None
+    human_oversight_required: bool | None = None
+    approval_status: PlatformApprovalStatus | None = None
+    reviewer_notes: str | None = None
+    priority: int | None = Field(default=None, ge=1, le=10)
 
 
 class PlatformResearchStatusChangeRequest(BaseModel):
     actor_id: str = Field(min_length=1, max_length=200)
-    status: str = Field(min_length=1, max_length=50)
+    status: PlatformResearchStatus
+
+
+class PlatformResearchReviewRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    risk_level: PlatformRiskLevel | None = None
+    possible_harm: str | None = None
+    mitigation_notes: str | None = None
+    human_oversight_required: bool | None = None
+    approval_status: PlatformApprovalStatus | None = None
+    reviewer_notes: str | None = None
+    priority: int | None = Field(default=None, ge=1, le=10)
+
+
+class PlatformResearchActionRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    reviewer_notes: str | None = None
+
+
+class PlatformResearchPriorityRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    priority: int = Field(ge=1, le=10)
+    reviewer_notes: str | None = None
 
 
 class PlatformCommentCreateRequest(BaseModel):
@@ -310,6 +348,40 @@ class PlatformScenarioConvertRequest(BaseModel):
     variables: list[str] = Field(default_factory=list)
     metrics: list[str] = Field(default_factory=list)
     ethical_constraints: list[str] = Field(default_factory=list)
+    environment_conditions: str = Field(default="", max_length=5000)
+    input_variables: list[str] = Field(default_factory=list)
+    expected_observations: list[str] = Field(default_factory=list)
+    metrics_to_collect: list[str] = Field(default_factory=list)
+    result_summary: str = Field(default="", max_length=10000)
+    status: str = Field(default="draft", min_length=1, max_length=50)
+    risk_level: PlatformRiskLevel = "low"
+    possible_harm: str = Field(default="", max_length=5000)
+    mitigation_notes: str = Field(default="", max_length=5000)
+    human_oversight_required: bool = True
+    approval_status: PlatformApprovalStatus = "pending"
+    reviewer_notes: str = Field(default="", max_length=5000)
+
+
+class PlatformScenarioUpdateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    purpose: str | None = None
+    agent_type: str | None = None
+    environment: str | None = None
+    variables: list[str] | None = None
+    metrics: list[str] | None = None
+    ethical_constraints: list[str] | None = None
+    environment_conditions: str | None = None
+    input_variables: list[str] | None = None
+    expected_observations: list[str] | None = None
+    metrics_to_collect: list[str] | None = None
+    result_summary: str | None = None
+    status: str | None = None
+    risk_level: PlatformRiskLevel | None = None
+    possible_harm: str | None = None
+    mitigation_notes: str | None = None
+    human_oversight_required: bool | None = None
+    approval_status: PlatformApprovalStatus | None = None
+    reviewer_notes: str | None = None
 
 
 class PlatformKnowledgeCreateRequest(BaseModel):

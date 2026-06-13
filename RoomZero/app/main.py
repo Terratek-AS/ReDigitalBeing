@@ -62,9 +62,13 @@ from app.models import (
     PlatformInvitationCreateRequest,
     PlatformKnowledgeCreateRequest,
     PlatformResearchQuestionCreateRequest,
+    PlatformResearchActionRequest,
+    PlatformResearchPriorityRequest,
+    PlatformResearchReviewRequest,
     PlatformResearchQuestionUpdateRequest,
     PlatformResearchStatusChangeRequest,
     PlatformScenarioConvertRequest,
+    PlatformScenarioUpdateRequest,
     AgentCommand,
     AgentState,
     ObservationEvent,
@@ -799,6 +803,12 @@ def platform_create_question(request: PlatformResearchQuestionCreateRequest) -> 
             ethical_risk=request.ethical_risk,
             suggested_conditions=request.suggested_conditions,
             tags=request.tags,
+            risk_level=request.risk_level,
+            possible_harm=request.possible_harm,
+            mitigation_notes=request.mitigation_notes,
+            human_oversight_required=request.human_oversight_required,
+            approval_status=request.approval_status,
+            priority=request.priority,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -806,12 +816,26 @@ def platform_create_question(request: PlatformResearchQuestionCreateRequest) -> 
 
 
 @app.get("/platform/research/questions")
-def platform_list_questions(actor_id: str) -> dict:
+def platform_list_questions(
+    actor_id: str,
+    status: str | None = None,
+    risk_level: str | None = None,
+    author: str | None = None,
+    priority_min: int | None = None,
+) -> dict:
     try:
         platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
-        items = platform_store.list_research_questions()
     except ValueError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc
+    try:
+        items = platform_store.list_research_questions(
+            status=status,
+            risk_level=risk_level,
+            author=author,
+            priority_min=priority_min,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"count": len(items), "items": items}
 
 
@@ -840,10 +864,89 @@ def platform_update_question(question_id: str, request: PlatformResearchQuestion
             ethical_risk=request.ethical_risk,
             suggested_conditions=request.suggested_conditions,
             tags=request.tags,
+            risk_level=request.risk_level,
+            possible_harm=request.possible_harm,
+            mitigation_notes=request.mitigation_notes,
+            human_oversight_required=request.human_oversight_required,
+            approval_status=request.approval_status,
+            reviewer_notes=request.reviewer_notes,
+            priority=request.priority,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"status": "updated", "question": question}
+
+
+@app.patch("/platform/research/questions/{question_id}/review")
+def platform_review_question(question_id: str, request: PlatformResearchReviewRequest) -> dict:
+    try:
+        question = platform_store.review_research_question(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            risk_level=request.risk_level,
+            possible_harm=request.possible_harm,
+            mitigation_notes=request.mitigation_notes,
+            human_oversight_required=request.human_oversight_required,
+            approval_status=request.approval_status,
+            reviewer_notes=request.reviewer_notes,
+            priority=request.priority,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "reviewed", "question": question}
+
+
+@app.post("/platform/research/questions/{question_id}/approve")
+def platform_approve_question_m4(question_id: str, request: PlatformResearchActionRequest) -> dict:
+    try:
+        question = platform_store.approve_research_question_m4(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            reviewer_notes=request.reviewer_notes,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "approved", "question": question}
+
+
+@app.post("/platform/research/questions/{question_id}/reject")
+def platform_reject_question_m4(question_id: str, request: PlatformResearchActionRequest) -> dict:
+    try:
+        question = platform_store.reject_research_question_m4(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            reviewer_notes=request.reviewer_notes,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "rejected", "question": question}
+
+
+@app.post("/platform/research/questions/{question_id}/archive")
+def platform_archive_question(question_id: str, request: PlatformResearchActionRequest) -> dict:
+    try:
+        question = platform_store.archive_research_question(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            reviewer_notes=request.reviewer_notes,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "archived", "question": question}
+
+
+@app.post("/platform/research/questions/{question_id}/prioritize")
+def platform_prioritize_question(question_id: str, request: PlatformResearchPriorityRequest) -> dict:
+    try:
+        question = platform_store.prioritize_research_question(
+            actor_id=request.actor_id,
+            question_id=question_id,
+            priority=request.priority,
+            reviewer_notes=request.reviewer_notes,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "prioritized", "question": question}
 
 
 @app.post("/platform/research/questions/{question_id}/status")
@@ -894,6 +997,18 @@ def platform_convert_scenario(question_id: str, request: PlatformScenarioConvert
             variables=request.variables,
             metrics=request.metrics,
             ethical_constraints=request.ethical_constraints,
+            environment_conditions=request.environment_conditions,
+            input_variables=request.input_variables,
+            expected_observations=request.expected_observations,
+            metrics_to_collect=request.metrics_to_collect,
+            result_summary=request.result_summary,
+            status=request.status,
+            risk_level=request.risk_level,
+            possible_harm=request.possible_harm,
+            mitigation_notes=request.mitigation_notes,
+            human_oversight_required=request.human_oversight_required,
+            approval_status=request.approval_status,
+            reviewer_notes=request.reviewer_notes,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -901,12 +1016,24 @@ def platform_convert_scenario(question_id: str, request: PlatformScenarioConvert
 
 
 @app.get("/platform/scenarios")
-def platform_list_scenarios(actor_id: str) -> dict:
+def platform_list_scenarios(
+    actor_id: str,
+    status: str | None = None,
+    risk_level: str | None = None,
+    research_question_id: str | None = None,
+) -> dict:
     try:
         platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
-        items = platform_store.list_scenarios()
     except ValueError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc
+    try:
+        items = platform_store.list_scenarios(
+            status=status,
+            risk_level=risk_level,
+            research_question_id=research_question_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"count": len(items), "items": items}
 
 
@@ -920,6 +1047,36 @@ def platform_get_scenario(scenario_id: str, actor_id: str) -> dict:
     except ValueError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc
     return scenario
+
+
+@app.patch("/platform/scenarios/{scenario_id}")
+def platform_update_scenario(scenario_id: str, request: PlatformScenarioUpdateRequest) -> dict:
+    try:
+        scenario = platform_store.update_scenario(
+            actor_id=request.actor_id,
+            scenario_id=scenario_id,
+            purpose=request.purpose,
+            agent_type=request.agent_type,
+            environment=request.environment,
+            variables=request.variables,
+            metrics=request.metrics,
+            ethical_constraints=request.ethical_constraints,
+            environment_conditions=request.environment_conditions,
+            input_variables=request.input_variables,
+            expected_observations=request.expected_observations,
+            metrics_to_collect=request.metrics_to_collect,
+            result_summary=request.result_summary,
+            status=request.status,
+            risk_level=request.risk_level,
+            possible_harm=request.possible_harm,
+            mitigation_notes=request.mitigation_notes,
+            human_oversight_required=request.human_oversight_required,
+            approval_status=request.approval_status,
+            reviewer_notes=request.reviewer_notes,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"status": "updated", "scenario": scenario}
 
 
 @app.post("/platform/knowledge")

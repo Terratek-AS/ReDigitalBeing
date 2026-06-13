@@ -5,6 +5,55 @@ import sqlite3
 from pathlib import Path
 
 
+def _table_columns(conn: sqlite3.Connection, table_name: str) -> set[str]:
+    rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+    return {str(row["name"]) for row in rows}
+
+
+def _add_column_if_missing(
+    conn: sqlite3.Connection,
+    table_name: str,
+    column_name: str,
+    column_definition: str,
+) -> None:
+    if column_name in _table_columns(conn, table_name):
+        return
+    conn.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_definition}")
+
+
+def _run_migrations(conn: sqlite3.Connection) -> None:
+    research_question_columns = {
+        "risk_level": "TEXT DEFAULT 'low'",
+        "possible_harm": "TEXT DEFAULT ''",
+        "mitigation_notes": "TEXT DEFAULT ''",
+        "human_oversight_required": "INTEGER DEFAULT 1",
+        "approval_status": "TEXT DEFAULT 'pending'",
+        "reviewer_notes": "TEXT DEFAULT ''",
+        "priority": "INTEGER DEFAULT 5",
+        "reviewed_by": "TEXT",
+        "reviewed_at": "TEXT",
+    }
+    for column_name, column_definition in research_question_columns.items():
+        _add_column_if_missing(conn, "research_questions", column_name, column_definition)
+
+    scenario_columns = {
+        "environment_conditions": "TEXT DEFAULT ''",
+        "input_variables": "TEXT DEFAULT '[]'",
+        "expected_observations": "TEXT DEFAULT '[]'",
+        "metrics_to_collect": "TEXT DEFAULT '[]'",
+        "result_summary": "TEXT DEFAULT ''",
+        "status": "TEXT DEFAULT 'draft'",
+        "risk_level": "TEXT DEFAULT 'low'",
+        "possible_harm": "TEXT DEFAULT ''",
+        "mitigation_notes": "TEXT DEFAULT ''",
+        "human_oversight_required": "INTEGER DEFAULT 1",
+        "approval_status": "TEXT DEFAULT 'pending'",
+        "reviewer_notes": "TEXT DEFAULT ''",
+    }
+    for column_name, column_definition in scenario_columns.items():
+        _add_column_if_missing(conn, "simulation_scenarios", column_name, column_definition)
+
+
 def get_connection(db_path: Path) -> sqlite3.Connection:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)
@@ -111,6 +160,7 @@ def init_db(db_path: Path) -> None:
             CREATE INDEX IF NOT EXISTS idx_audit_target ON audit_logs(target_type, target_id);
             """
         )
+        _run_migrations(conn)
 
 
 def json_dumps(value: object) -> str:
