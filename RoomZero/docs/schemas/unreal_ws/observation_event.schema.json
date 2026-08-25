@@ -20,6 +20,11 @@
     },
     "payload": {
       "type": "object"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional persistent simulation run identifier. The run must be active."
     }
   },
   "required": [

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-labelledby="title description">
+  <title id="title">RoomZero</title>
+  <desc id="description">A luminous RZ research-lab monogram.</desc>
+  <defs>
+    <linearGradient id="bg" x1="22" y1="16" x2="170" y2="178" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#263a68"/>
+      <stop offset="1" stop-color="#0b1224"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="46" y1="42" x2="145" y2="148" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#77e0c5"/>
+      <stop offset="1" stop-color="#7d9cff"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  <circle cx="96" cy="96" r="68" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M51 139V53h38c22 0 35 11 35 29 0 13-7 22-19 26l25 31h-22l-22-28H70v28H51Zm19-45h18c11 0 17-4 17-12 0-8-6-12-17-12H70v24Z" fill="url(#mark)"/>
+  <path d="M117 53h31v16l-31 53h31v17h-54v-15l32-54h-29V53h20Z" fill="#eef2ff" fill-opacity=".9"/>
+  <circle cx="148" cy="45" r="6" fill="#77e0c5"/>
+</svg>

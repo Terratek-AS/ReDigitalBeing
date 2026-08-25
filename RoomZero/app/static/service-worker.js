@@ -1,4 +1,4 @@
-const CACHE_NAME = "roomzero-ui-v2";
+const CACHE_NAME = "roomzero-ui-v3";
 const APP_SHELL = [
   "/ui",
   "/static/styles.css",

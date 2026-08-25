@@ -23,7 +23,7 @@ jobs:
       - name: Scan requirements.txt for vulnerabilities
         run: |
           if [ -f RoomZero/requirements.txt ]; then
-            docker run --rm -v "$PWD":/project aquasec/trivy:latest fs --exit-code 1 --severity CRITICAL,HIGH /project/RoomZero/requirements.txt || true
+            docker run --rm -v "$PWD":/project aquasec/trivy:latest fs --exit-code 1 --severity CRITICAL,HIGH /project/RoomZero/requirements.txt
           else
             echo 'No requirements.txt found; skipping.'
           fi

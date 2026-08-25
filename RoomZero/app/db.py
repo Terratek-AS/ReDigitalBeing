@@ -66,6 +66,12 @@ def init_db(db_path: Path) -> None:
     with get_connection(db_path) as conn:
         conn.executescript(
             """
+            CREATE TABLE IF NOT EXISTS schema_migrations (
+                version INTEGER PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE,
+                applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
             CREATE TABLE IF NOT EXISTS users (
                 id TEXT PRIMARY KEY,
                 display_name TEXT NOT NULL,
@@ -130,6 +136,38 @@ def init_db(db_path: Path) -> None:
                 FOREIGN KEY(research_question_id) REFERENCES research_questions(id) ON DELETE CASCADE
             );
 
+            CREATE TABLE IF NOT EXISTS simulation_runs (
+                id TEXT PRIMARY KEY,
+                scenario_id TEXT NOT NULL,
+                run_number INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'queued',
+                started_by TEXT NOT NULL,
+                started_at TEXT,
+                completed_at TEXT,
+                input_snapshot TEXT NOT NULL DEFAULT '{}',
+                metrics TEXT NOT NULL DEFAULT '{}',
+                result_summary TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                UNIQUE(scenario_id, run_number),
+                FOREIGN KEY(scenario_id) REFERENCES simulation_scenarios(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS observations (
+                id TEXT PRIMARY KEY,
+                run_id TEXT NOT NULL,
+                scenario_id TEXT NOT NULL,
+                observer_id TEXT NOT NULL,
+                observation_type TEXT NOT NULL,
+                content TEXT NOT NULL,
+                data TEXT NOT NULL DEFAULT '{}',
+                severity TEXT NOT NULL DEFAULT 'info',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY(run_id) REFERENCES simulation_runs(id) ON DELETE CASCADE,
+                FOREIGN KEY(scenario_id) REFERENCES simulation_scenarios(id) ON DELETE CASCADE
+            );
+
             CREATE TABLE IF NOT EXISTS knowledge_entries (
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
@@ -157,10 +195,23 @@ def init_db(db_path: Path) -> None:
             CREATE INDEX IF NOT EXISTS idx_invitations_code ON invitations(invite_code);
             CREATE INDEX IF NOT EXISTS idx_questions_status ON research_questions(status);
             CREATE INDEX IF NOT EXISTS idx_comments_question ON research_comments(question_id);
+            CREATE INDEX IF NOT EXISTS idx_runs_scenario ON simulation_runs(scenario_id, run_number);
+            CREATE INDEX IF NOT EXISTS idx_observations_run ON observations(run_id, created_at);
             CREATE INDEX IF NOT EXISTS idx_audit_target ON audit_logs(target_type, target_id);
             """
         )
         _run_migrations(conn)
+        conn.executemany(
+            "INSERT OR IGNORE INTO schema_migrations (version, name) VALUES (?, ?)",
+            (
+                (1, "platform_base_schema"),
+                (2, "ethical_review_fields"),
+                (3, "simulation_runs_and_observations"),
+            ),
+        )
+        violations = conn.execute("PRAGMA foreign_key_check").fetchall()
+        if violations:
+            raise RuntimeError(f"Platform database foreign-key validation failed: {violations!r}")
 
 
 def json_dumps(value: object) -> str:

@@ -22,21 +22,12 @@ jobs:
       - name: Compile Python files
         run: python -m compileall -q .
       - name: Pip check
-        run: pip check || true
+        run: pip check
       - name: Run pytest
         run: pytest -q
-      - name: Node lint if present
+      - name: Run ruff
+        run: ruff check RoomZero/app RoomZero/tests RoomZero/scripts
+      - name: Validate JavaScript syntax
         run: |
-          if [ -f package.json ]; then
-            curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-            npm ci || true
-            if npm run | grep -q "lint"; then npm run lint || true; else echo "no lint script in package.json"; fi
-          elif [ -f RoomZero/package.json ]; then
-            curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-            (cd RoomZero && npm ci) || true
-            (cd RoomZero && if npm run | grep -q "lint"; then npm run lint || true; else echo "no lint script in RoomZero/package.json"; fi)
-          else
-            echo "no package.json found; skipping JS lint"
-          fi
+          node --check RoomZero/app/static/app.js
+          node --check RoomZero/app/static/service-worker.js
