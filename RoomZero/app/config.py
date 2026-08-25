@@ -7,7 +7,13 @@ from dotenv import load_dotenv
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT_DIR / "data"
+load_dotenv(ROOT_DIR / ".env")
+_configured_data_dir = os.getenv("ROOMZERO_DATA_DIR", "").strip()
+if _configured_data_dir:
+    _data_dir = Path(_configured_data_dir)
+    DATA_DIR = _data_dir if _data_dir.is_absolute() else ROOT_DIR / _data_dir
+else:
+    DATA_DIR = ROOT_DIR / "data"
 PERSONA_DIR = DATA_DIR / "persona"
 STATE_DIR = DATA_DIR / "state"
 MEMORY_DIR = DATA_DIR / "memory"
@@ -47,7 +53,6 @@ class Settings:
 
 
 def load_settings() -> Settings:
-    load_dotenv(ROOT_DIR / ".env")
     api_key = os.getenv("OPENAI_API_KEY", "").strip() or None
     model = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
     debug = os.getenv("ROOMZERO_DEBUG", "true").strip().lower() == "true"

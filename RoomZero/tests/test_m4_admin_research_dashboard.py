@@ -77,6 +77,16 @@ def _seed_researcher(admin_id: str) -> str:
     return created["user_id"]
 
 
+def _seed_reviewer(admin_id: str) -> str:
+    invite = platform_store.create_invitation(role="reviewer", invited_by=admin_id, expires_in_hours=24)
+    created = platform_store.accept_invitation(
+        invite_code=invite["invite_code"],
+        display_name="M4 Reviewer",
+        accepted_by=admin_id,
+    )
+    return created["user_id"]
+
+
 def _create_question(actor_id: str, suffix: str = "lifecycle", risk_level: str = "medium") -> dict:
     res = client.post(
         "/platform/research/questions",
@@ -226,6 +236,122 @@ def test_research_question_invalid_values_are_rejected() -> None:
         json={"actor_id": admin_id, "priority": 11},
     )
     assert res_invalid_priority.status_code in {400, 422}
+
+    res_invalid_scenario_status = client.get(
+        "/platform/scenarios",
+        params={"actor_id": admin_id, "status": "executing"},
+    )
+    assert res_invalid_scenario_status.status_code == 400
+
+
+def test_governance_decisions_cannot_be_self_approved_or_escalated() -> None:
+    admin_id = _seed_admin()
+    researcher_id = _seed_researcher(admin_id)
+    reviewer_id = _seed_reviewer(admin_id)
+
+    self_approved_create = client.post(
+        "/platform/research/questions",
+        json={
+            "actor_id": researcher_id,
+            "title": "Self-approved question",
+            "description": "Must be rejected by the governance boundary.",
+            "category": "governance",
+            "hypothesis": "Separation of duties prevents self-approval.",
+            "simulation_relevance": "Exercises the review gate.",
+            "ethical_risk": "Privilege escalation.",
+            "suggested_conditions": "Synthetic-only test.",
+            "approval_status": "approved",
+        },
+    )
+    assert self_approved_create.status_code == 403
+
+    question = _create_question(researcher_id, "separation-of-duties", risk_level="medium")
+    for path, method, payload in (
+        (f"/platform/research/questions/{question['id']}/approve", "post", {}),
+        (
+            f"/platform/research/questions/{question['id']}/review",
+            "patch",
+            {"approval_status": "approved"},
+        ),
+        (
+            f"/platform/research/questions/{question['id']}/prioritize",
+            "post",
+            {"priority": 10},
+        ),
+    ):
+        response = client.request(
+            method,
+            path,
+            json={"actor_id": researcher_id, **payload},
+        )
+        assert response.status_code == 403, response.text
+
+    approved = client.post(
+        f"/platform/research/questions/{question['id']}/approve",
+        json={"actor_id": reviewer_id, "reviewer_notes": "Independent review complete."},
+    )
+    assert approved.status_code == 200, approved.text
+
+    self_approved_scenario = client.post(
+        f"/platform/research/questions/{question['id']}/convert-scenario",
+        json={
+            "actor_id": researcher_id,
+            "purpose": "Attempt self-approved execution.",
+            "agent_type": "Eir",
+            "environment": "Local synthetic chamber",
+            "status": "ready_for_test",
+            "risk_level": "medium",
+            "human_oversight_required": True,
+            "approval_status": "approved",
+        },
+    )
+    assert self_approved_scenario.status_code == 403
+
+    draft = client.post(
+        f"/platform/research/questions/{question['id']}/convert-scenario",
+        json={
+            "actor_id": researcher_id,
+            "purpose": "Governed scenario draft.",
+            "agent_type": "Eir",
+            "environment": "Local synthetic chamber",
+            "risk_level": "medium",
+            "human_oversight_required": True,
+        },
+    )
+    assert draft.status_code == 200, draft.text
+    scenario_id = draft.json()["scenario"]["id"]
+
+    self_approved_update = client.patch(
+        f"/platform/scenarios/{scenario_id}",
+        json={
+            "actor_id": researcher_id,
+            "status": "ready_for_test",
+            "approval_status": "approved",
+        },
+    )
+    assert self_approved_update.status_code == 403
+
+    reviewer_approved = client.patch(
+        f"/platform/scenarios/{scenario_id}",
+        json={
+            "actor_id": reviewer_id,
+            "status": "ready_for_test",
+            "approval_status": "approved",
+            "reviewer_notes": "Independent scenario review complete.",
+        },
+    )
+    assert reviewer_approved.status_code == 200, reviewer_approved.text
+
+    elevated_invite = client.post(
+        "/platform/invitations",
+        json={"actor_id": reviewer_id, "role": "admin", "expires_in_hours": 24},
+    )
+    assert elevated_invite.status_code == 403
+    tester_invite = client.post(
+        "/platform/invitations",
+        json={"actor_id": reviewer_id, "role": "tester", "expires_in_hours": 24},
+    )
+    assert tester_invite.status_code == 200, tester_invite.text
 
 
 def test_scenario_conversion_m4_fields_filters_update_and_audit() -> None:

@@ -53,6 +53,49 @@ Additional policy requirements:
 - Optional OpenAI API mode using `.env`
 - Modular architecture for future upgrades (vector DB/graph memory)
 
+## Stable research MVP workflow
+
+The SQLite-backed platform API now supports the complete first research loop:
+
+1. Invite and register role-scoped users.
+2. Submit, review, prioritize, and approve research questions.
+3. Convert approved questions into ethically reviewed scenarios.
+4. Start numbered, persistent simulation runs from approved scenarios.
+5. Store structured observations, metrics, result summaries, and audit events.
+6. Link curated knowledge entries back to questions, scenarios, and observations.
+
+Key run endpoints:
+
+- `POST /platform/scenarios/{scenario_id}/runs`
+- `GET /platform/runs`
+- `PATCH /platform/runs/{run_id}`
+- `POST /platform/runs/{run_id}/observations`
+- `GET /platform/runs/{run_id}/observations`
+
+Simulation execution remains intentionally local-first. Creating a run records the
+research lifecycle; it does not automatically execute an external AI or Unreal process.
+
+Run control is governed and monotonic: `queued -> running -> completed|failed|cancelled`.
+Terminal runs cannot be reopened, only one run per scenario may be active, and
+observations are accepted only while the run is `running`. Researchers may draft
+questions and scenarios, but approval/rejection and readiness decisions require an
+independent admin or reviewer.
+
+## M4.2 Admin Research Console
+
+Open `/ui`, choose **Admin**, and provide an existing platform admin or reviewer
+`actor_id` to use the governance console. The console supports:
+
+- user and invitation visibility plus expiring invite creation;
+- filtered research review with ethical decision notes;
+- approved-question conversion into draft scenarios;
+- scenario approval and controlled run start/completion;
+- persistent observation inspection and recent audit activity;
+- a downloadable `roomzero.research-export.v1` JSON research snapshot.
+
+The visible actor-ID control is intentionally marked as prototype authorization.
+It must be replaced with server-issued authentication before public deployment.
+
 ## Project Structure
 
 ```text
@@ -145,6 +188,11 @@ Local default path (when no `ROOMZERO_PLATFORM_DB_PATH` is set) is:
 - `RoomZero/data/platform/platform.sqlite`
 
 This keeps SQLite runtime writes out of tracked repo files and avoids repeated dirty Git state.
+
+For complete runtime-data isolation (including legacy JSON stores), set
+`ROOMZERO_DATA_DIR` to an absolute directory or to a path relative to the
+`RoomZero/` application directory. The test suite configures both storage
+variables before importing the app so tests never migrate tracked runtime data.
 
 ### Build and run
 
@@ -739,17 +787,20 @@ Define a future planning blueprint for the **Simulation Intelligence & Digital H
 - Ensure transport boundary between simulation runtime and visual renderer is contract-based and auditable
 - Restrict visual layer to presentation, animation, and user-facing embodiment experiences only
 
-### Future database models
+### Current and future database models
 
-(Planning targets only; no schema changes in this task)
+Implemented in the current research MVP:
 
 - `simulation_runs`
+- `observations`
+
+Remaining planning targets:
+
 - `simulation_run_events`
 - `agent_profiles`
 - `agent_profile_versions`
 - `memory_state_snapshots`
 - `memory_state_transitions`
-- `simulation_observations`
 - `simulation_metric_series`
 - `ethical_reviews`
 - `ethical_review_decisions`
@@ -757,9 +808,11 @@ Define a future planning blueprint for the **Simulation Intelligence & Digital H
 - `visual_session_links`
 - `run_artifact_index`
 
-### Future APIs
+### Expanded future APIs
 
-(Planning targets only; no API implementation in this task)
+The current MVP exposes run control below `/platform/scenarios/{scenario_id}/runs`
+and `/platform/runs`. The following remain planning targets for a fuller control
+plane:
 
 - Simulation runs:
   - `POST /platform/simulations/runs`

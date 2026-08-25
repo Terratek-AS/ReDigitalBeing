@@ -395,6 +395,26 @@ class PlatformKnowledgeCreateRequest(BaseModel):
     linked_observation_id: str | None = None
 
 
+class PlatformSimulationRunCreateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    input_snapshot: dict[str, Any] = Field(default_factory=dict)
+
+
+class PlatformSimulationRunUpdateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    status: Literal["queued", "running", "completed", "failed", "cancelled"]
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    result_summary: str = Field(default="", max_length=10000)
+
+
+class PlatformObservationCreateRequest(BaseModel):
+    actor_id: str = Field(min_length=1, max_length=200)
+    observation_type: str = Field(min_length=1, max_length=100)
+    content: str = Field(min_length=1, max_length=10000)
+    data: dict[str, Any] = Field(default_factory=dict)
+    severity: Literal["info", "warning", "critical"] = "info"
+
+
 # --- Unreal bridge (local-first MVP) ---
 class AgentState(BaseModel):
     protocol_version: str = "roomzero.unreal.v1"
@@ -424,6 +444,7 @@ class ObservationEvent(BaseModel):
     agent_id: str
     event: str
     payload: dict[str, Any] = Field(default_factory=dict)
+    run_id: str | None = None
     created_at: str = Field(default_factory=utc_now_iso)
 
 

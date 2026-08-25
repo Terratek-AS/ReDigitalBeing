@@ -1,6 +1,14 @@
 const $ = (id) => document.getElementById(id);
 
 let deferredInstallPrompt = null;
+const adminState = {
+  users: [],
+  invitations: [],
+  questions: [],
+  scenarios: [],
+  runs: [],
+  audit: [],
+};
 
 function getConfiguredApiBaseUrl() {
   const fallback = "http://127.0.0.1:8000";
@@ -54,6 +62,236 @@ function pretty(el, data) {
   el.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
 }
 
+function getAdminActorId() {
+  return ($("admin-actor-id")?.value || "").trim();
+}
+
+function requireAdminActorId() {
+  const actorId = getAdminActorId();
+  if (!actorId) throw new Error("Enter a valid admin or reviewer actor ID first.");
+  return actorId;
+}
+
+function splitCsv(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function formatDate(value) {
+  if (!value) return "Not set";
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? String(value) : parsed.toLocaleString();
+}
+
+function safeStateClass(value) {
+  const allowed = new Set(["approved", "running", "completed"]);
+  return allowed.has(value) ? `state-${value}` : "";
+}
+
+function safeRiskClass(value) {
+  return value === "high" || value === "critical" ? `risk-${value}` : "";
+}
+
+function renderAdminEmpty(targetId, message) {
+  const target = $(targetId);
+  if (target) target.innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
+}
+
+function renderAdminInvitations(items) {
+  const target = $("admin-invitations-list");
+  if (!target) return;
+  if (!items.length) {
+    renderAdminEmpty("admin-invitations-list", "No platform invitations yet.");
+    return;
+  }
+  target.innerHTML = items.slice(0, 12).map((item) => `
+    <article class="admin-list-item">
+      <div class="item-meta">
+        <span class="state-badge ${item.active ? "state-approved" : ""}">${item.active ? "active" : "used / inactive"}</span>
+        <span>${escapeHtml(item.role)}</span>
+      </div>
+      <h4>${escapeHtml(item.invite_code)}</h4>
+      <p class="muted small">Expires ${escapeHtml(formatDate(item.expires_at))}</p>
+      ${item.accepted_by ? `<p class="muted small">Accepted by ${escapeHtml(item.accepted_by)}</p>` : ""}
+    </article>
+  `).join("");
+}
+
+function renderAdminUsers(items) {
+  const target = $("admin-users-list");
+  if (!target) return;
+  if (!items.length) {
+    renderAdminEmpty("admin-users-list", "No platform users registered.");
+    return;
+  }
+  target.innerHTML = items.slice(0, 20).map((item) => `
+    <article class="admin-list-item">
+      <div class="item-meta">
+        <span class="state-badge ${Number(item.active) === 1 ? "state-approved" : ""}">${Number(item.active) === 1 ? "active" : "inactive"}</span>
+        <span>${escapeHtml(item.role)}</span>
+      </div>
+      <h4>${escapeHtml(item.display_name)}</h4>
+      <p class="muted small">${escapeHtml(item.id)} • joined ${escapeHtml(formatDate(item.created_at))}</p>
+    </article>
+  `).join("");
+}
+
+function renderAdminQuestions(items) {
+  const target = $("admin-questions-list");
+  if (!target) return;
+  if (!items.length) {
+    renderAdminEmpty("admin-questions-list", "No questions match the selected filters.");
+    return;
+  }
+  target.innerHTML = items.map((item) => `
+    <article class="admin-list-item">
+      <div class="item-meta">
+        <span class="state-badge ${safeStateClass(item.status)}">${escapeHtml(item.status)}</span>
+        <span class="risk-badge ${safeRiskClass(item.risk_level)}">${escapeHtml(item.risk_level || "low")} risk</span>
+        <span>Priority ${escapeHtml(item.priority ?? 5)}</span>
+        <span>${escapeHtml(item.category)}</span>
+      </div>
+      <h4>${escapeHtml(item.title)}</h4>
+      <p class="muted">${escapeHtml(item.description)}</p>
+      <p class="muted small">Author ${escapeHtml(item.author)} • ${escapeHtml(formatDate(item.created_at))}</p>
+      <div class="item-actions">
+        <button data-question-action="approve" data-question-id="${escapeHtml(item.id)}">Approve</button>
+        <button class="btn-secondary" data-question-action="review" data-question-id="${escapeHtml(item.id)}">Needs review</button>
+        <button class="btn-danger" data-question-action="reject" data-question-id="${escapeHtml(item.id)}">Reject</button>
+        <button class="btn-secondary" data-question-action="archive" data-question-id="${escapeHtml(item.id)}">Archive</button>
+        ${item.status === "approved" ? `<button class="btn-secondary" data-question-action="scenario" data-question-id="${escapeHtml(item.id)}">Use in scenario</button>` : ""}
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderAdminScenarios(items) {
+  const target = $("admin-scenarios-list");
+  if (!target) return;
+  if (!items.length) {
+    renderAdminEmpty("admin-scenarios-list", "No scenarios have been created.");
+    return;
+  }
+  target.innerHTML = items.map((item) => `
+    <article class="admin-list-item">
+      <div class="item-meta">
+        <span class="state-badge ${safeStateClass(item.approval_status)}">${escapeHtml(item.approval_status)}</span>
+        <span class="risk-badge ${safeRiskClass(item.risk_level)}">${escapeHtml(item.risk_level)} risk</span>
+        <span>${escapeHtml(item.status)}</span>
+      </div>
+      <h4>${escapeHtml(item.purpose)}</h4>
+      <p class="muted small">${escapeHtml(item.agent_type)} • ${escapeHtml(item.environment)}</p>
+      <div class="item-actions">
+        ${item.approval_status !== "approved" ? `<button data-scenario-action="approve" data-scenario-id="${escapeHtml(item.id)}">Approve scenario</button>` : `<button data-scenario-action="start" data-scenario-id="${escapeHtml(item.id)}">Start controlled run</button>`}
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderAdminRuns(items) {
+  const target = $("admin-runs-list");
+  if (!target) return;
+  if (!items.length) {
+    renderAdminEmpty("admin-runs-list", "No simulation runs recorded.");
+    return;
+  }
+  target.innerHTML = items.map((item) => `
+    <article class="admin-list-item">
+      <div class="item-meta">
+        <span class="state-badge ${safeStateClass(item.status)}">${escapeHtml(item.status)}</span>
+        <span>Run ${escapeHtml(item.run_number)}</span>
+      </div>
+      <h4>${escapeHtml(item.id)}</h4>
+      <p class="muted small">Scenario ${escapeHtml(item.scenario_id)} • ${escapeHtml(formatDate(item.created_at))}</p>
+      <div class="item-actions">
+        <button class="btn-secondary" data-run-action="observe" data-run-id="${escapeHtml(item.id)}">View observations</button>
+        ${item.status === "running" ? `<button data-run-action="complete" data-run-id="${escapeHtml(item.id)}">Complete run</button>` : ""}
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderAdminAudit(items) {
+  const target = $("admin-audit-list");
+  if (!target) return;
+  if (!items.length) {
+    renderAdminEmpty("admin-audit-list", "No audit activity recorded.");
+    return;
+  }
+  target.innerHTML = items.slice(0, 30).map((item) => `
+    <article class="admin-list-item">
+      <div class="item-meta"><span>${escapeHtml(formatDate(item.created_at))}</span><span>${escapeHtml(item.actor_id)}</span></div>
+      <h4>${escapeHtml(item.action)}</h4>
+      <p class="muted small">${escapeHtml(item.target_type)} • ${escapeHtml(item.target_id)}</p>
+    </article>
+  `).join("");
+}
+
+function updateAdminSummary() {
+  const openInvites = adminState.invitations.filter((item) => Number(item.active) === 1).length;
+  const needsReview = adminState.questions.filter(
+    (item) => item.status === "proposed" || item.approval_status === "needs_review"
+  ).length;
+  $("admin-kpi-users").textContent = adminState.users.length;
+  $("admin-kpi-invitations").textContent = openInvites;
+  $("admin-kpi-review").textContent = needsReview;
+  $("admin-kpi-scenarios").textContent = adminState.scenarios.length;
+  $("admin-kpi-runs").textContent = adminState.runs.length;
+}
+
+async function loadAdminQuestions() {
+  const actorId = requireAdminActorId();
+  const params = new URLSearchParams({ actor_id: actorId });
+  const status = $("admin-question-status").value;
+  const risk = $("admin-question-risk").value;
+  if (status) params.set("status", status);
+  if (risk) params.set("risk_level", risk);
+  const data = await api(`/platform/research/questions?${params}`);
+  adminState.questions = data.items || [];
+  renderAdminQuestions(adminState.questions);
+  updateAdminSummary();
+}
+
+async function loadAdminDashboard() {
+  const actorId = requireAdminActorId();
+  $("admin-scope-note").textContent = "Loading governed platform data…";
+  const encodedActor = encodeURIComponent(actorId);
+  const [users, invitations, questions, scenarios, runs, audit] = await Promise.all([
+    api(`/platform/users?actor_id=${encodedActor}`),
+    api(`/platform/invitations?actor_id=${encodedActor}`),
+    api(`/platform/research/questions?actor_id=${encodedActor}`),
+    api(`/platform/scenarios?actor_id=${encodedActor}`),
+    api(`/platform/runs?actor_id=${encodedActor}`),
+    api("/platform/audit", { method: "POST", body: JSON.stringify({ actor_id: actorId }) }),
+  ]);
+  adminState.users = users.items || [];
+  adminState.invitations = invitations.items || [];
+  adminState.questions = questions.items || [];
+  adminState.scenarios = scenarios.items || [];
+  adminState.runs = runs.items || [];
+  adminState.audit = audit.items || [];
+  renderAdminInvitations(adminState.invitations);
+  renderAdminUsers(adminState.users);
+  renderAdminQuestions(adminState.questions);
+  renderAdminScenarios(adminState.scenarios);
+  renderAdminRuns(adminState.runs);
+  renderAdminAudit(adminState.audit);
+  updateAdminSummary();
+  $("admin-scope-note").textContent = `Authorized workspace loaded for ${actorId}.`;
+}
+
+async function refreshAdminArea() {
+  try {
+    await loadAdminDashboard();
+    showToast("Admin workspace refreshed");
+  } catch (error) {
+    $("admin-scope-note").textContent = error.message;
+    showToast(error.message);
+  }
+}
+
 async function copyText(value, okMessage) {
   try {
     await navigator.clipboard.writeText(value);
@@ -75,6 +313,7 @@ function setRolePanel(role) {
     tester: "dashboard-tester",
     observer: "dashboard-observer",
     researcher: "dashboard-researcher",
+    admin: "dashboard-admin",
   };
   Object.values(map).forEach((id) => {
     const panel = $(id);
@@ -509,6 +748,226 @@ $("btn-list-sources").onclick = async () => {
   }
 };
 
+$("btn-admin-save-actor").onclick = async () => {
+  const actorId = getAdminActorId();
+  if (!actorId) {
+    showToast("Enter an actor ID first.");
+    return;
+  }
+  localStorage.setItem("roomzero_admin_actor_id", actorId);
+  await refreshAdminArea();
+};
+
+$("btn-admin-refresh").onclick = refreshAdminArea;
+$("btn-admin-export").onclick = async () => {
+  try {
+    const actorId = requireAdminActorId();
+    await loadAdminDashboard();
+    const observationPairs = await Promise.all(
+      adminState.runs.map(async (run) => {
+        const data = await api(
+          `/platform/runs/${encodeURIComponent(run.id)}/observations?actor_id=${encodeURIComponent(actorId)}`
+        );
+        return [run.id, data.items || []];
+      })
+    );
+    const snapshot = {
+      exported_at: new Date().toISOString(),
+      schema: "roomzero.research-export.v1",
+      users: adminState.users,
+      invitations: adminState.invitations,
+      research_questions: adminState.questions,
+      simulation_scenarios: adminState.scenarios,
+      simulation_runs: adminState.runs,
+      observations_by_run: Object.fromEntries(observationPairs),
+      audit_logs: adminState.audit,
+    };
+    const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `roomzero-research-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    showToast("Research snapshot exported");
+  } catch (error) {
+    showToast(error.message);
+  }
+};
+$("btn-admin-filter-questions").onclick = async () => {
+  try {
+    await loadAdminQuestions();
+    showToast("Research queue filtered");
+  } catch (error) {
+    showToast(error.message);
+  }
+};
+
+$("btn-admin-create-invite").onclick = async () => {
+  try {
+    const actorId = requireAdminActorId();
+    const data = await api("/platform/invitations", {
+      method: "POST",
+      body: JSON.stringify({
+        actor_id: actorId,
+        role: $("admin-invite-role").value,
+        expires_in_hours: Number($("admin-invite-hours").value || 72),
+      }),
+    });
+    showToast(`Invite ${data.invitation.invite_code} created`);
+    await loadAdminDashboard();
+  } catch (error) {
+    showToast(error.message);
+  }
+};
+
+$("admin-questions-list").onclick = async (event) => {
+  const button = event.target.closest("button[data-question-action]");
+  if (!button) return;
+  const questionId = button.dataset.questionId;
+  const action = button.dataset.questionAction;
+  if (action === "scenario") {
+    $("admin-scenario-question-id").value = questionId;
+    $("admin-scenario-purpose").focus();
+    showToast("Question selected for scenario builder");
+    return;
+  }
+  try {
+    const actorId = requireAdminActorId();
+    const reviewerNotes = $("admin-review-notes").value.trim();
+    if (action === "review") {
+      await api(`/platform/research/questions/${encodeURIComponent(questionId)}/review`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          actor_id: actorId,
+          approval_status: "needs_review",
+          reviewer_notes: reviewerNotes || "Returned for further ethical review.",
+        }),
+      });
+    } else {
+      await api(`/platform/research/questions/${encodeURIComponent(questionId)}/${action}`, {
+        method: "POST",
+        body: JSON.stringify({ actor_id: actorId, reviewer_notes: reviewerNotes || null }),
+      });
+    }
+    const actionLabels = { approve: "approved", review: "returned for review", reject: "rejected", archive: "archived" };
+    showToast(`Question ${actionLabels[action] || "updated"}`);
+    await loadAdminDashboard();
+  } catch (error) {
+    showToast(error.message);
+  }
+};
+
+$("btn-admin-convert-scenario").onclick = async () => {
+  try {
+    const actorId = requireAdminActorId();
+    const questionId = $("admin-scenario-question-id").value.trim();
+    if (!questionId) throw new Error("Select an approved research question first.");
+    const purpose = $("admin-scenario-purpose").value.trim();
+    if (!purpose) throw new Error("Describe the scenario purpose.");
+    const metrics = splitCsv($("admin-scenario-metrics").value);
+    const constraints = splitCsv($("admin-scenario-constraints").value);
+    await api(`/platform/research/questions/${encodeURIComponent(questionId)}/convert-scenario`, {
+      method: "POST",
+      body: JSON.stringify({
+        actor_id: actorId,
+        purpose,
+        agent_type: $("admin-scenario-agent").value.trim() || "Eir",
+        environment: $("admin-scenario-environment").value.trim() || "Local synthetic chamber",
+        variables: [],
+        metrics,
+        ethical_constraints: constraints,
+        environment_conditions: "Controlled local research environment.",
+        input_variables: [],
+        expected_observations: [],
+        metrics_to_collect: metrics,
+        result_summary: "Not run yet.",
+        status: "draft",
+        risk_level: $("admin-scenario-risk").value,
+        possible_harm: "Requires human review before execution.",
+        mitigation_notes: constraints.join("; "),
+        human_oversight_required: true,
+        approval_status: "pending",
+        reviewer_notes: $("admin-review-notes").value.trim(),
+      }),
+    });
+    showToast("Draft scenario created");
+    await loadAdminDashboard();
+  } catch (error) {
+    showToast(error.message);
+  }
+};
+
+$("btn-admin-refresh-scenarios").onclick = refreshAdminArea;
+$("btn-admin-refresh-runs").onclick = refreshAdminArea;
+
+$("admin-scenarios-list").onclick = async (event) => {
+  const button = event.target.closest("button[data-scenario-action]");
+  if (!button) return;
+  const scenarioId = button.dataset.scenarioId;
+  const action = button.dataset.scenarioAction;
+  try {
+    const actorId = requireAdminActorId();
+    if (action === "approve") {
+      await api(`/platform/scenarios/${encodeURIComponent(scenarioId)}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          actor_id: actorId,
+          status: "ready_for_test",
+          approval_status: "approved",
+          reviewer_notes: $("admin-review-notes").value.trim() || "Approved in M4.2 admin console.",
+        }),
+      });
+      showToast("Scenario approved for controlled testing");
+    } else if (action === "start") {
+      const created = await api(`/platform/scenarios/${encodeURIComponent(scenarioId)}/runs`, {
+        method: "POST",
+        body: JSON.stringify({ actor_id: actorId, input_snapshot: { source: "m4.2-admin-ui" } }),
+      });
+      await api(`/platform/runs/${encodeURIComponent(created.run.id)}`, {
+        method: "PATCH",
+        body: JSON.stringify({ actor_id: actorId, status: "running", metrics: {}, result_summary: "" }),
+      });
+      showToast(`Run ${created.run.run_number} started`);
+    }
+    await loadAdminDashboard();
+  } catch (error) {
+    showToast(error.message);
+  }
+};
+
+$("admin-runs-list").onclick = async (event) => {
+  const button = event.target.closest("button[data-run-action]");
+  if (!button) return;
+  const runId = button.dataset.runId;
+  const action = button.dataset.runAction;
+  try {
+    const actorId = requireAdminActorId();
+    if (action === "observe") {
+      const data = await api(
+        `/platform/runs/${encodeURIComponent(runId)}/observations?actor_id=${encodeURIComponent(actorId)}`
+      );
+      pretty($("admin-run-observations"), data);
+    } else if (action === "complete") {
+      await api(`/platform/runs/${encodeURIComponent(runId)}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          actor_id: actorId,
+          status: "completed",
+          metrics: {},
+          result_summary: "Completed from M4.2 admin console; review observations before conclusions.",
+        }),
+      });
+      showToast("Simulation run completed");
+      await loadAdminDashboard();
+    }
+  } catch (error) {
+    showToast(error.message);
+  }
+};
+
 $("btn-quick-health").onclick = async () => {
   try {
     const data = await api("/health");
@@ -553,6 +1012,14 @@ refreshObserverOutput();
 refreshEventReviewNotes();
 refreshSimulationEvents();
 renderReviewAuditAction();
+renderAdminEmpty("admin-invitations-list", "Enter an authorized actor ID to load invitations.");
+renderAdminEmpty("admin-users-list", "Enter an authorized actor ID to load users.");
+renderAdminEmpty("admin-questions-list", "Enter an authorized actor ID to load the review queue.");
+renderAdminEmpty("admin-scenarios-list", "Enter an authorized actor ID to load scenarios.");
+renderAdminEmpty("admin-runs-list", "Enter an authorized actor ID to load runs.");
+renderAdminEmpty("admin-audit-list", "Enter an authorized actor ID to load audit activity.");
+const savedAdminActorId = localStorage.getItem("roomzero_admin_actor_id");
+if (savedAdminActorId) $("admin-actor-id").value = savedAdminActorId;
 setRolePanel("tester");
 setupPwaInstall();
 initHealthAndStatus();

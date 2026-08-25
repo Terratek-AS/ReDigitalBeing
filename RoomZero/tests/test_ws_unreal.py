@@ -14,6 +14,7 @@ from app.main import (
     unreal_pending_commands,
     unreal_simulation_events,
 )
+from app.platform_store import PlatformStore
 
 client = TestClient(app)
 FIXTURE_DIR = Path(__file__).parent / "fixtures" / "unreal_ws"
@@ -21,6 +22,45 @@ FIXTURE_DIR = Path(__file__).parent / "fixtures" / "unreal_ws"
 
 def _load_fixture(name: str) -> dict[str, Any]:
     return json.loads((FIXTURE_DIR / name).read_text(encoding="utf-8"))
+
+
+def _active_run(store: PlatformStore) -> tuple[str, str]:
+    admin_invite = store.create_invitation("admin", "system", 24)
+    admin_id = store.accept_invitation(admin_invite["invite_code"], "Admin")["user_id"]
+    researcher_invite = store.create_invitation("researcher", admin_id, 24)
+    researcher_id = store.accept_invitation(
+        researcher_invite["invite_code"], "Researcher", admin_id
+    )["user_id"]
+    question = store.create_research_question(
+        actor_id=researcher_id,
+        title="Unreal persistence contract",
+        description="Verify durable Unreal observations.",
+        category="unreal_engine",
+        hypothesis="Linked observations remain traceable.",
+        simulation_relevance="Direct bridge integration.",
+        ethical_risk="Synthetic event data only.",
+        suggested_conditions="One local active run.",
+    )
+    store.change_research_status(admin_id, question["id"], "approved")
+    scenario = store.create_scenario_from_question(
+        researcher_id,
+        question["id"],
+        "Verify bridge persistence.",
+        "Eir",
+        "Unreal test chamber",
+        [],
+        ["observation_count"],
+        ["synthetic data only"],
+    )
+    scenario = store.update_scenario(
+        admin_id,
+        scenario["id"],
+        status="ready_for_test",
+        approval_status="approved",
+    )
+    run = store.create_simulation_run(researcher_id, scenario["id"])
+    store.update_simulation_run(researcher_id, run["id"], "running", {}, "")
+    return run["id"], admin_id
 
 
 def test_default_agent_state_endpoint() -> None:
@@ -240,6 +280,66 @@ def test_observation_ack() -> None:
     assert last_item["agent_id"] == agent_id
     assert last_item["event"] == "player_entered_room"
     assert last_item["payload"] == {"distance": 2.4}
+
+
+def test_observation_with_active_run_is_persisted_and_audited(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = PlatformStore(tmp_path / "bridge.sqlite")
+    run_id, admin_id = _active_run(store)
+    monkeypatch.setattr("app.main.platform_store", store)
+    agent_id = "rz-test-persistent-observation"
+
+    with client.websocket_connect(f"/ws/unreal/{agent_id}") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+        ws.send_json(
+            {
+                "type": "observation",
+                "event": "agent_gesture_completed",
+                "run_id": run_id,
+                "payload": {"gesture": "explain", "duration_ms": 840},
+            }
+        )
+        ack = ws.receive_json()
+
+    assert ack["type"] == "ack"
+    assert ack["persisted"] is True
+    assert ack["run_id"] == run_id
+    observations = store.list_observations(run_id)
+    assert len(observations) == 1
+    assert observations[0]["id"] == ack["observation_id"]
+    assert observations[0]["observation_type"] == "unreal.agent_gesture_completed"
+    assert observations[0]["data"]["payload"]["duration_ms"] == 840
+    actions = {item["action"] for item in store.recent_activity()}
+    assert "unreal_observation_persisted" in actions
+    assert store.require_role(admin_id, {"admin"})["id"] == admin_id
+
+
+def test_observation_rejects_unknown_or_inactive_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = PlatformStore(tmp_path / "bridge.sqlite")
+    run_id, _ = _active_run(store)
+    run = store.get_simulation_run(run_id)
+    assert run is not None
+    store.update_simulation_run(run["started_by"], run_id, "completed", {}, "Done.")
+    monkeypatch.setattr("app.main.platform_store", store)
+
+    with client.websocket_connect("/ws/unreal/rz-test-invalid-run") as ws:
+        _ = ws.receive_json()
+        _ = ws.receive_json()
+        ws.send_json({"type": "observation", "event": "late", "run_id": run_id, "payload": {}})
+        inactive = ws.receive_json()
+        assert inactive["error"] == "simulation_run_not_active"
+
+        ws.send_json(
+            {"type": "observation", "event": "unknown", "run_id": "missing-run", "payload": {}}
+        )
+        missing = ws.receive_json()
+        assert missing["error"] == "simulation_run_not_found"
+
+    assert store.list_observations(run_id) == []
 
 
 def test_observation_retention_cap_prunes_oldest() -> None:

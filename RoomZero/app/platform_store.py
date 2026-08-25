@@ -11,8 +11,17 @@ from app.db import get_connection, init_db, json_dumps, json_loads
 
 VALID_ROLES = {"observer", "tester", "researcher", "reviewer", "admin", "contributor"}
 VALID_STATUSES = {"proposed", "approved", "rejected", "testing", "completed", "archived"}
+VALID_SCENARIO_STATUSES = {"draft", "ready_for_test", "testing", "completed", "archived"}
 VALID_RISK_LEVELS = {"low", "medium", "high", "critical"}
 VALID_APPROVAL_STATUSES = {"pending", "approved", "rejected", "needs_review"}
+VALID_RUN_STATUSES = {"queued", "running", "completed", "failed", "cancelled"}
+RUN_STATUS_TRANSITIONS = {
+    "queued": {"running", "cancelled"},
+    "running": {"completed", "failed", "cancelled"},
+    "completed": set(),
+    "failed": set(),
+    "cancelled": set(),
+}
 
 
 def utc_now_iso() -> str:
@@ -207,10 +216,12 @@ class PlatformStore:
         approval_status: str = "pending",
         priority: int = 5,
     ) -> dict:
-        self.require_role(actor_id, {"admin", "researcher", "tester", "contributor"})
+        user = self.require_role(actor_id, {"admin", "researcher", "tester", "contributor"})
         self._validate_risk_level(risk_level)
         self._validate_approval_status(approval_status)
         self._validate_priority(priority)
+        if user["role"] != "admin" and approval_status not in {"pending", "needs_review"}:
+            raise ValueError("Only governance roles can approve research questions.")
         qid = str(uuid4())
         now = utc_now_iso()
         with get_connection(self.db_path) as conn:
@@ -278,6 +289,26 @@ class PlatformStore:
         if approval_status not in VALID_APPROVAL_STATUSES:
             raise ValueError("Invalid approval status.")
 
+    def _validate_scenario_status(self, status: str) -> None:
+        if status not in VALID_SCENARIO_STATUSES:
+            raise ValueError("Invalid scenario status.")
+
+    def _validate_scenario_approval(
+        self,
+        approval_status: str,
+        risk_level: str,
+        mitigation_notes: str,
+        human_oversight_required: bool,
+    ) -> None:
+        if approval_status != "approved":
+            return
+        if risk_level in {"medium", "high", "critical"} and not human_oversight_required:
+            raise ValueError(
+                "Medium- and high-risk scenarios require human oversight before approval."
+            )
+        if risk_level in {"high", "critical"} and not mitigation_notes.strip():
+            raise ValueError("High-risk scenarios require mitigation notes before approval.")
+
     def get_research_question(self, question_id: str) -> dict | None:
         with get_connection(self.db_path) as conn:
             row = conn.execute("SELECT * FROM research_questions WHERE id = ?", (question_id,)).fetchone()
@@ -343,6 +374,10 @@ class PlatformStore:
         user = self.require_role(actor_id, {"admin", "researcher", "tester", "contributor"})
         if user["role"] != "admin" and question["author"] != actor_id:
             raise ValueError("Only author or admin can edit this question.")
+        if user["role"] != "admin" and any(
+            value is not None for value in (approval_status, reviewer_notes, priority)
+        ):
+            raise ValueError("Only governance roles can edit review decisions or priority.")
         if risk_level is not None:
             self._validate_risk_level(risk_level)
         if approval_status is not None:
@@ -407,15 +442,23 @@ class PlatformStore:
     def change_research_status(self, actor_id: str, question_id: str, status: str) -> dict:
         if status not in VALID_STATUSES:
             raise ValueError("Invalid status.")
-        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        self.require_role(actor_id, {"admin", "reviewer"})
         question = self.get_research_question(question_id)
         if question is None:
             raise ValueError("Research question not found.")
 
+        approval_status = question["approval_status"]
+        if status == "approved":
+            approval_status = "approved"
+        elif status == "rejected":
+            approval_status = "rejected"
+        elif status == "proposed":
+            approval_status = "pending"
+
         with get_connection(self.db_path) as conn:
             conn.execute(
-                "UPDATE research_questions SET status = ?, updated_at = ? WHERE id = ?",
-                (status, utc_now_iso(), question_id),
+                "UPDATE research_questions SET status = ?, approval_status = ?, updated_at = ? WHERE id = ?",
+                (status, approval_status, utc_now_iso(), question_id),
             )
         self._audit(actor_id, "question_status_changed", "research_question", question_id, {"status": status})
         return self.get_research_question(question_id)  # type: ignore[return-value]
@@ -432,7 +475,7 @@ class PlatformStore:
         reviewer_notes: str | None = None,
         priority: int | None = None,
     ) -> dict:
-        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        self.require_role(actor_id, {"admin", "reviewer"})
         question = self.get_research_question(question_id)
         if question is None:
             raise ValueError("Research question not found.")
@@ -507,7 +550,7 @@ class PlatformStore:
             raise ValueError("Invalid status.")
         if approval_status is not None:
             self._validate_approval_status(approval_status)
-        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        self.require_role(actor_id, {"admin", "reviewer"})
         question = self.get_research_question(question_id)
         if question is None:
             raise ValueError("Research question not found.")
@@ -546,7 +589,7 @@ class PlatformStore:
         priority: int,
         reviewer_notes: str | None = None,
     ) -> dict:
-        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        self.require_role(actor_id, {"admin", "reviewer"})
         self._validate_priority(priority)
         question = self.get_research_question(question_id)
         if question is None:
@@ -622,9 +665,17 @@ class PlatformStore:
         approval_status: str = "pending",
         reviewer_notes: str = "",
     ) -> dict:
-        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        user = self.require_role(actor_id, {"admin", "reviewer", "researcher"})
         self._validate_risk_level(risk_level)
         self._validate_approval_status(approval_status)
+        self._validate_scenario_status(status)
+        if user["role"] == "researcher" and (
+            approval_status != "pending" or status != "draft" or reviewer_notes.strip()
+        ):
+            raise ValueError("Researchers cannot approve or review their own scenarios.")
+        self._validate_scenario_approval(
+            approval_status, risk_level, mitigation_notes, human_oversight_required
+        )
         question = self.get_research_question(question_id)
         if question is None:
             raise ValueError("Research question not found.")
@@ -699,6 +750,7 @@ class PlatformStore:
         clauses = []
         params: list[object] = []
         if status is not None:
+            self._validate_scenario_status(status)
             clauses.append("status = ?")
             params.append(status)
         if risk_level is not None:
@@ -739,7 +791,7 @@ class PlatformStore:
         approval_status: str | None = None,
         reviewer_notes: str | None = None,
     ) -> dict:
-        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        user = self.require_role(actor_id, {"admin", "reviewer", "researcher"})
         scenario = self.get_scenario(scenario_id)
         if scenario is None:
             raise ValueError("Scenario not found.")
@@ -747,6 +799,14 @@ class PlatformStore:
             self._validate_risk_level(risk_level)
         if approval_status is not None:
             self._validate_approval_status(approval_status)
+        if status is not None:
+            self._validate_scenario_status(status)
+        if user["role"] == "researcher" and (
+            approval_status is not None
+            or reviewer_notes is not None
+            or (status is not None and status != "draft")
+        ):
+            raise ValueError("Researchers cannot approve or review their own scenarios.")
 
         updated = {
             "purpose": purpose if purpose is not None else scenario["purpose"],
@@ -785,6 +845,12 @@ class PlatformStore:
             "reviewer_notes": reviewer_notes if reviewer_notes is not None else scenario["reviewer_notes"],
             "updated_at": utc_now_iso(),
         }
+        self._validate_scenario_approval(
+            updated["approval_status"],
+            updated["risk_level"],
+            updated["mitigation_notes"],
+            updated["human_oversight_required"],
+        )
 
         with get_connection(self.db_path) as conn:
             conn.execute(
@@ -823,6 +889,209 @@ class PlatformStore:
             )
         self._audit(actor_id, "scenario_updated", "simulation_scenario", scenario_id, {})
         return self.get_scenario(scenario_id)  # type: ignore[return-value]
+
+    def create_simulation_run(
+        self, actor_id: str, scenario_id: str, input_snapshot: dict | None = None
+    ) -> dict:
+        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        run_id = str(uuid4())
+        now = utc_now_iso()
+        with get_connection(self.db_path) as conn:
+            # Serialize approval/status validation and MAX(run_number)+1 so a
+            # concurrent review cannot race run creation.
+            conn.execute("BEGIN IMMEDIATE")
+            scenario = conn.execute(
+                "SELECT approval_status, status FROM simulation_scenarios WHERE id = ?",
+                (scenario_id,),
+            ).fetchone()
+            if scenario is None:
+                raise ValueError("Scenario not found.")
+            if scenario["approval_status"] != "approved":
+                raise ValueError("Only approved scenarios can be run.")
+            if scenario["status"] not in {"ready_for_test", "testing"}:
+                raise ValueError("Only scenarios marked ready_for_test or testing can be run.")
+            row = conn.execute(
+                "SELECT COALESCE(MAX(run_number), 0) + 1 AS next_number FROM simulation_runs WHERE scenario_id = ?",
+                (scenario_id,),
+            ).fetchone()
+            run_number = int(row["next_number"])
+            conn.execute(
+                """
+                INSERT INTO simulation_runs
+                (id, scenario_id, run_number, status, started_by, input_snapshot, metrics,
+                 result_summary, created_at, updated_at)
+                VALUES (?, ?, ?, 'queued', ?, ?, '{}', '', ?, ?)
+                """,
+                (run_id, scenario_id, run_number, actor_id, json_dumps(input_snapshot or {}), now, now),
+            )
+        self._audit(actor_id, "simulation_run_created", "simulation_run", run_id, {"scenario_id": scenario_id})
+        return self.get_simulation_run(run_id)  # type: ignore[return-value]
+
+    def _normalize_run(self, row: dict) -> dict:
+        row["input_snapshot"] = json_loads(row.get("input_snapshot", "{}"))
+        row["metrics"] = json_loads(row.get("metrics", "{}"))
+        return row
+
+    def get_simulation_run(self, run_id: str) -> dict | None:
+        with get_connection(self.db_path) as conn:
+            row = conn.execute("SELECT * FROM simulation_runs WHERE id = ?", (run_id,)).fetchone()
+        return self._normalize_run(dict(row)) if row else None
+
+    def list_simulation_runs(self, scenario_id: str | None = None) -> list[dict]:
+        query = "SELECT * FROM simulation_runs"
+        params: tuple = ()
+        if scenario_id is not None:
+            query += " WHERE scenario_id = ?"
+            params = (scenario_id,)
+        query += " ORDER BY created_at DESC"
+        with get_connection(self.db_path) as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._normalize_run(dict(row)) for row in rows]
+
+    def update_simulation_run(
+        self, actor_id: str, run_id: str, status: str, metrics: dict, result_summary: str
+    ) -> dict:
+        self.require_role(actor_id, {"admin", "reviewer", "researcher"})
+        if status not in VALID_RUN_STATUSES:
+            raise ValueError("Invalid simulation run status.")
+        now = utc_now_iso()
+        with get_connection(self.db_path) as conn:
+            # State validation and mutation are one serialized transaction.
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute(
+                "SELECT * FROM simulation_runs WHERE id = ?", (run_id,)
+            ).fetchone()
+            if row is None:
+                raise ValueError("Simulation run not found.")
+            run = self._normalize_run(dict(row))
+            current_status = str(run["status"])
+            if status not in RUN_STATUS_TRANSITIONS[current_status]:
+                raise ValueError(
+                    f"Invalid simulation run transition: {current_status} -> {status}."
+                )
+            if status == "running":
+                active = conn.execute(
+                    "SELECT id FROM simulation_runs WHERE scenario_id = ? AND status = 'running' AND id != ? LIMIT 1",
+                    (run["scenario_id"], run_id),
+                ).fetchone()
+                if active is not None:
+                    raise ValueError("Scenario already has an active simulation run.")
+            started_at = run["started_at"] or (now if status == "running" else None)
+            completed_at = now if status in {"completed", "failed", "cancelled"} else None
+            conn.execute(
+                """UPDATE simulation_runs SET status = ?, started_at = ?, completed_at = ?,
+                   metrics = ?, result_summary = ?, updated_at = ? WHERE id = ?""",
+                (status, started_at, completed_at, json_dumps(metrics), result_summary, now, run_id),
+            )
+            if status == "running":
+                conn.execute(
+                    "UPDATE simulation_scenarios SET status = 'testing', updated_at = ? WHERE id = ?",
+                    (now, run["scenario_id"]),
+                )
+        self._audit(actor_id, "simulation_run_updated", "simulation_run", run_id, {"status": status})
+        return self.get_simulation_run(run_id)  # type: ignore[return-value]
+
+    def add_observation(
+        self, actor_id: str, run_id: str, observation_type: str, content: str,
+        data: dict | None = None, severity: str = "info"
+    ) -> dict:
+        self.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        observation_id = str(uuid4())
+        now = utc_now_iso()
+        with get_connection(self.db_path) as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            run = conn.execute(
+                "SELECT scenario_id, status FROM simulation_runs WHERE id = ?", (run_id,)
+            ).fetchone()
+            if run is None:
+                raise ValueError("Simulation run not found.")
+            if run["status"] != "running":
+                raise ValueError("Simulation run is not active.")
+            conn.execute(
+                """INSERT INTO observations
+                   (id, run_id, scenario_id, observer_id, observation_type, content, data, severity, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (observation_id, run_id, run["scenario_id"], actor_id, observation_type,
+                 content, json_dumps(data or {}), severity, now, now),
+            )
+        self._audit(actor_id, "observation_created", "observation", observation_id, {"run_id": run_id})
+        return self.get_observation(observation_id)  # type: ignore[return-value]
+
+    def ingest_unreal_observation(
+        self,
+        run_id: str,
+        agent_id: str,
+        event: str,
+        payload: dict,
+        protocol_version: str,
+    ) -> dict:
+        """Persist one authenticated bridge observation without impersonating a user."""
+        if not event.strip() or len(event) > 100:
+            raise ValueError("Invalid observation event.")
+
+        observation_id = str(uuid4())
+        actor_id = f"unreal:{agent_id}"
+        now = utc_now_iso()
+        structured_data = {
+            "payload": payload,
+            "agent_id": agent_id,
+            "protocol_version": protocol_version,
+            "transport": "websocket",
+        }
+        with get_connection(self.db_path) as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            run = conn.execute(
+                "SELECT scenario_id, status FROM simulation_runs WHERE id = ?", (run_id,)
+            ).fetchone()
+            if run is None:
+                raise ValueError("Simulation run not found.")
+            if run["status"] != "running":
+                raise ValueError("Simulation run is not active.")
+            conn.execute(
+                """INSERT INTO observations
+                   (id, run_id, scenario_id, observer_id, observation_type, content, data, severity, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, 'info', ?, ?)""",
+                (
+                    observation_id,
+                    run_id,
+                    run["scenario_id"],
+                    actor_id,
+                    f"unreal.{event}",
+                    f"Unreal observation: {event}",
+                    json_dumps(structured_data),
+                    now,
+                    now,
+                ),
+            )
+        self._audit(
+            actor_id,
+            "unreal_observation_persisted",
+            "observation",
+            observation_id,
+            {"run_id": run_id, "event": event, "agent_id": agent_id},
+        )
+        return self.get_observation(observation_id)  # type: ignore[return-value]
+
+    def get_observation(self, observation_id: str) -> dict | None:
+        with get_connection(self.db_path) as conn:
+            row = conn.execute("SELECT * FROM observations WHERE id = ?", (observation_id,)).fetchone()
+        if not row:
+            return None
+        item = dict(row)
+        item["data"] = json_loads(item.get("data", "{}"))
+        return item
+
+    def list_observations(self, run_id: str) -> list[dict]:
+        with get_connection(self.db_path) as conn:
+            rows = conn.execute(
+                "SELECT * FROM observations WHERE run_id = ? ORDER BY created_at", (run_id,)
+            ).fetchall()
+        items = []
+        for row in rows:
+            item = dict(row)
+            item["data"] = json_loads(item.get("data", "{}"))
+            items.append(item)
+        return items
 
     def create_knowledge_entry(
         self,
