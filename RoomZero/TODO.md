@@ -1,5 +1,40 @@
 # TODO - Milestone M2: RoomZero research platform MVP (SQLite parallel layer)
 
+## M4.2 — Admin Research Console UI
+
+- [x] Add Admin role entry and responsive research-governance console to `/ui`.
+- [x] Add explicit prototype identity warning and locally remembered `actor_id` selector.
+- [x] Add overview KPIs for users, open invitations, review queue, scenarios, and runs.
+- [x] Add platform user/invitation visibility and expiring invitation creation.
+- [x] Add research queue filters and approve/reject/archive/needs-review actions.
+- [x] Add approved-question scenario builder with risk and ethical constraints.
+- [x] Add scenario approval and controlled run start/complete actions.
+- [x] Add persistent run observation viewer and recent audit timeline.
+- [x] Add downloadable `roomzero.research-export.v1` JSON snapshot.
+- [x] Escape database-backed text before dynamic HTML rendering.
+- [x] Repair PWA icons, Apple touch icon reference, and cache version.
+- [x] Regenerate the static `out/` release artifact from `app/static/`.
+- [x] Validation:
+  - [x] `node --check RoomZero/app/static/app.js` -> PASS.
+  - [x] `python -m compileall -q RoomZero/app` -> PASS.
+  - [x] `python -m pytest -q` -> PASS (`62 passed`, 1 upstream warning).
+  - [x] `python -m ruff check RoomZero/app RoomZero/tests` -> PASS.
+  - [x] Dependency consistency -> PASS.
+  - [x] HTML parse/duplicate-ID audit -> PASS (`118` IDs, no duplicates).
+  - [x] Static `app/static` to `out/` byte-parity test -> PASS.
+  - [x] Test storage isolation -> PASS; tracked SQLite checksum unchanged after full suite.
+  - [x] Run state machine, concurrent start serialization, and active-only observations -> PASS.
+  - [x] Independent review boundary and elevated-invite prevention -> PASS.
+  - [x] Idempotent schema ledger plus foreign-key validation -> PASS.
+  - [x] Isolated FastAPI `/health`, `/ui`, and required OpenAPI-path smoke -> PASS.
+  - [x] CI gates hardened: Ruff/pip/Trivy no longer fail-soft; CodeQL matrix condition repaired.
+  - [x] Workflow and Compose YAML structural validation -> PASS.
+- [ ] Manual browser click-through and screenshot QA.
+  - Blocked in the current environment: browser CLI absent; Playwright Chromium download returned an invalid archive.
+- [ ] Replace prototype `actor_id` authorization with server-issued authentication before public deployment.
+
+Next recommended milestone: commit/push this green M4.2 vertical, run CI and Windows/Docker verification, then perform the live Unreal client E2E pilot.
+
 ## M4.1 — Admin Research Dashboard backend foundation
 - [x] Backend-first implementation completed; no Admin UI/M4.2 work started.
 - [x] Exact files changed:
@@ -38,7 +73,7 @@
 - [x] Known limitations:
   - [x] Admin UI is not implemented in M4.1; next milestone is M4.2.
   - [x] Actor identity remains `actor_id` based, not real authentication.
-  - [x] Stateful JSON/SQLite-backed tests should be run sequentially.
+  - [x] Historical mutable-test-data limitation superseded by isolated per-session storage and per-test restore.
   - [x] Existing Starlette/httpx deprecation warning remains upstream.
 - [ ] Validation commands:
   - [x] `python -m compileall -q RoomZero` -> PASS

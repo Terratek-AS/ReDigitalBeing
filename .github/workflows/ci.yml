@@ -43,10 +43,14 @@ jobs:
         working-directory: RoomZero
         run: python -m pytest -q
 
-      - name: Run ruff if available
+      - name: Run ruff
         working-directory: RoomZero
+        run: ruff check app tests scripts
+
+      - name: Validate JavaScript syntax
         run: |
-          python -c "import importlib.util,sys; sys.exit(0 if importlib.util.find_spec('ruff') else 1)" && ruff check . || echo "ruff not installed, skipping"
+          node --check RoomZero/app/static/app.js
+          node --check RoomZero/app/static/service-worker.js
 
       - name: Run npm lint if package.json has lint script
         shell: bash

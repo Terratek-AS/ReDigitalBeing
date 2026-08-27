@@ -7,7 +7,7 @@
   <meta name="description" content="RoomZero is a safe, local-first research space for testers, observers, and researchers collaborating with Eir." />
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#101828" />
-  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.svg" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -76,6 +76,11 @@
           <p>Submit questions, manage research jobs, and curate source quality.</p>
           <button class="btn-role" data-open-role="researcher">Open Researcher Dashboard</button>
         </article>
+        <article class="role-card role-card-admin" data-role="admin">
+          <h3>Admin Lab Console</h3>
+          <p>Review research, govern risk, launch approved runs, and inspect the audit trail.</p>
+          <button class="btn-role" data-open-role="admin">Open Admin Console</button>
+        </article>
       </div>
     </section>
 
@@ -83,6 +88,7 @@
       <button class="btn-secondary" data-open-role="tester">Tester</button>
       <button class="btn-secondary" data-open-role="observer">Observer</button>
       <button class="btn-secondary" data-open-role="researcher">Researcher</button>
+      <button class="btn-secondary" data-open-role="admin">Admin</button>
     </nav>
 
     <section class="card role-panel" id="dashboard-tester">
@@ -263,6 +269,158 @@
         <button id="btn-list-sources" class="btn-secondary">Queue</button>
       </div>
       <pre id="source-output" class="output"></pre>
+    </section>
+
+    <section class="card card-wide role-panel admin-console" id="dashboard-admin">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">M4.2 • Governance workspace</p>
+          <h2>Admin Research Console</h2>
+          <p class="muted">Move approved research from question to controlled, observable simulation run.</p>
+        </div>
+        <div class="row">
+          <button id="btn-admin-export" class="btn-secondary">Export research snapshot</button>
+          <button id="btn-admin-refresh">Refresh workspace</button>
+        </div>
+      </div>
+
+      <div class="prototype-warning" role="note">
+        <strong>Local prototype identity.</strong>
+        The actor ID controls access in this milestone. It is not production authentication.
+      </div>
+
+      <div class="admin-identity row">
+        <label for="admin-actor-id">Active admin or reviewer ID</label>
+        <input id="admin-actor-id" placeholder="Paste a valid platform user ID" autocomplete="off" />
+        <button id="btn-admin-save-actor" class="btn-secondary">Use actor ID</button>
+      </div>
+      <p id="admin-scope-note" class="muted small">Enter an authorized actor ID to load governed platform data.</p>
+
+      <div class="admin-kpi-grid" aria-label="Admin platform summary">
+        <article class="admin-kpi"><span>Users</span><strong id="admin-kpi-users">—</strong></article>
+        <article class="admin-kpi"><span>Open invites</span><strong id="admin-kpi-invitations">—</strong></article>
+        <article class="admin-kpi"><span>Needs review</span><strong id="admin-kpi-review">—</strong></article>
+        <article class="admin-kpi"><span>Scenarios</span><strong id="admin-kpi-scenarios">—</strong></article>
+        <article class="admin-kpi"><span>Runs</span><strong id="admin-kpi-runs">—</strong></article>
+      </div>
+
+      <div class="admin-workspace-grid">
+        <article class="admin-module">
+          <div class="module-heading">
+            <div><span class="module-step">01</span><h3>Access & invitations</h3></div>
+            <span class="status-chip">Role gated</span>
+          </div>
+          <p class="muted">Create expiring platform invitations and inspect who joined through each code.</p>
+          <div class="row">
+            <label class="sr-only" for="admin-invite-role">Invitation role</label>
+            <select id="admin-invite-role" title="Invitation role">
+              <option value="observer">Observer</option>
+              <option value="tester" selected>Tester</option>
+              <option value="contributor">Contributor</option>
+              <option value="researcher">Researcher</option>
+              <option value="reviewer">Reviewer</option>
+              <option value="admin">Admin</option>
+            </select>
+            <label class="sr-only" for="admin-invite-hours">Invitation validity in hours</label>
+            <input id="admin-invite-hours" type="number" min="1" max="720" value="72" title="Invitation validity in hours" />
+            <button id="btn-admin-create-invite">Create invite</button>
+          </div>
+          <h4>Users</h4>
+          <div id="admin-users-list" class="admin-list" aria-live="polite"></div>
+          <h4>Invitations</h4>
+          <div id="admin-invitations-list" class="admin-list" aria-live="polite"></div>
+        </article>
+
+        <article class="admin-module admin-module-wide">
+          <div class="module-heading">
+            <div><span class="module-step">02</span><h3>Research review queue</h3></div>
+            <span class="status-chip status-chip-ethical">Ethical gate</span>
+          </div>
+          <div class="row admin-filters">
+            <label class="sr-only" for="admin-question-status">Question status</label>
+            <select id="admin-question-status" title="Question status">
+              <option value="" selected>All statuses</option>
+              <option value="proposed">Proposed</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="testing">Testing</option>
+              <option value="completed">Completed</option>
+              <option value="archived">Archived</option>
+            </select>
+            <label class="sr-only" for="admin-question-risk">Risk level</label>
+            <select id="admin-question-risk" title="Risk level">
+              <option value="">All risk levels</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+            <button id="btn-admin-filter-questions" class="btn-secondary">Apply filters</button>
+          </div>
+          <label for="admin-review-notes">Reviewer notes used for the next decision</label>
+          <textarea id="admin-review-notes" class="textarea-compact" placeholder="Record reasoning, safeguards, or why the submission should be revised."></textarea>
+          <div id="admin-questions-list" class="admin-list" aria-live="polite"></div>
+        </article>
+
+        <article class="admin-module">
+          <div class="module-heading">
+            <div><span class="module-step">03</span><h3>Scenario builder</h3></div>
+            <span class="status-chip">Approved only</span>
+          </div>
+          <div class="field-stack">
+            <label for="admin-scenario-question-id">Research question ID</label>
+            <input id="admin-scenario-question-id" placeholder="Select an approved question or paste its ID" />
+            <label for="admin-scenario-purpose">Purpose</label>
+            <textarea id="admin-scenario-purpose" class="textarea-compact" placeholder="What will this controlled run test?"></textarea>
+            <div class="row">
+              <input id="admin-scenario-agent" placeholder="Agent type" value="Eir" />
+              <input id="admin-scenario-environment" placeholder="Environment" value="Local synthetic chamber" />
+            </div>
+            <input id="admin-scenario-metrics" placeholder="Metrics, comma separated" />
+            <input id="admin-scenario-constraints" placeholder="Ethical constraints, comma separated" value="human stop control, synthetic data only" />
+            <div class="row">
+              <label class="sr-only" for="admin-scenario-risk">Scenario risk level</label>
+              <select id="admin-scenario-risk" title="Scenario risk level">
+                <option value="low">Low risk</option>
+                <option value="medium" selected>Medium risk</option>
+                <option value="high">High risk</option>
+                <option value="critical">Critical risk</option>
+              </select>
+              <button id="btn-admin-convert-scenario">Create draft scenario</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="admin-module admin-module-wide">
+          <div class="module-heading">
+            <div><span class="module-step">04</span><h3>Scenarios & controlled runs</h3></div>
+            <span class="status-chip status-chip-live">Observable</span>
+          </div>
+          <div class="row">
+            <button id="btn-admin-refresh-scenarios" class="btn-secondary">Refresh scenarios</button>
+            <button id="btn-admin-refresh-runs" class="btn-secondary">Refresh runs</button>
+          </div>
+          <div class="admin-split">
+            <div>
+              <h4>Scenario registry</h4>
+              <div id="admin-scenarios-list" class="admin-list" aria-live="polite"></div>
+            </div>
+            <div>
+              <h4>Run activity</h4>
+              <div id="admin-runs-list" class="admin-list" aria-live="polite"></div>
+              <pre id="admin-run-observations" class="output output-compact">Select a run to inspect observations.</pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="admin-module admin-module-full">
+          <div class="module-heading">
+            <div><span class="module-step">05</span><h3>Recent audit activity</h3></div>
+            <span class="status-chip">Traceable</span>
+          </div>
+          <div id="admin-audit-list" class="admin-list audit-timeline" aria-live="polite"></div>
+        </article>
+      </div>
     </section>
 
     <section class="card card-wide">

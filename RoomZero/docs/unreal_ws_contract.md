@@ -104,6 +104,7 @@ Optional fields:
 {
   "type": "observation",
   "event": "player_entered_room",
+  "run_id": "run-uuid",
   "payload": {
     "distance": 2.4
   }
@@ -116,6 +117,13 @@ Required fields:
 
 Optional fields:
 - `payload` (object; if missing or non-object, server normalizes to `{}`)
+- `run_id` (persistent simulation run ID; the referenced run must be `running`)
+- `simulation_id` (accepted as a backwards-compatible alias for `run_id`)
+
+When `run_id` is present, the bridge writes the event to the SQLite `observations`
+table before acknowledging it. The stored record is linked to both the run and its
+scenario and receives an `unreal_observation_persisted` audit event. Payloads larger
+than 64 KiB are rejected rather than persisted.
 
 Server persistence shape (`ObservationEvent`) includes:
 - `protocol_version`, `type`, `agent_id`, `event`, `payload`, `created_at`
@@ -149,6 +157,9 @@ Required pong fields:
   "protocol_version": "roomzero.unreal.v1",
   "kind": "observation",
   "agent_id": "rz-01",
+  "persisted": true,
+  "run_id": "run-uuid",
+  "observation_id": "observation-uuid",
   "created_at": "2025-01-01T12:00:02+00:00"
 }
 ```
@@ -159,6 +170,9 @@ Required fields:
 - `kind` = `"observation"`
 - `agent_id`
 - `created_at` (ISO datetime string)
+
+`persisted`, `run_id`, and `observation_id` are additive fields returned only when
+the client supplied a valid active run and persistence succeeded.
 
 ### 4.6 Error payloads (server -> client)
 
@@ -198,6 +212,9 @@ Known stable error codes (current):
 - `unknown_message_type`
 - `missing_event`
 - `invalid_payload`
+- `simulation_run_not_found`
+- `simulation_run_not_active`
+- `payload_too_large`
 
 ## 5) Known stable string/enum values
 

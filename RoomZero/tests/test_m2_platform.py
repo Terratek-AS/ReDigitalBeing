@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 
 from fastapi.testclient import TestClient
 
@@ -50,8 +49,7 @@ def _seed_observer(admin_id: str) -> str:
 
 
 def test_migration_bootstrap_and_db_file_exists() -> None:
-    db_path = Path("RoomZero/data/platform/platform.sqlite")
-    assert db_path.exists(), "Platform DB file should exist after app import/bootstrap."
+    assert platform_store.db_path.exists(), "Platform DB file should exist after app import/bootstrap."
 
 
 def test_invitation_user_permission_and_audit_flow() -> None:

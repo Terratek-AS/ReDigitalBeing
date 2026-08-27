@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from datetime import datetime, timezone
+import json
 import os
 import sys
 import threading
@@ -69,6 +70,9 @@ from app.models import (
     PlatformResearchStatusChangeRequest,
     PlatformScenarioConvertRequest,
     PlatformScenarioUpdateRequest,
+    PlatformSimulationRunCreateRequest,
+    PlatformSimulationRunUpdateRequest,
+    PlatformObservationCreateRequest,
     AgentCommand,
     AgentState,
     ObservationEvent,
@@ -115,9 +119,44 @@ platform_store = PlatformStore(platform_db_path)
 
 safe_mode = True
 
+
+def _platform_http_exception(exc: ValueError) -> HTTPException:
+    """Map platform-domain failures to stable, useful HTTP semantics."""
+    detail = str(exc)
+    normalized = detail.lower()
+    if any(
+        marker in normalized
+        for marker in (
+            "permission",
+            "inactive",
+            "only governance roles",
+            "only administrators",
+            "only author",
+            "researchers cannot",
+        )
+    ):
+        status_code = 403
+    elif "not found" in normalized:
+        status_code = 404
+    elif any(
+        marker in normalized
+        for marker in (
+            "invalid simulation run transition",
+            "already has an active",
+            "simulation run is not active",
+            "only approved scenarios",
+            "only scenarios marked",
+        )
+    ):
+        status_code = 409
+    else:
+        status_code = 400
+    return HTTPException(status_code=status_code, detail=detail)
+
 # --- Unreal bridge runtime (local in-memory MVP) ---
 UNREAL_OBSERVATION_CAP = 500
 UNREAL_SIMULATION_EVENT_CAP = 500
+UNREAL_PERSISTED_PAYLOAD_MAX_BYTES = 64 * 1024
 unreal_agent_states: dict[str, AgentState] = {}
 unreal_agent_connections: dict[str, set[WebSocket]] = {}
 unreal_observations: list[ObservationEvent] = []
@@ -201,12 +240,15 @@ def _append_simulation_event(event: SimulationEvent) -> None:
 
 
 def _normalize_observation_to_simulation_event(observation: ObservationEvent) -> SimulationEvent:
+    run = platform_store.get_simulation_run(observation.run_id) if observation.run_id else None
     return SimulationEvent(
         event_type=f"unreal.observation.{observation.event}",
         source="unreal.websocket",
         payload=observation.payload,
         created_at=observation.created_at,
         agent_id=observation.agent_id,
+        scenario_id=run["scenario_id"] if run else None,
+        simulation_id=observation.run_id,
         protocol_version=observation.protocol_version,
         status="accepted",
         severity="info",
@@ -734,14 +776,16 @@ def admin_shutdown_safe_mode(request: AdminToggleRequest) -> dict:
 @app.post("/platform/invitations")
 def platform_create_invitation(request: PlatformInvitationCreateRequest) -> dict:
     try:
-        platform_store.require_role(request.actor_id, {"admin", "reviewer"})
+        actor = platform_store.require_role(request.actor_id, {"admin", "reviewer"})
+        if actor["role"] == "reviewer" and request.role in {"admin", "reviewer"}:
+            raise ValueError("Only administrators can invite governance roles.")
         invite = platform_store.create_invitation(
             role=request.role,
             invited_by=request.actor_id,
             expires_in_hours=request.expires_in_hours,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "created", "invitation": invite}
 
 
@@ -764,7 +808,7 @@ def platform_accept_invitation(request: PlatformInvitationAcceptRequest) -> dict
             accepted_by=request.accepted_by,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "accepted", "user": user}
 
 
@@ -811,7 +855,7 @@ def platform_create_question(request: PlatformResearchQuestionCreateRequest) -> 
             priority=request.priority,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "created", "question": question}
 
 
@@ -873,7 +917,7 @@ def platform_update_question(question_id: str, request: PlatformResearchQuestion
             priority=request.priority,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "updated", "question": question}
 
 
@@ -892,7 +936,7 @@ def platform_review_question(question_id: str, request: PlatformResearchReviewRe
             priority=request.priority,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "reviewed", "question": question}
 
 
@@ -905,7 +949,7 @@ def platform_approve_question_m4(question_id: str, request: PlatformResearchActi
             reviewer_notes=request.reviewer_notes,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "approved", "question": question}
 
 
@@ -918,7 +962,7 @@ def platform_reject_question_m4(question_id: str, request: PlatformResearchActio
             reviewer_notes=request.reviewer_notes,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "rejected", "question": question}
 
 
@@ -931,7 +975,7 @@ def platform_archive_question(question_id: str, request: PlatformResearchActionR
             reviewer_notes=request.reviewer_notes,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "archived", "question": question}
 
 
@@ -945,7 +989,7 @@ def platform_prioritize_question(question_id: str, request: PlatformResearchPrio
             reviewer_notes=request.reviewer_notes,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "prioritized", "question": question}
 
 
@@ -958,7 +1002,7 @@ def platform_change_question_status(question_id: str, request: PlatformResearchS
             status=request.status,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "updated", "question": question}
 
 
@@ -1011,7 +1055,7 @@ def platform_convert_scenario(question_id: str, request: PlatformScenarioConvert
             reviewer_notes=request.reviewer_notes,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "created", "scenario": scenario}
 
 
@@ -1075,7 +1119,7 @@ def platform_update_scenario(scenario_id: str, request: PlatformScenarioUpdateRe
             reviewer_notes=request.reviewer_notes,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise _platform_http_exception(exc) from exc
     return {"status": "updated", "scenario": scenario}
 
 
@@ -1117,6 +1161,60 @@ def platform_get_knowledge(knowledge_id: str, actor_id: str) -> dict:
     except ValueError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc
     return item
+
+
+@app.post("/platform/scenarios/{scenario_id}/runs")
+def platform_create_run(scenario_id: str, request: PlatformSimulationRunCreateRequest) -> dict:
+    try:
+        run = platform_store.create_simulation_run(request.actor_id, scenario_id, request.input_snapshot)
+    except ValueError as exc:
+        raise _platform_http_exception(exc) from exc
+    return {"status": "created", "run": run}
+
+
+@app.get("/platform/runs")
+def platform_list_runs(actor_id: str, scenario_id: str | None = None) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        items = platform_store.list_simulation_runs(scenario_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
+
+
+@app.patch("/platform/runs/{run_id}")
+def platform_update_run(run_id: str, request: PlatformSimulationRunUpdateRequest) -> dict:
+    try:
+        run = platform_store.update_simulation_run(
+            request.actor_id, run_id, request.status, request.metrics, request.result_summary
+        )
+    except ValueError as exc:
+        raise _platform_http_exception(exc) from exc
+    return {"status": "updated", "run": run}
+
+
+@app.post("/platform/runs/{run_id}/observations")
+def platform_add_run_observation(run_id: str, request: PlatformObservationCreateRequest) -> dict:
+    try:
+        observation = platform_store.add_observation(
+            request.actor_id, run_id, request.observation_type, request.content,
+            request.data, request.severity,
+        )
+    except ValueError as exc:
+        raise _platform_http_exception(exc) from exc
+    return {"status": "created", "observation": observation}
+
+
+@app.get("/platform/runs/{run_id}/observations")
+def platform_list_run_observations(run_id: str, actor_id: str) -> dict:
+    try:
+        platform_store.require_role(actor_id, {"admin", "reviewer", "researcher", "tester", "observer", "contributor"})
+        if platform_store.get_simulation_run(run_id) is None:
+            raise HTTPException(status_code=404, detail="Simulation run not found.")
+        items = platform_store.list_observations(run_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    return {"count": len(items), "items": items}
 
 
 @app.post("/platform/audit")
@@ -1232,20 +1330,67 @@ async def unreal_ws(websocket: WebSocket, agent_id: str) -> None:
                     continue
                 if not isinstance(payload, dict):
                     payload = {}
-                obs = ObservationEvent(agent_id=agent_id, event=event_name, payload=payload)
+                run_id_value = message.get("run_id", message.get("simulation_id"))
+                run_id = str(run_id_value).strip() if run_id_value is not None else None
+                if run_id == "":
+                    run_id = None
+                persisted_observation = None
+                if run_id is not None:
+                    payload_size = len(json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8"))
+                    if payload_size > UNREAL_PERSISTED_PAYLOAD_MAX_BYTES:
+                        await websocket.send_json(
+                            {
+                                "type": "error",
+                                "protocol_version": "roomzero.unreal.v1",
+                                "error": "payload_too_large",
+                                "run_id": run_id,
+                            }
+                        )
+                        continue
+                    try:
+                        persisted_observation = platform_store.ingest_unreal_observation(
+                            run_id=run_id,
+                            agent_id=agent_id,
+                            event=event_name,
+                            payload=payload,
+                            protocol_version="roomzero.unreal.v1",
+                        )
+                    except ValueError as exc:
+                        error_code = (
+                            "simulation_run_not_found"
+                            if str(exc) == "Simulation run not found."
+                            else "simulation_run_not_active"
+                        )
+                        await websocket.send_json(
+                            {
+                                "type": "error",
+                                "protocol_version": "roomzero.unreal.v1",
+                                "error": error_code,
+                                "run_id": run_id,
+                            }
+                        )
+                        continue
+                obs = ObservationEvent(agent_id=agent_id, event=event_name, payload=payload, run_id=run_id)
                 _append_unreal_observation(obs)
                 sim_event = _normalize_observation_to_simulation_event(obs)
                 _append_simulation_event(sim_event)
                 _trace_simulation_event(sim_event)
-                await websocket.send_json(
-                    {
-                        "type": "ack",
-                        "protocol_version": "roomzero.unreal.v1",
-                        "kind": "observation",
-                        "agent_id": agent_id,
-                        "created_at": obs.created_at,
-                    }
-                )
+                ack = {
+                    "type": "ack",
+                    "protocol_version": "roomzero.unreal.v1",
+                    "kind": "observation",
+                    "agent_id": agent_id,
+                    "created_at": obs.created_at,
+                }
+                if persisted_observation is not None:
+                    ack.update(
+                        {
+                            "persisted": True,
+                            "run_id": run_id,
+                            "observation_id": persisted_observation["id"],
+                        }
+                    )
+                await websocket.send_json(ack)
                 continue
 
             if msg_type == "state_update":
@@ -1312,4 +1457,3 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"RoomZero: startup failed: {exc}")
         raise
-

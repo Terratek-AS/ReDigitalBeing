@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   analyze:
-    name: Analyze (Python)
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@v4.37.3
         with:
           languages: ${{ matrix.language }}
 
@@ -40,9 +40,9 @@ jobs:
           pip install -r RoomZero/requirements.txt
 
       - name: Install Node dependencies
-        if: matrix.language == 'javascript' && (exists('package.json') || exists('RoomZero/package.json'))
+        if: matrix.language == 'javascript'
         run: |
           if [ -f package.json ]; then npm ci; elif [ -f RoomZero/package.json ]; then (cd RoomZero && npm ci); else echo "no package.json found"; fi
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@v4.37.3
